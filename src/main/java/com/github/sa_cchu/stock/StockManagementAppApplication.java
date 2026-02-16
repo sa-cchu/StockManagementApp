@@ -11,3 +11,7 @@ public class StockManagementAppApplication {
 	}
 
 }
+
+//アプリ起動（SpringBoot　etc....
+//コンポネートスキャン
+//自動設定
