@@ -11,143 +11,151 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name = "user")
+@Table(
+    name = "user",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "user_name")
+    }
+)
 public class User implements UserDetails {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
-	private Integer userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Integer userId;
 
-	@Column(name = "user_name", nullable = false, length = 255)
-	private String userName;
+    // ★ ログインID（Spring Security の username）
+    @Column(name = "user_name", nullable = false, length = 255)
+    private String userName;
 
-	@Column(name = "user_password", nullable = false, length = 256)
-	private String userPassword;
+    @Column(name = "user_password", nullable = false, length = 256)
+    private String userPassword;
 
-	@Column(name = "user_gender", nullable = false, length = 255)
-	private String userGender;
+    @Column(name = "user_gender", nullable = false, length = 255)
+    private String userGender;
 
-	// authority_id（NOT NULL）
-	@ManyToOne
-	@JoinColumn(name = "authority_id", nullable = false)
-	private Authority authority;
+    @ManyToOne
+    @JoinColumn(name = "authority_id", nullable = false)
+    private Authority authority;
 
-	// wh_id（NULL可）
-	@ManyToOne
-	@JoinColumn(name = "wh_id")
-	private Warehouse warehouse;
+    @ManyToOne
+    @JoinColumn(name = "wh_id")
+    private Warehouse warehouse;
 
-	// shop_id（NULL可）
-	@ManyToOne
-	@JoinColumn(name = "shop_id")
-	private Shop shop;
+    @ManyToOne
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
 
-	@Column(name = "delete_flag", nullable = false)
+    @Column(name = "delete_flag", nullable = false)
     private Integer deleteFlag = 0;
 
-	public Integer getUserId() {
-		return userId;
-	}
+    // ===== getter / setter =====
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
+    public Integer getUserId() {
+        return userId;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public String getUserPassword() {
-		return userPassword;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public void setUserPassword(String userPassword) {
-		this.userPassword = userPassword;
-	}
+    public String getUserPassword() {
+        return userPassword;
+    }
 
-	public String getUserGender() {
-		return userGender;
-	}
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
 
-	public void setUserGender(String userGender) {
-		this.userGender = userGender;
-	}
+    public String getUserGender() {
+        return userGender;
+    }
 
-	public Authority getAuthority() {
-		return authority;
-	}
+    public void setUserGender(String userGender) {
+        this.userGender = userGender;
+    }
 
-	public void setAuthority(Authority authority) {
-		this.authority = authority;
-	}
+    public Authority getAuthority() {
+        return authority;
+    }
 
-	public Warehouse getWarehouse() {
-		return warehouse;
-	}
+    public void setAuthority(Authority authority) {
+        this.authority = authority;
+    }
 
-	public void setWarehouse(Warehouse warehouse) {
-		this.warehouse = warehouse;
-	}
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
 
-	public Shop getShop() {
-		return shop;
-	}
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
+    }
 
-	public void setShop(Shop shop) {
-		this.shop = shop;
-	}
+    public Shop getShop() {
+        return shop;
+    }
 
-	public Integer getDeleteFlag() {
-		return deleteFlag;
-	}
+    public void setShop(Shop shop) {
+        this.shop = shop;
+    }
 
-	public void setDeleteFlag(Integer deleteFlag) {
-		this.deleteFlag = deleteFlag;
-	}
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-	    return List.of(new SimpleGrantedAuthority(authority.getAuthorityName()));
-	}
+    public Integer getDeleteFlag() {
+        return deleteFlag;
+    }
 
-	@Override
-	public String getPassword() {
-	    return userPassword;
-	}
+    public void setDeleteFlag(Integer deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
 
-	@Override
-	public String getUsername() {
-	    return userName;
-	}
+    // ===== Spring Security =====
+    //UserDetailsのメソッドを実装
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(authority.getAuthorityName()));//リストにして返す
+    }////////////////////文字列権限を変換////////////権限取得（ROLE_....
 
-	@Override
-	public boolean isAccountNonExpired() {
-	    return true;
-	}
+    @Override
+    public String getPassword() {
+        return userPassword;
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-	    return true;
-	}
+    @Override
+    public String getUsername() {
+        return userName;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-	    return true;
-	}
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-	@Override
-	public boolean isEnabled() {
-	    return deleteFlag == 0;
-	}
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return deleteFlag == 0;
+    }
 }
