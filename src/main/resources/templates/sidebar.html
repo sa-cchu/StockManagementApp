@@ -1,0 +1,61 @@
+<div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+	<!-- ===== ユーザー情報 ===== -->
+	<div class="user-card">
+
+		<div class="user-name">
+			名前：
+			<span th:text="${loginUser.userName}"></span>
+		</div>
+
+		<div class="user-role">
+			権限：
+			<span th:switch="${loginUser.authority.authorityName}">
+				<span th:case="'ROLE_ADMIN'">管理者</span>
+				<span th:case="'ROLE_SHOP'">店舗</span>
+				<span th:case="'ROLE_WAREHOUSE'">倉庫</span>
+			</span>
+		</div>
+
+		<div class="user-belong">
+			所属：
+			<span th:if="${loginUser.shop != null}" th:text="${loginUser.shop.shopName}"></span>
+
+			<span th:if="${loginUser.warehouse != null}" th:text="${loginUser.warehouse.whName}"></span>
+
+			<span th:if="${loginUser.shop == null and loginUser.warehouse == null}">
+				無
+			</span>
+		</div>
+
+	</div>
+
+	<!-- ===== メニュー ===== -->
+	<ul class="menu">
+		<!-- 共通 -->
+		<li>
+			<a th:href="@{/users}">ユーザー管理</a>
+		</li>
+
+		<!-- 管理者のみ -->
+		<li sec:authorize="hasRole('ADMIN')">
+			<a th:href="@{/shops}">店舗管理</a>
+		</li>
+
+		<li sec:authorize="hasRole('ADMIN')">
+			<a th:href="@{/warehouses}">倉庫管理</a>
+		</li>
+
+		<li sec:authorize="hasRole('ADMIN')">
+			<a th:href="@{/goods}">商品管理</a>
+		</li>
+
+		<!-- 共通 -->
+		<li>
+			<a th:href="@{/inquiry}">問い合わせ対応</a>
+		</li>
+
+	</ul>
+
+</div>
