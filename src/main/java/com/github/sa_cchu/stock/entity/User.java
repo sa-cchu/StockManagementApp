@@ -56,7 +56,7 @@ public class User implements UserDetails {
     @Column(name = "delete_flag", nullable = false)
     private Integer deleteFlag = 0;
 
-    // ===== getter / setter =====
+    // ===== getter / setter アノテーションで省略してもいい（UserDetailsは省略できない　 =====
 
     public Integer getUserId() {
         return userId;
@@ -127,7 +127,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(authority.getAuthorityName()));//リストにして返す
-    }////////////////////文字列権限を変換////////////権限取得（ROLE_....
+    }////////////////文字列権限を変換SpringSecurity////////////権限取得（ROLE_....
 
     @Override
     public String getPassword() {

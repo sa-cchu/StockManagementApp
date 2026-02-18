@@ -6,9 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "category")
+@Table(name = "category", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "category_name")
+})
 public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

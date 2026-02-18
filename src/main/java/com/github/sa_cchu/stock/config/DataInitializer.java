@@ -5,8 +5,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.github.sa_cchu.stock.entity.Authority;
+import com.github.sa_cchu.stock.entity.Category;
 import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.repository.AuthorityRepository;
+import com.github.sa_cchu.stock.repository.CategoryRepository;
 import com.github.sa_cchu.stock.repository.UserRepository;
 
 @Component //起動時にインスタンス化してくれている　DIかってにNEwしてくれる
@@ -16,41 +18,67 @@ public class DataInitializer implements CommandLineRunner {//起動後に一回�
 	private final AuthorityRepository authorityRepository;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final CategoryRepository categoryRepository;
 
 	//コンストラクタ
 	public DataInitializer(
 			AuthorityRepository authorityRepository,
 			UserRepository userRepository,
+			CategoryRepository categoryRepository,
 			PasswordEncoder passwordEncoder) {
 		this.authorityRepository = authorityRepository;
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.categoryRepository = categoryRepository;
+	}
+
+	private Authority createAuthorityIfNotExists(String roleName) {
+		return authorityRepository.findByAuthorityName(roleName)
+				.orElseGet(() -> {
+					Authority authority = new Authority();
+					authority.setAuthorityName(roleName);
+					return authorityRepository.save(authority);
+				});
+	}
+
+	private void createCategoryIfNotExists(String categoryName) {
+		categoryRepository.findByCategoryName(categoryName)
+				.orElseGet(() -> {
+					Category category = new Category();
+					category.setCategoryName(categoryName);
+					return categoryRepository.save(category);
+				});
 	}
 
 	@Override
 	public void run(String... args) {//runのメソッドは一クラスに一つ
 
 		// ===== 権限初期データ =====
-		Authority adminAuthority = authorityRepository
-				.findByAuthorityName("ROLE_ADMIN")//リポジトリからメソッドを読んで引数をDBから探して変数に代入
-				
-				.orElseGet(() -> {//こいつは見つからなかった時だけ下の処理をするようにラムだ式
-					Authority authority = new Authority();//インスタンス化して
-					authority.setAuthorityName("ROLE_ADMIN");//作ったインスタンスに値を入れている　//ROLE_がないと画面制御がだるい
-					return authorityRepository.save(authority);//インスタンスをインサートしている
-				});
+		Authority admin = createAuthorityIfNotExists("ROLE_ADMIN");
+		createAuthorityIfNotExists("ROLE_SHOP");
+		createAuthorityIfNotExists("ROLE_WAREHOUSE");
+		
+		
+		// ===== カテゴリ初期データ =====
+        createCategoryIfNotExists("食品");
+        createCategoryIfNotExists("日用品");
+        createCategoryIfNotExists("家電");
+        createCategoryIfNotExists("衣料品");
+        createCategoryIfNotExists("その他");
+        
+
 
 		// ===== ユーザー初期データ =====
-		userRepository.findByUserName("admin")
+		userRepository.findByUserName("admin")//リポジトリからメソッドを読んで引数をDBから探して変数に代入
 				.orElseGet(() -> {
 					User user = new User();
 					user.setUserName("admin"); // ログインID
 					user.setUserPassword(
 							passwordEncoder.encode("password"));
 					user.setUserGender("M");
-					user.setAuthority(adminAuthority);
+					user.setAuthority(admin);
 					user.setDeleteFlag(0);
-					return userRepository.save(user);
+					return userRepository.save(user);//インスタンスをインサートしている
 				});
 	}
 }
