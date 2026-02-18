@@ -13,66 +13,67 @@ import jakarta.persistence.Table;
 @Table(name = "shop_stock")
 public class ShopStock {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "shop_stock_id")
-    private Integer shopStockId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "shop_stock_id")
+	private Integer shopStockId;
 
-    // 店舗（外部キー）
-    @ManyToOne
-    @JoinColumn(name = "shop_id", nullable = false)
-    private Shop shop;
+	// 店舗（外部キー）
+	@ManyToOne
+	@JoinColumn(name = "shop_id", nullable = false)
+	private Shop shopId;
 
-    // 商品（外部キー）
-    @ManyToOne
-    @JoinColumn(name = "goods_id", nullable = false)
-    private Goods goods;
+	// 商品（外部キー）
+	@ManyToOne
+	@JoinColumn(name = "goods_id", nullable = false)
+	private Goods goodsId;
 
-    @Column(name = "shop_stock", nullable = false)
-    private Integer shopStock = 0;
+	@Column(name = "quantity", nullable = false)
+	private Integer quantity = 0;
 
-    @Column(name = "delete_flag", nullable = false)
-    private Integer deleteFlag = 0;
+	@Column(name = "delete_flag", nullable = false)
+	private Integer deleteFlag = 0;
 
-    // getter / setter
+	public Integer getShopStockId() {
+		return shopStockId;
+	}
 
-    public Integer getShopStockId() {
-        return shopStockId;
-    }
+	public void setShopStockId(Integer shopStockId) {
+		this.shopStockId = shopStockId;
+	}
 
-    public void setShopStockId(Integer shopStockId) {
-        this.shopStockId = shopStockId;
-    }
+	public Shop getShopId() {
+		return shopId;
+	}
 
-    public Shop getShop() {
-        return shop;
-    }
+	public void setShopId(Shop shopId) {
+		this.shopId = shopId;
+	}
 
-    public void setShop(Shop shop) {
-        this.shop = shop;
-    }
+	public Goods getGoodsId() {
+		return goodsId;
+	}
 
-    public Goods getGoods() {
-        return goods;
-    }
+	public void setGoodsId(Goods goodsId) {
+		this.goodsId = goodsId;
+	}
 
-    public void setGoods(Goods goods) {
-        this.goods = goods;
-    }
+	public Integer getQuantity() {
+		return quantity;
+	}
 
-    public Integer getShopStock() {
-        return shopStock;
-    }
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 
-    public void setShopStock(Integer shopStock) {
-        this.shopStock = shopStock;
-    }
+	public Integer getDeleteFlag() {
+		return deleteFlag;
+	}
 
-    public Integer getDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(Integer deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
+	public void setDeleteFlag(Integer deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+	
+	
 }
+	

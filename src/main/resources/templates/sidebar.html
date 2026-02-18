@@ -40,7 +40,7 @@
 
 		<!-- 管理者のみ -->
 		<li sec:authorize="hasRole('ADMIN')">
-			<a th:href="@{/shops}">店舗管理</a>
+			<a th:href="@{/shop}">店舗管理</a>
 		</li>
 
 		<li sec:authorize="hasRole('ADMIN')">
