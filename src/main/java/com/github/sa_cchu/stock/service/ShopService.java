@@ -35,7 +35,10 @@ public class ShopService {
 
 	@Transactional
 	public Shop addShop(Shop shop) {
-
+		
+		if(shopRepository.findByShopName(shop.getShopName()).isPresent()) {
+			throw new IllegalArgumentException("既に店舗名は存在します");
+		}
 		// 店舗情報を保存
 		Shop savedShop = shopRepository.save(shop);
 

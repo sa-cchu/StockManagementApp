@@ -6,10 +6,12 @@
 <div th:fragment="content">
 
     <h1>新規倉庫追加</h1>
+	<!-- エラーメッセージ -->
 	<div th:if="${errorMessage}" class="text-danger">
 	    <span style="color:red"th:text="${errorMessage}"></span>
 	</div>
-
+	
+	<!-- 入力フォーム -->
     <form th:action="@{/warehouse/add}" th:object="${warehouse}" method="post">
 
         <!-- 倉庫名 -->
