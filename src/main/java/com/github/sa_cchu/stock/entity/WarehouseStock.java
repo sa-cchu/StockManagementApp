@@ -15,64 +15,67 @@ public class WarehouseStock {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "wh_stock_id")
-    private Integer whStockId;
+    @Column(name = "warehouse_stock_id")
+    private Integer warehouseStockId;
 
     // 倉庫（外部キー）
     @ManyToOne
-    @JoinColumn(name = "wh_id", nullable = false)
-    private Warehouse warehouse;
+    @JoinColumn(name = "warehouse_id", nullable = false)
+    private Warehouse warehouseId;
 
     // 商品（外部キー）
     @ManyToOne
     @JoinColumn(name = "goods_id", nullable = false)
-    private Goods goods;
+    private Goods goodsId;
 
-    @Column(name = "wh_stock", nullable = false)
-    private Integer whStock = 0;
+    @Column(name = "warehouse_stock_quantity", nullable = false)
+    private Integer warehouseStockQuantity = 0;
 
     @Column(name = "delete_flag", nullable = false)
     private Integer deleteFlag = 0;
 
-    // ===== getter / setter =====
+	public Integer getWarehouseStockId() {
+		return warehouseStockId;
+	}
 
-    public Integer getWhStockId() {
-        return whStockId;
-    }
+	public void setWarehouseStockId(Integer warehouseStockId) {
+		this.warehouseStockId = warehouseStockId;
+	}
 
-    public void setWhStockId(Integer whStockId) {
-        this.whStockId = whStockId;
-    }
+	public Warehouse getWarehouseId() {
+		return warehouseId;
+	}
 
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
+	public void setWarehouseId(Warehouse warehouseId) {
+		this.warehouseId = warehouseId;
+	}
 
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
+	public Goods getGoodsId() {
+		return goodsId;
+	}
 
-    public Goods getGoods() {
-        return goods;
-    }
+	public void setGoodsId(Goods goodsId) {
+		this.goodsId = goodsId;
+	}
 
-    public void setGoods(Goods goods) {
-        this.goods = goods;
-    }
+	public Integer getWarehouseStockQuantity() {
+		return warehouseStockQuantity;
+	}
 
-    public Integer getWhStock() {
-        return whStock;
-    }
+	public void setWarehouseStockQuantity(Integer warehouseStockQuantity) {
+		this.warehouseStockQuantity = warehouseStockQuantity;
+	}
 
-    public void setWhStock(Integer whStock) {
-        this.whStock = whStock;
-    }
+	public Integer getDeleteFlag() {
+		return deleteFlag;
+	}
 
-    public Integer getDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(Integer deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
+	public void setDeleteFlag(Integer deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+    
+    
+    
 }
+
+   

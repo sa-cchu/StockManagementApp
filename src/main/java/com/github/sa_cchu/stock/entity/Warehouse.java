@@ -6,54 +6,62 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "warehouse")
+@Table(name = "warehouse", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "warehouse_name")
+})
+
 public class Warehouse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "wh_id")
-    private Integer whId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "warehouse_id")
+	private Integer warehouseId;
 
-    @Column(name = "wh_name", nullable = false, length = 255)
-    private String whName;
+	@NotBlank
+	@Column(name = "warehouse_name", nullable = false, length = 255)
+	private String warehouseName;
 
-    @Column(name = "wh_address", nullable = false, length = 255)
-    private String whAddress;
+	@NotBlank
+	@Column(name = "warehouse_address", nullable = false, length = 255)
+	private String warehouseAddress;
 
-    @Column(name = "delete_flag", nullable = false)
-    private Integer deleteFlag = 0;
+	@Column(name = "delete_flag", nullable = false)
+	private Integer deleteFlag = 0;
 
-    public Integer getWhId() {
-        return whId;
-    }
+	public Integer getWarehouseId() {
+		return warehouseId;
+	}
 
-    public void setWhId(Integer whId) {
-        this.whId = whId;
-    }
+	public void setWarehouseId(Integer warehouseId) {
+		this.warehouseId = warehouseId;
+	}
 
-    public String getWhName() {
-        return whName;
-    }
+	public String getWarehouseName() {
+		return warehouseName;
+	}
 
-    public void setWhName(String whName) {
-        this.whName = whName;
-    }
+	public void setWarehouseName(String warehouseName) {
+		this.warehouseName = warehouseName;
+	}
 
-    public String getWhAddress() {
-        return whAddress;
-    }
+	public String getWarehouseAddress() {
+		return warehouseAddress;
+	}
 
-    public void setWhAddress(String whAddress) {
-        this.whAddress = whAddress;
-    }
+	public void setWarehouseAddress(String warehouseAddress) {
+		this.warehouseAddress = warehouseAddress;
+	}
 
-    public Integer getDeleteFlag() {
-        return deleteFlag;
-    }
+	public Integer getDeleteFlag() {
+		return deleteFlag;
+	}
 
-    public void setDeleteFlag(Integer deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
+	public void setDeleteFlag(Integer deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+
 }

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.github.sa_cchu.stock.entity.User;//Userテーブルを実装
 
-public interface UserRepository extends JpaRepository<User, Integer> {//<>の中はエンティティDB名、主キーの型名
+public interface UserRepository extends JpaRepository<User, Integer> {//<>の中はエンティティ名、主キーの型名
 //JpaRepositoryを継承することでSQL文を自動的に使用することができる
 	
     Optional<User> findByUserName(String userName);

@@ -43,7 +43,7 @@ public class ShopService {
 		List<Goods> allGoods = goodsRepository.findAll();
 
 		// ShopStock作成と既存チェック
-		for (Goods goods : allGoods) {
+		for (Goods goods : allGoods) {//allGoodsに入っている商品をgoodsにいれて処理を回すfor文
 			boolean exists = shopStockRepository.existsByShopIdAndGoodsId(savedShop, goods); //
 			if (!exists) {
 				ShopStock stock = new ShopStock();

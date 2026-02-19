@@ -48,7 +48,7 @@ public class HomeController {
 		if (shop != null) {
 			belongName = shop.getShopName();
 		} else if (warehouse != null) {
-			belongName = warehouse.getWhName();
+			belongName = warehouse.getWarehouseName();
 		} else {
 			belongName = "無";
 		}
