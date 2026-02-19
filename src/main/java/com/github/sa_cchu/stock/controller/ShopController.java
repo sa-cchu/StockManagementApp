@@ -11,7 +11,7 @@ import com.github.sa_cchu.stock.entity.Shop;
 import com.github.sa_cchu.stock.service.ShopService;
 
 @Controller
-@RequestMapping("/shop")
+@RequestMapping("/shop")//コントローラー全体の基本パスを設定
 public class ShopController {
 
     private final ShopService shopService;
@@ -21,22 +21,24 @@ public class ShopController {
     }
 
     // 一覧表示
-    @GetMapping
+    @GetMapping //店舗リストモデルに入れてshopMGに画面遷移させる
     public String list(Model model) {
-        model.addAttribute("shops", shopService.getAllShop()); // ← 複数形に統一
+        model.addAttribute("shops", shopService.getAllShop()); // 
         return "shopMG";
     }
 
     // 追加画面表示
     @GetMapping("/new")
     public String newForm(Model model) {
-        model.addAttribute("shop", new Shop());
+        model.addAttribute("shop", new Shop());//入力値を受け取る値を空箱を作っている
+        					//紐づけ先　//入力値を受け取る空箱
         return "shop-form";
     }
 
     // 保存
     @PostMapping("/add")
     public String save(@ModelAttribute Shop shop) {
+    					//Shop型の変数Shopに受け取ったデータを格納している（エンティティ）
         shopService.addShop(shop);
         return "redirect:/shop";
     }

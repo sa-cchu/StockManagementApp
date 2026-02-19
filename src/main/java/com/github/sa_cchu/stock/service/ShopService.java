@@ -16,43 +16,44 @@ import com.github.sa_cchu.stock.repository.ShopStockRepository;
 @Service
 public class ShopService {
 
-    private final ShopRepository shopRepository;
-    private final GoodsRepository goodsRepository;
-    private final ShopStockRepository shopStockRepository;
+	private final ShopRepository shopRepository;
+	private final GoodsRepository goodsRepository;
+	private final ShopStockRepository shopStockRepository;
 
-    public ShopService(ShopRepository shopRepository,
-                       GoodsRepository goodsRepository,
-                       ShopStockRepository shopStockRepository) {
-        this.shopRepository = shopRepository;
-        this.goodsRepository = goodsRepository;
-        this.shopStockRepository = shopStockRepository;
-    }
+	public ShopService(ShopRepository shopRepository,
+			GoodsRepository goodsRepository,
+			ShopStockRepository shopStockRepository) {
+		this.shopRepository = shopRepository;
+		this.goodsRepository = goodsRepository;
+		this.shopStockRepository = shopStockRepository;
+	}
 
-    @Transactional
-    public Shop addShop(Shop shop) {
+	@Transactional//全部成功でコミット　失敗でロールバック
+	public List<Shop> getAllShop() {
+		return shopRepository.findAll();
+	}
 
-        // 店舗情報を保存
-        Shop savedShop = shopRepository.save(shop);
+	@Transactional
+	public Shop addShop(Shop shop) {
 
-        // 既存商品を取得
-        List<Goods> allGoods = goodsRepository.findAll();
+		// 店舗情報を保存
+		Shop savedShop = shopRepository.save(shop);
 
-        // ShopStock作成と既存チェック
-        for (Goods goods : allGoods) {
-            boolean exists = shopStockRepository.existsByShopIdAndGoodsId(savedShop, goods); // ← Repository メソッドに合わせる
-            if (!exists) {
-                ShopStock stock = new ShopStock();
-                stock.setShopId(savedShop);
-                stock.setGoodsId(goods);
-                stock.setQuantity(0);
-                shopStockRepository.save(stock);
-            }
-        }
-        return savedShop;
-    }
+		// 既存商品を取得
+		List<Goods> allGoods = goodsRepository.findAll();
 
-    @Transactional
-    public List<Shop> getAllShop() {
-        return shopRepository.findAll();
-    }
+		// ShopStock作成と既存チェック
+		for (Goods goods : allGoods) {
+			boolean exists = shopStockRepository.existsByShopIdAndGoodsId(savedShop, goods); //
+			if (!exists) {
+				ShopStock stock = new ShopStock();
+				stock.setShopId(savedShop);
+				stock.setGoodsId(goods);
+				stock.setQuantity(0);
+				shopStockRepository.save(stock);
+			}
+		}
+		return savedShop;
+	}
+
 }

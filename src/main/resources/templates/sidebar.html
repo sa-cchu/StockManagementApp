@@ -35,7 +35,7 @@
 	<ul class="menu">
 		<!-- 共通 -->
 		<li>
-			<a th:href="@{/users}">ユーザー管理</a>
+			<a th:href="@{/user}">ユーザー管理</a>
 		</li>
 
 		<!-- 管理者のみ -->
@@ -44,7 +44,7 @@
 		</li>
 
 		<li sec:authorize="hasRole('ADMIN')">
-			<a th:href="@{/warehouses}">倉庫管理</a>
+			<a th:href="@{/warehouse}">倉庫管理</a>
 		</li>
 
 		<li sec:authorize="hasRole('ADMIN')">
