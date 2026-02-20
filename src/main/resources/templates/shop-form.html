@@ -3,13 +3,17 @@
 
 <div th:fragment="content">
 
-	<h1>新規店舗追加</h1>
+	<h1 th:text="${shop.shopId == null} ? '新規店舗追加' : '店舗編集'"></h1>
 
 	<div th:if="${errorMessage}" class="text-danger">
 		<span style="color:red" th:text="${errorMessage}"></span>
 	</div>
 
-	<form th:action="@{/shop/add}" th:object="${shop}" method="post">
+	<!-- 入力フォーム -->
+	<form th:action="@{${shop.shopId == null}?'/shop/add':'/shop/update'" th:object="${shop}" method="post">
+
+		<!-- 店舗ID -->
+		<input typ="hidden" th:if="${shop.shopId != null}" th:field="*{shopId}" />
 
 		<!-- 店舗名 -->
 		<div class="mb-3">
@@ -24,8 +28,7 @@
 		</div>
 
 		<!-- ボタン -->
-		<button type="submit" class="btn btn-primary">追加</button>
-		
+		<button type="submit" class="btn btn-primary" th:text="${shop.shopId == null} ? '追加' :'編集'"></button>
 		<a th:href="@{/shop}" class="btn btn-secondary">一覧に戻る</a>
 
 	</form>

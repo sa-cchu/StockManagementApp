@@ -10,7 +10,7 @@
 		<span style="color:red" th:text="${errorMessage}"></span>
 	</div>
 
-	<!-- 入力フォーム -->
+
 	<form th:action="@{${warehouse.warehouseId == null}?'/warehouse/add':'/warehouse/update'}" th:object="${warehouse}"
 		method="post">
 
