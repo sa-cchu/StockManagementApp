@@ -28,15 +28,15 @@ public class ShopService {
 		this.shopStockRepository = shopStockRepository;
 	}
 
-	@Transactional//全部成功でコミット　失敗でロールバック
+	@Transactional //全部成功でコミット　失敗でロールバック
 	public List<Shop> getAllShop() {
-		return shopRepository.findAll();
+		return shopRepository.findByDeleteFlag(0);
 	}
 
 	@Transactional
 	public Shop addShop(Shop shop) {
-		
-		if(shopRepository.findByShopName(shop.getShopName()).isPresent()) {
+
+		if (shopRepository.findByShopName(shop.getShopName()).isPresent()) {
 			throw new IllegalArgumentException("既に店舗名は存在します");
 		}
 		// 店舗情報を保存
@@ -57,6 +57,34 @@ public class ShopService {
 			}
 		}
 		return savedShop;
+	}
+
+	//編集する店舗ID取得
+	@Transactional
+	public Shop getShop(Integer shopId) {
+		return shopRepository.findById(shopId).get();
+	}
+
+	//情報編集確認する画面
+	@Transactional
+	public void updateShop(Shop shop) {
+		shopRepository.findByShopName(shop.getShopName())
+				.ifPresent(exsiting -> {
+					if (!exsiting.getShopId().equals(shop.getShopId())) {
+						throw new IllegalArgumentException("既に店舗名は存在します");
+					}
+				});
+		shopRepository.save(shop);
+	}
+
+	//論理削除
+	@Transactional
+	public void deleteShop(Integer shopId) {
+		Shop shop = shopRepository.findById(shopId)
+				.orElseThrow(() -> new IllegalArgumentException("店舗が存在しません"));
+		shop.setDeleteFlag(0);
+		shopRepository.save(shop);
+
 	}
 
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -47,5 +48,32 @@ public class ShopController {
 			return "shop-form";
 		}
 
+	}
+
+	//編集画面
+	@GetMapping("/edit/{shopId}")
+	public String edit(@PathVariable Integer shopId, Model model) {
+		model.addAttribute("shop", shopService.getShop(shopId));
+		return "shop-form";
+	}
+
+	//更新
+	@PostMapping("/update")
+	public String update(@ModelAttribute Shop shop, Model model) {
+		try {
+			shopService.updateShop(shop);
+			return "redirect:/shop";
+		} catch (IllegalArgumentException e) {
+			model.addAttribute("errorMessage", e.getMessage());
+			model.addAttribute("shop", shop);
+			return "shop-form";
+		}
+	}
+
+	//削除
+	@PostMapping("/delete/{shopId}")
+	public String delete(@PathVariable Integer shopId) {
+		shopService.deleteShop(shopId);
+		return "redirec:/shop";
 	}
 }
