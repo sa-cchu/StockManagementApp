@@ -4,21 +4,22 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Stock Management</title>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
 
-	<div class="layout">
-
-		<aside th:replace="sidebar :: sidebar"></aside>
-
-		<main>
+	<div class="layout d-flex min-vh-100">
+		<aside th:replace="sidebar :: sidebar" class="flex-shrink-0 p-3 bg-light"
+			style="width: 280px; min-height: 100vh;"></aside>
+		<main class = "flex-grow-1 p-4">
 			<div th:replace="~{::content}"></div>
 		</main>
 
 	</div>
-
+	<!-- Bootstrap JS：bodyの一番下 -->
+	<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 
 </html>
