@@ -74,6 +74,6 @@ public class ShopController {
 	@PostMapping("/delete/{shopId}")
 	public String delete(@PathVariable Integer shopId) {
 		shopService.deleteShop(shopId);
-		return "redirec:/shop";
+		return "redirect:/shop";
 	}
 }

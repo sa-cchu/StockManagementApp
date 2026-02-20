@@ -11,8 +11,11 @@
 	</div>
 
 
-	<form th:action="@{${warehouse.warehouseId == null}?'/warehouse/add':'/warehouse/update'}" th:object="${warehouse}"
-		method="post">
+	<form th:action="${warehouse.warehouseId == null}
+	        ? @{/warehouse/add}
+	        : @{/warehouse/update}"
+	      th:object="${warehouse}"
+	      method="post">
 
 		<!-- 編集時のみIDをhiddenで送る -->
 		<input type="hidden" th:if="${warehouse.warehouseId != null}" th:field="*{warehouseId}" />

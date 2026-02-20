@@ -82,7 +82,7 @@ public class ShopService {
 	public void deleteShop(Integer shopId) {
 		Shop shop = shopRepository.findById(shopId)
 				.orElseThrow(() -> new IllegalArgumentException("店舗が存在しません"));
-		shop.setDeleteFlag(0);
+		shop.setDeleteFlag(1);
 		shopRepository.save(shop);
 
 	}
