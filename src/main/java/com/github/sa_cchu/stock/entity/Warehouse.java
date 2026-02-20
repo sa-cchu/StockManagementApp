@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "warehouse", uniqueConstraints = {
-		@UniqueConstraint(columnNames = "warehouse_name")
+		@UniqueConstraint(columnNames = {"warehouse_name","delete_flag"})
 })
 
 public class Warehouse {

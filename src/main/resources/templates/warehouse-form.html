@@ -1,36 +1,42 @@
 <!DOCTYPE html>
-<html lang="ja"
-      xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout :: layout">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout">
 
 <div th:fragment="content">
 
-    <h1>新規倉庫追加</h1>
+	<h1　th:text="${warehouse.warehouseId==null} ? '新規倉庫追加' :'倉庫編集'"></h1>
+
 	<!-- エラーメッセージ -->
 	<div th:if="${errorMessage}" class="text-danger">
-	    <span style="color:red"th:text="${errorMessage}"></span>
+		<span style="color:red" th:text="${errorMessage}"></span>
 	</div>
-	
+
 	<!-- 入力フォーム -->
-    <form th:action="@{/warehouse/add}" th:object="${warehouse}" method="post">
+	<form th:action="@{${warehouse.warehouseId == null}?'/warehouse/add':'/warehouse/update'}" th:object="${warehouse}"
+		method="post">
 
-        <!-- 倉庫名 -->
-        <div class="mb-3">
-            <label for="warehouseName" class="form-label">倉庫名 <span style="color:red">*</span></label>
-            <input type="text" id="warehouseName" th:field="*{warehouseName}" class="form-control" required maxlength="255">
-        </div>
+		<!-- 編集時のみIDをhiddenで送る -->
+		<input type="hidden" th:if="${warehouse.warehouseId != null}" th:field="*{warehouseId}" />
 
-        <!-- 倉庫住所 -->
-        <div class="mb-3">
-            <label for="warehouseAddress" class="form-label">倉庫住所 <span style="color:red">*</span></label>
-            <input type="text" id="warehouseAddress" th:field="*{warehouseAddress}" class="form-control" required maxlength="255">
-        </div>
+		<!-- 倉庫名 -->
+		<div class="mb-3">
+			<label for="warehouseName" class="form-label">倉庫名 <span style="color:red">*</span></label>
+			<input type="text" id="warehouseName" th:field="*{warehouseName}" class="form-control" required
+				maxlength="255">
+		</div>
 
-        <!-- ボタン -->
-        <button type="submit" class="btn btn-primary">追加</button>
-        <a th:href="@{/warehouse}" class="btn btn-secondary">一覧に戻る</a>
+		<!-- 倉庫住所 -->
+		<div class="mb-3">
+			<label for="warehouseAddress" class="form-label">倉庫住所 <span style="color:red">*</span></label>
+			<input type="text" id="warehouseAddress" th:field="*{warehouseAddress}" class="form-control" required
+				maxlength="255">
+		</div>
 
-    </form>
+		<!-- ボタン -->
+		<button type="submit" class="btn btn-primary" th:text="${warehouse.warehouseId == null} ? '追加' : '編集'"></button>
+		<a th:href="@{/warehouse}" class="btn btn-secondary">一覧に戻る</a>
+
+	</form>
 
 </div>
+
 </html>

@@ -14,14 +14,12 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>店舗名</th>
                 <th>店舗住所</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="shop : ${shops}">
-                <td th:text="${shop.shopId}"></td>
+            <tr th:each="shop : ${shops}">           
                 <td th:text="${shop.shopName}"></td>
                 <td th:text="${shop.shopAddress}"></td>
             </tr>
