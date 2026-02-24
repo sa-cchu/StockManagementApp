@@ -46,7 +46,7 @@ public class User implements UserDetails {
     private Authority authority;
 
     @ManyToOne
-    @JoinColumn(name = "wh_id")
+    @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
     @ManyToOne
