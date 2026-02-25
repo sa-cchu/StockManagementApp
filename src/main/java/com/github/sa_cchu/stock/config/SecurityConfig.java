@@ -8,44 +8,45 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 
-
-@Configuration//Beanがあるクラスには必須アノテーション
+@Configuration // このクラスが「設定用クラス」であることをSpringに知らせます
 public class SecurityConfig {
-	@Bean
+
+	@Bean // Thymeleafで「ログイン中か？」等の判定を使えるようにする部品を登録します
 	public SpringSecurityDialect springSecurityDialect() {
-	    return new SpringSecurityDialect();
+		return new SpringSecurityDialect();
 	}
-	
-	
-    @Bean//Spring管理のオブジェクトとして登録するアノテーション
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
 
-        http
-        		//URLのアクセス制御
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login").permitAll()//フルアクセス
-                .anyRequest().authenticated()
-               //その他すべて　　//ログインユーザーのみアクセス可能
-            )
-            
-            .formLogin(login -> login//フィルターが自動で作られ＠Serviceで取って着た値と入力値をBCyryptした値と照合
-                .loginPage("/login")//loginページのformからうけとる
-                .defaultSuccessUrl("/", true)//成功したら指定URLに飛ばす
-                .permitAll()
-                //ログイン失敗したら自動で戻してくれる
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
-            );
+	@Bean // セキュリティのメインルール（フィルターチェーン）を構築します
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.build();
-    }
+		http
+				// 1. URLごとのアクセス権限を設定開始
+				.authorizeHttpRequests(auth -> auth
+						// 「/login」へのアクセスは、誰でも（未ログインでも）許可します
+						.requestMatchers("/login").permitAll()
+						// それ以外のすべてのリクエストは、ログイン済みユーザーのみ許可します
+						.anyRequest().authenticated())
 
-    @Bean//登録時に呼ばれて使われている
-    
-    
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+				// 2. フォームログイン（画面からのログイン）の設定開始
+				.formLogin(login -> login
+						// 自作のログイン画面（URL: /login）を使うよう指定します
+						.loginPage("/login")
+						// ログイン成功後、必ずトップページ（/）に飛ばします
+						.defaultSuccessUrl("/", true)
+						// ログイン画面自体は誰でもアクセスできるようにします
+						.permitAll())
+
+				// 3. ログアウトの設定開始
+				.logout(logout -> logout
+						// ログアウト成功後、「?logout」という印を付けてログイン画面へ戻します
+						.logoutSuccessUrl("/login?logout"));
+
+		// 設定を組み立てて完成した「ルール一式」をSpringに返します
+		return http.build();
+	}
+
+	@Bean // パスワードを「生」ではなく「ハッシュ化（暗号化）」して保存・比較する部品を登録します
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }
