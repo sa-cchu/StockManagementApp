@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {//<>の中
 
 	List<User> findByAuthorityAndDeleteFlag(Authority authority, Integer deleteFlag);
 
+	boolean existsByUserNameAndUserIdNot(String userName, Integer UserId);
+
+	boolean existsByUserName(String userName);
 }

@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,15 +34,18 @@ public class User implements UserDetails {
     private Integer userId;
 
     // ★ ログインID（Spring Security の username）
+    @NotBlank(message = "ユーザー名を入力してください")
     @Column(name = "user_name", nullable = false, length = 255)
     private String userName;
 
     @Column(name = "user_password", nullable = false, length = 256)
     private String userPassword;
 
+    @NotBlank(message = "性別を選択してください")
     @Column(name = "user_gender", nullable = false, length = 255)
     private String userGender;
-
+    
+    @NotNull(message = "権限を選択してください")
     @ManyToOne
     @JoinColumn(name = "authority_id", nullable = false)
     private Authority authority;

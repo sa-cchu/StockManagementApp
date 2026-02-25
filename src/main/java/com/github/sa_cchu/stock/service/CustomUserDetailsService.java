@@ -76,5 +76,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		// userRepository.save(existingUser); // @Transactionalがあるので省略可能ですが書いてもOK
 	}
-	
+
+	public boolean isUserNameExists(String userName, Integer userId) {
+		if (userId == null) {
+			// 新規登録時
+			return userRepository.existsByUserName(userName);
+		} else {
+			// 更新時（自分以外のIDで同じ名前があるか）
+			return userRepository.existsByUserNameAndUserIdNot(userName, userId);
+		}
+	}
+
+	public String getAuthorityNameById(Integer id) {
+		return authorityRepository.findById(id)
+				.map(Authority::getAuthorityName)
+				.orElse("");
+	}
 }
