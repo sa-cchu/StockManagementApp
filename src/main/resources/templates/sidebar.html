@@ -21,7 +21,7 @@
 			<div>
 				<strong>所属：</strong>
 				<span th:if="${loginUser.shop != null}" th:text="${loginUser.shop.shopName}"></span>
-				<span th:if="${loginUser.warehouse != null}" th:text="${loginUser.warehouse.whName}"></span>
+				<span th:if="${loginUser.warehouse != null}" th:text="${loginUser.warehouse.warehouseName}"></span>
 				<span th:if="${loginUser.shop == null and loginUser.warehouse == null}">無</span>
 			</div>
 		</div>

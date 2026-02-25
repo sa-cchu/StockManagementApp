@@ -2,100 +2,96 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
 
 <div th:fragment="content">
-    <h1 th:text="${user.userId == null} ? '新規ユーザー追加' : 'ユーザー編集'"></h1>
+	<h1 th:text="${user.userId == null} ? '新規ユーザー追加' : 'ユーザー編集'"></h1>
 
-    <div th:if="${errorMessage}" class="alert alert-danger mb-3">
-        <span th:text="${errorMessage}"></span>
-    </div>
+	<div th:if="${errorMessage}" class="alert alert-danger mb-3">
+		<span th:text="${errorMessage}"></span>
+	</div>
 
-    <form th:action="${user.userId == null} ? @{/user/add} : @{/user/update}" 
-          th:object="${user}" method="post" 
-          th:autocomplete="${user.userId == null} ? 'off' : 'on'">
+	<form th:action="${user.userId == null} ? @{/user/add} : @{/user/update}" th:object="${user}" method="post"
+		th:autocomplete="${user.userId == null} ? 'off' : 'on'">
 
-        <input type="hidden" th:if="*{userId != null}" th:field="*{userId}" />
+		<input type="hidden" th:if="*{userId != null}" th:field="*{userId}" />
 
-        <div class="mb-3">
-            <label class="form-label">名前</label>
-            <input type="text" th:field="*{userName}" class="form-control" 
-                   th:autocomplete="${user.userId == null} ? 'off' : 'on'" required>
-        </div>
-
-		<div class="mb-3" th:if="${user.userId == null}">
-		    <label class="form-label">パスワード</label>
-		    <input type="password" th:field="*{userPassword}" class="form-control" 
-		           required autocomplete="new-password">
+		<div class="mb-3">
+			<label class="form-label">名前</label>
+			<input type="text" th:field="*{userName}" class="form-control"
+				th:autocomplete="${user.userId == null} ? 'off' : 'on'" required>
 		</div>
 
-        <div class="mb-3">
-            <label class="form-label d-block">性別</label>
-            <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" th:field="*{userGender}" value="M" id="genderM" required>
-                <label class="btn btn-outline-primary" for="genderM">男 (M)</label>
+		<div class="mb-3" th:if="${user.userId == null}">
+			<label class="form-label">パスワード</label>
+			<input type="password" th:field="*{userPassword}" class="form-control" required autocomplete="new-password">
+		</div>
 
-                <input type="radio" class="btn-check" th:field="*{userGender}" value="F" id="genderF" required>
-                <label class="btn btn-outline-danger" for="genderF">女 (F)</label>
-            </div>
-        </div>
+		<div class="mb-3">
+			<label class="form-label d-block">性別</label>
+			<div class="btn-group" role="group">
+				<input type="radio" class="btn-check" th:field="*{userGender}" value="M" id="genderM" required>
+				<label class="btn btn-outline-primary" for="genderM">男 (M)</label>
 
-        <div class="mb-3">
-            <label class="form-label">権限</label>
-            <select th:field="*{authority}" class="form-select" id="authoritySelect" onchange="toggleFields()" required>
-                <option value="">権限を選択してください</option>
-                <option th:each="auth : ${authorities}" 
-                        th:value="${auth.authorityId}" 
-                        th:text="${auth.authorityName}">
-                </option>
-            </select>
-        </div>
+				<input type="radio" class="btn-check" th:field="*{userGender}" value="F" id="genderF" required>
+				<label class="btn btn-outline-danger" for="genderF">女 (F)</label>
+			</div>
+		</div>
 
-        <div class="mb-3" id="shopField" style="display:none;">
-            <label class="form-label">所属店舗</label>
-            <select th:field="*{shop}" class="form-select">
-                <option value="">店舗を選択してください</option>
-                <option th:each="s : ${shops}" th:value="${s.shopId}" th:text="${s.shopName}"></option>
-            </select>
-        </div>
+		<div class="mb-3">
+			<label class="form-label">権限</label>
+			<select th:field="*{authority}" class="form-select" id="authoritySelect" onchange="toggleFields()" required>
+				<option value="">権限を選択してください</option>
+				<option th:each="auth : ${authorities}" th:value="${auth.authorityId}" th:text="${auth.authorityName}">
+				</option>
+			</select>
+		</div>
 
-        <div class="mb-3" id="warehouseField" style="display:none;">
-            <label class="form-label">所属倉庫</label>
-            <select th:field="*{warehouse}" class="form-select">
-                <option value="">倉庫を選択してください</option>
-                <option th:each="w : ${warehouses}" th:value="${w.warehouseId}" th:text="${w.warehouseName}"></option>
-            </select>
-        </div>
+		<div class="mb-3" id="shopField" style="display:none;">
+			<label class="form-label">所属店舗</label>
+			<select th:field="*{shop}" class="form-select" required>
+				<option value="">店舗を選択してください</option>
+				<option th:each="s : ${shops}" th:value="${s.shopId}" th:text="${s.shopName}"></option>
+			</select>
+		</div>
 
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary" 
-                    th:text="${user.userId == null} ? '追加' : '更新'">
-            </button>
-            <a th:href="@{/user}" class="btn btn-secondary">一覧に戻る</a>
-        </div>
-    </form>
+		<div class="mb-3" id="warehouseField" style="display:none;">
+			<label class="form-label">所属倉庫</label>
+			<select th:field="*{warehouse}" class="form-select" required>
+				<option value="">倉庫を選択してください</option>
+				<option th:each="w : ${warehouses}" th:value="${w.warehouseId}" th:text="${w.warehouseName}"></option>
+			</select>
+		</div>
 
-    <script th:inline="javascript">
-        function toggleFields() {
-            const select = document.getElementById("authoritySelect");
-            // 選択なしの場合は早期リターン
-            if (select.selectedIndex === -1) return;
+		<div class="mt-4">
+			<button type="submit" class="btn btn-primary" th:text="${user.userId == null} ? '追加' : '更新'">
+			</button>
+			<a th:href="@{/user}" class="btn btn-secondary">一覧に戻る</a>
+		</div>
+	</form>
 
-            const selectedText = select.options[select.selectedIndex].text;
-            const shopField = document.getElementById("shopField");
-            const warehouseField = document.getElementById("warehouseField");
+	<script th:inline="javascript">
+		function toggleFields() {
+			const select = document.getElementById("authoritySelect");
+			// 選択なしの場合は早期リターン
+			if (select.selectedIndex === -1) return;
 
-            // 一旦非表示
-            shopField.style.display = "none";
-            warehouseField.style.display = "none";
+			const selectedText = select.options[select.selectedIndex].text;
+			const shopField = document.getElementById("shopField");
+			const warehouseField = document.getElementById("warehouseField");
 
-            // ROLE_SHOP や ROLE_WAREHOUSE の文字列が含まれているか判定
-            if (selectedText.includes('SHOP')) {
-                shopField.style.display = "block";
-            } else if (selectedText.includes('WAREHOUSE')) {
-                warehouseField.style.display = "block";
-            }
-        }
+			// 一旦非表示
+			shopField.style.display = "none";
+			warehouseField.style.display = "none";
 
-        // ページ読み込み時に実行
-        window.addEventListener('DOMContentLoaded', toggleFields);
-    </script>
+			// ROLE_SHOP や ROLE_WAREHOUSE の文字列が含まれているか判定
+			if (selectedText.includes('SHOP')) {
+				shopField.style.display = "block";
+			} else if (selectedText.includes('WAREHOUSE')) {
+				warehouseField.style.display = "block";
+			}
+		}
+
+		// ページ読み込み時に実行
+		window.addEventListener('DOMContentLoaded', toggleFields);
+	</script>
 </div>
+
 </html>
