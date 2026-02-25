@@ -6,11 +6,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 
 
 @Configuration//Beanがあるクラスには必須アノテーション
 public class SecurityConfig {
-
+	@Bean
+	public SpringSecurityDialect springSecurityDialect() {
+	    return new SpringSecurityDialect();
+	}
+	
+	
     @Bean//Spring管理のオブジェクトとして登録するアノテーション
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {

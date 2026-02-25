@@ -90,7 +90,10 @@
 			<artifactId>bootstrap</artifactId>
 			<version>5.3.3</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

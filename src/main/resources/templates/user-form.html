@@ -46,7 +46,7 @@
 
 		<div class="mb-3" id="shopField" style="display:none;">
 			<label class="form-label">所属店舗</label>
-			<select th:field="*{shop}" class="form-select" required>
+			<select th:field="*{shop}" class="form-select">
 				<option value="">店舗を選択してください</option>
 				<option th:each="s : ${shops}" th:value="${s.shopId}" th:text="${s.shopName}"></option>
 			</select>
@@ -54,7 +54,7 @@
 
 		<div class="mb-3" id="warehouseField" style="display:none;">
 			<label class="form-label">所属倉庫</label>
-			<select th:field="*{warehouse}" class="form-select" required>
+			<select th:field="*{warehouse}" class="form-select">
 				<option value="">倉庫を選択してください</option>
 				<option th:each="w : ${warehouses}" th:value="${w.warehouseId}" th:text="${w.warehouseName}"></option>
 			</select>
@@ -70,22 +70,30 @@
 	<script th:inline="javascript">
 		function toggleFields() {
 			const select = document.getElementById("authoritySelect");
-			// 選択なしの場合は早期リターン
 			if (select.selectedIndex === -1) return;
 
 			const selectedText = select.options[select.selectedIndex].text;
 			const shopField = document.getElementById("shopField");
 			const warehouseField = document.getElementById("warehouseField");
 
-			// 一旦非表示
-			shopField.style.display = "none";
-			warehouseField.style.display = "none";
+			// select要素を取得
+			const shopSelect = shopField.querySelector('select');
+			const warehouseSelect = warehouseField.querySelector('select');
 
-			// ROLE_SHOP や ROLE_WAREHOUSE の文字列が含まれているか判定
+			// 初期化：非表示にし、必須設定(required)を解除する
+			shopField.style.display = "none";
+			shopSelect.required = false;
+
+			warehouseField.style.display = "none";
+			warehouseSelect.required = false;
+
+			// 選択された権限に応じて表示し、必須設定(required)を付与する
 			if (selectedText.includes('SHOP')) {
 				shopField.style.display = "block";
+				shopSelect.required = true;
 			} else if (selectedText.includes('WAREHOUSE')) {
 				warehouseField.style.display = "block";
+				warehouseSelect.required = true;
 			}
 		}
 
