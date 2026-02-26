@@ -151,8 +151,8 @@ public class UserContoroller {
 	}
 
 	// 論理削除
-	@PostMapping("/delete/{userId")
-	public String delete(@PathVariable Integer userId) {
+	@PostMapping("/delete/{userId}")
+	public String delete(@PathVariable("userId") Integer userId) {
 		customUserDetailsService.deleteUser(userId);
 		return "redirect:/user";
 	}
