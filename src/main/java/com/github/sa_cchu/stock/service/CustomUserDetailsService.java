@@ -27,14 +27,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username)
-			throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
 		return userRepository.findByUserName(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 	}
 
-	//権限絞り込み
+	// 権限絞り込み
 	public List<Authority> getAllAuthorities() {
 		return authorityRepository.findByDeleteFlag(0);
 	}
@@ -88,8 +87,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	public String getAuthorityNameById(Integer id) {
-		return authorityRepository.findById(id)
-				.map(Authority::getAuthorityName)
-				.orElse("");
+		return authorityRepository.findById(id).map(Authority::getAuthorityName).orElse("");
+	}
+
+	// 論理削除
+	public void deleteUser(Integer userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("ユーザーが存在しません"));
+		user.setDeleteFlag(1);
+		userRepository.save(user);
 	}
 }

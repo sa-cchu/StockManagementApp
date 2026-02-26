@@ -149,4 +149,11 @@ public class UserContoroller {
 		model.addAttribute("shops", shopService.getAllShop());
 		model.addAttribute("warehouses", warehouseService.getAllWarehouses());
 	}
+
+	// 論理削除
+	@PostMapping("/delete/{userId")
+	public String delete(@PathVariable Integer userId) {
+		customUserDetailsService.deleteUser(userId);
+		return "redirect:/user";
+	}
 }
