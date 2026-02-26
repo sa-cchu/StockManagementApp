@@ -20,10 +20,10 @@ import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.repository.AuthorityRepository;
 import com.github.sa_cchu.stock.repository.UserRepository;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)//JUnitでMockito（モック機能）を有効にするための魔法の言葉
 class CustomUserDetailsServiceTest {
 
-	@Mock
+	@Mock//「偽物のリポジトリ」
 	private UserRepository userRepository;
 
 	@Mock
