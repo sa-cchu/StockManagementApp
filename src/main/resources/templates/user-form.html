@@ -21,11 +21,11 @@
 			</div>
 		</div>
 
-		<div class="mb-3" th:if="${user.userId == null}">
-			<label class="form-label">パスワード</label>
-			<input type="password" th:field="*{userPassword}" class="form-control" autocomplete="new-password">
-			<div class="text-danger d-block small" th:if="${#fields.hasErrors('userPassword')}"
-				th:errors="*{userPassword}"></div>
+		<div class="mb-3" id="passwordField" 
+		     th:if="${user.userId == null or (loginUser != null and loginUser.authority.authorityName == 'ROLE_ADMIN')}">
+		    <label class="form-label">パスワード</label>
+		    <input type="password" th:field="*{userPassword}" class="form-control" autocomplete="new-password">
+		    <div class="text-danger d-block small" th:if="${#fields.hasErrors('userPassword')}" th:errors="*{userPassword}"></div>
 		</div>
 
 		<div class="mb-3">
