@@ -2,35 +2,48 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>ログイン</title>
-	<link rel="stylesheet"
-		          th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ログイン | 在庫管理システム</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <style>
+        body { background-color: #f8f9fa; }
+        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { width: 100%; max-width: 400px; padding: 2rem; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); background: white; }
+    </style>
 </head>
 <body>
 
-<h2>ログイン</h2>
+<div class="container login-container">
+    <div class="login-card">
+        <h2 class="text-center mb-4">SMGWApp</h2>
 
-<form th:action="@{/login}" method="post">
-    <div>
-        <label>ユーザー名</label>
-        <input type="text" name="username" required>
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+            ユーザー名またはパスワードが違います
+        </div>
+
+        <div th:if="${param.logout}" class="alert alert-success" role="alert">
+            ログアウトしました
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label class="form-label">ユーザー名</label>
+                <input type="text" name="username" class="form-control" placeholder="admin" required autofocus>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">パスワード</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">ログイン</button>
+            </div>
+        </form>
     </div>
-
-    <div>
-        <label>パスワード</label>
-        <input type="password" name="password" required>
-    </div>
-
-    <button type="submit">ログイン</button>
-</form>
-
-<div th:if="${param.error}">
-    <p style="color:red;">ユーザー名またはパスワードが違います</p>
 </div>
 
-<div th:if="${param.logout}">
-    <p>ログアウトしました</p>
-</div>
+
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
