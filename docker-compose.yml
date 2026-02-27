@@ -1,29 +1,35 @@
-
 services:
-  db:
-    image: mysql:8.0
-    container_name: mysql-db
-    environment:
-      MYSQL_DATABASE: myapp_db
-      MYSQL_ROOT_PASSWORD: password
-    ports:
-      - "3306:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 20s
-      retries: 10
+    db:
+        image: mysql:8.0
+        command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        container_name: mysql-db
+        environment:
+            MYSQL_DATABASE: myapp_db
+            MYSQL_ROOT_PASSWORD: password
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 5s
+            timeout: 20s
+            retries: 10
 
-  app:
-    build: .
-    container_name: spring-app
-    ports:
-      - "8080:8080"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/myapp_db?allowPublicKeyRetrieval=true&useSSL=false
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    app:
+        build: .
+        container_name: spring-app
+        volumes:
+            - .:/app
+        ports:
+            - "8080:8080"
+        depends_on:
+            db:
+                condition: service_healthy
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/myapp_db?allowPublicKeyRetrieval=true&useSSL=false
+            SPRING_DATASOURCE_USERNAME: root
+            SPRING_DATASOURCE_PASSWORD: password
+            SPRING_JPA_HIBERNATE_DDL_AUTO: update
+volumes:
+    mysql_data:
