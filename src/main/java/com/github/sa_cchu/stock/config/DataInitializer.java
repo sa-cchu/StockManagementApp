@@ -14,7 +14,7 @@ import com.github.sa_cchu.stock.repository.UserRepository;
 @Component //起動時にインスタンス化してくれている　DIかってにNEwしてくれる
 public class DataInitializer implements CommandLineRunner {//起動後に一回だけrunの処理を行う
 
-	//komatsu test!!!!
+	//komatsu test!!!
 	//メンバ変数にする
 	private final AuthorityRepository authorityRepository;
 	private final UserRepository userRepository;
