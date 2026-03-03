@@ -1,0 +1,70 @@
+<div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+	<div class="sidebar-content">
+
+		<div class="card p-3 ms-3" style="width: 12rem;">
+			<div class="mb-2">
+				<strong>名前：</strong>
+				<span th:text="${loginUser.userName}"></span>
+			</div>
+
+			<div class="mb-2">
+				<strong>権限：</strong>
+				<span th:switch="${loginUser.authority.authorityName}">
+					<span th:case="'ROLE_ADMIN'">管理者</span>
+					<span th:case="'ROLE_SHOP'">店舗</span>
+					<span th:case="'ROLE_WAREHOUSE'">倉庫</span>
+				</span>
+			</div>
+
+			<div>
+				<strong>所属：</strong>
+				<span th:if="${loginUser.shop != null}" th:text="${loginUser.shop.shopName}"></span>
+				<span th:if="${loginUser.warehouse != null}" th:text="${loginUser.warehouse.warehouseName}"></span>
+				<span th:if="${loginUser.shop == null and loginUser.warehouse == null}">無</span>
+			</div>
+		</div>
+
+		<br>
+
+		<ul class="list-unstyled ps-3">
+			<li class="mb-2">
+				<a th:href="@{/}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-home me-2"></i> ホーム
+				</a>
+			</li>
+			<li class="mb-2">
+				<a th:href="@{/user}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-users me-2"></i> ユーザー管理
+				</a>
+			</li>
+
+			<li class="mb-2" sec:authorize="hasRole('ADMIN')">
+				<a th:href="@{/shop}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-store me-2"></i> 店舗管理
+				</a>
+			</li>
+			<li class="mb-2" sec:authorize="hasRole('ADMIN')">
+				<a th:href="@{/warehouse}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-warehouse me-2"></i> 倉庫管理
+				</a>
+			</li>
+			<li class="mb-2" sec:authorize="hasRole('ADMIN')">
+				<a th:href="@{/goods}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-boxes me-2"></i> 商品管理
+				</a>
+			</li>
+			<li class="mb-2" sec:authorize="hasRole('ADMIN')">
+							<a th:href="@{/relation}" class="d-flex align-items-center text-decoration-none text-dark">
+								<i class="fas fa-boxes me-2"></i> 連携管理
+							</a>
+						</li>
+			<li class="mb-2">
+				<a th:href="@{/inquiry}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-envelope me-2"></i> 問い合わせ対応
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>

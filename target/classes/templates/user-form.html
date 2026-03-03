@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+
+<div th:fragment="content">
+	<h1 th:text="${user.userId == null} ? '新規ユーザー追加' : 'ユーザー編集'"></h1>
+
+	<div th:if="${errorMessage}" class="alert alert-danger mb-3">
+		<span th:text="${errorMessage}"></span>
+	</div>
+
+	<form th:action="${user.userId == null} ? @{/user/add} : @{/user/update}" th:object="${user}" method="post"
+		th:autocomplete="${user.userId == null} ? 'off' : 'on'">
+
+		<input type="hidden" th:if="*{userId != null}" th:field="*{userId}" />
+
+		<div class="mb-3">
+			<label class="form-label">名前</label>
+			<input type="text" th:field="*{userName}" class="form-control"
+				th:autocomplete="${user.userId == null} ? 'off' : 'on'">
+			<div class="text-danger d-block small" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">
+			</div>
+		</div>
+
+		<div class="mb-3" id="passwordField" 
+		     th:if="${user.userId == null or (loginUser != null and loginUser.authority.authorityName == 'ROLE_ADMIN')}">
+		    <label class="form-label">パスワード</label>
+		    <input type="password" th:field="*{userPassword}" class="form-control" autocomplete="new-password">
+		    <div class="text-danger d-block small" th:if="${#fields.hasErrors('userPassword')}" th:errors="*{userPassword}"></div>
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label d-block">性別</label>
+			<div class="btn-group" role="group">
+				<input type="radio" class="btn-check" th:field="*{userGender}" value="M" id="genderM">
+				<label class="btn btn-outline-primary" for="genderM">男 (M)</label>
+
+				<input type="radio" class="btn-check" th:field="*{userGender}" value="F" id="genderF">
+				<label class="btn btn-outline-danger" for="genderF">女 (F)</label>
+			</div>
+			<div class="text-danger d-block small" th:if="${#fields.hasErrors('userGender')}" th:errors="*{userGender}">
+			</div>
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label">権限</label>
+			<select th:field="*{authority}" class="form-select" id="authoritySelect" onchange="toggleFields()">
+				<option value="">権限を選択してください</option>
+				<option th:each="auth : ${authorities}" th:value="${auth.authorityId}" th:text="${auth.authorityName}">
+				</option>
+			</select>
+			<div class="text-danger d-block small" th:if="${#fields.hasErrors('authority')}" th:errors="*{authority}">
+			</div>
+		</div>
+
+		<div class="mb-3" id="shopField" style="display:none;">
+			<label class="form-label">所属店舗</label>
+			<select th:field="*{shop}" class="form-select">
+				<option value="">店舗を選択してください</option>
+				<option th:each="s : ${shops}" th:value="${s.shopId}" th:text="${s.shopName}"></option>
+			</select>
+			<div class="text-danger d-block small" th:if="${#fields.hasErrors('shop')}" th:errors="*{shop}"></div>
+		</div>
+
+		<div class="mb-3" id="warehouseField" style="display:none;">
+			<label class="form-label">所属倉庫</label>
+			<select th:field="*{warehouse}" class="form-select">
+				<option value="">倉庫を選択してください</option>
+				<option th:each="w : ${warehouses}" th:value="${w.warehouseId}" th:text="${w.warehouseName}"></option>
+			</select>
+			<div class="text-danger d-block small" th:if="${#fields.hasErrors('warehouse')}" th:errors="*{warehouse}">
+			</div>
+		</div>
+
+		<div class="mt-4">
+			<button type="submit" class="btn btn-primary" th:text="${user.userId == null} ? '追加' : '更新'">
+			</button>
+			<a th:href="@{/user}" class="btn btn-secondary">一覧に戻る</a>
+		</div>
+	</form>
+
+	<script th:inline="javascript">
+		function toggleFields() {
+			const select = document.getElementById("authoritySelect");
+			if (select.selectedIndex === -1) return;
+
+			const selectedText = select.options[select.selectedIndex].text;
+			const shopField = document.getElementById("shopField");
+			const warehouseField = document.getElementById("warehouseField");
+
+			// select要素を取得
+			const shopSelect = shopField.querySelector('select');
+			const warehouseSelect = warehouseField.querySelector('select');
+
+			// 初期化：非表示にし、必須設定(required)を解除する
+			shopField.style.display = "none";
+			shopSelect.required = false;
+
+			warehouseField.style.display = "none";
+			warehouseSelect.required = false;
+
+			// 選択された権限に応じて表示し、必須設定(required)を付与する
+			if (selectedText.includes('SHOP')) {
+				shopField.style.display = "block";
+				shopSelect.required = true;
+			} else if (selectedText.includes('WAREHOUSE')) {
+				warehouseField.style.display = "block";
+				warehouseSelect.required = true;
+			}
+		}
+
+		// ページ読み込み時に実行
+		window.addEventListener('DOMContentLoaded', toggleFields);
+	</script>
+</div>
+
+</html>

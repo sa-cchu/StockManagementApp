@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:replace="layout :: layout">
+
+<div th:fragment="content">
+
+	<h1>店舗管理</h1>
+
+	<!-- 新規追加ボタン -->
+	<a th:href="@{/shop/new}" class="btn btn-primary mb-3">新規店舗追加</a>
+
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>店舗名</th>
+				<th>店舗住所</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="shop : ${shops}">
+				<td th:text="${shop.shopName}"></td>
+				<td th:text="${shop.shopAddress}"></td>
+				<td>
+					<a th:href="@{/shop/edit/{shopId}(shopId=${shop.shopId})}" class="btn btn-sm btn-warning">
+						編集
+					</a>
+				</td>
+				<td>
+					<form th:action="@{/shop/delete/{shopId}(shopId=${shop.shopId})}" method="post"
+						style="display:inline;" onsubmit="return confirm('本当に削除しますか？');">
+						<button type="submit" class="btn btn-sm btn-danger">
+							削除
+						</button>
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+
+</html>
