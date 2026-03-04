@@ -34,7 +34,7 @@
 					<i class="fas fa-home me-2"></i> ホーム
 				</a>
 			</li>
-			<li class="mb-2">
+			<li class="mb-2" sec:authorize="hasRole('ADMIN')">
 				<a th:href="@{/user}" class="d-flex align-items-center text-decoration-none text-dark">
 					<i class="fas fa-users me-2"></i> ユーザー管理
 				</a>
