@@ -101,7 +101,13 @@ public class UserContoroller {
 		if (customUserDetailsService.isUserNameExists(user.getUserName(), user.getUserId())) {
 			result.rejectValue("userName", "error.userName", "このユーザー名は既に使用されています");
 		}
-
+		// 2. パスワード文字数チェック
+		String rawPassword = user.getUserPassword();
+	    if (rawPassword != null && !rawPassword.isEmpty()) {
+	        if (rawPassword.length() < 8) {
+	            result.rejectValue("userPassword", "error.userPassword", "パスワードは8文字以上で入力してください");
+	        }
+	    }
 		// 2. 所属チェック
 		validateBelonging(user, result);
 
@@ -112,6 +118,12 @@ public class UserContoroller {
 		}
 
 		try {
+			// パスワードが入力されている場合のみ暗号化
+	        if (rawPassword != null && !rawPassword.isEmpty()) {
+	            user.setUserPassword(passwordEncoder.encode(rawPassword));
+	        } else {
+	            user.setUserPassword(null); // Service側で「nullなら更新しない」と判断させる
+	        }
 			customUserDetailsService.updateUser(user);
 			return "redirect:/user";
 		} catch (Exception e) {

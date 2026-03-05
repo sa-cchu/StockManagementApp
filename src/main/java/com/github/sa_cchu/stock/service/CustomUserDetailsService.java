@@ -74,6 +74,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 		existingUser.setShop(user.getShop());
 		existingUser.setWarehouse(user.getWarehouse());
 
+		// ★ パスワードが null でない（入力があった）場合のみ更新
+		if (user.getUserPassword() != null) {
+			existingUser.setUserPassword(user.getUserPassword());
+		}
+
 		// userRepository.save(existingUser); // @Transactionalがあるので省略可能ですが書いてもOK
 	}
 
