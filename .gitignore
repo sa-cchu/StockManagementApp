@@ -1,2 +1,4 @@
-/mysql_data/
 /target/
+/.settings/
+/.classpath
+/.project
