@@ -49,21 +49,30 @@ public class RelationService {
 
 	}
 
-	
 	@Transactional
 	public void saveRelation(Relation relation) throws Exception {
-	    // 重複チェック (論理削除されていない有効なデータが対象)
-	    boolean exists = relationRepository.existsByShopAndWarehouseAndDeleteFlag(
-	        relation.getShop(), 
-	        relation.getWarehouse(), 
-	        0
-	    );
+		// 重複チェック (論理削除されていない有効なデータが対象)
+		boolean exists = relationRepository.existsByShopAndWarehouseAndDeleteFlag(relation.getShop(),
+				relation.getWarehouse(), 0);
 
-	    if (exists) {
-	        throw new Exception("この店舗と倉庫の組み合わせは既に登録されています。");
-	    }
+		if (exists) {
+			throw new Exception("この店舗と倉庫の組み合わせは既に登録されています。");
+		}
 
-	    relationRepository.save(relation);
+		relationRepository.save(relation);
+	}
+
+	public Relation getRelationById(Integer id) {
+		return relationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("指定された連携IDは存在しません"));
+	}
+
+	@Transactional
+	public void deleteRelation(Integer relationId) {
+		Relation relation = relationRepository.findById(relationId)
+				.orElseThrow(() -> new IllegalArgumentException("連携記録がありません"));
+		relation.setDeleteFlag(1);
+		relationRepository.save(relation);
+
 	}
 
 }

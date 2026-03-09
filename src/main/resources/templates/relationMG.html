@@ -31,6 +31,7 @@
 				<td th:text="${relation.shop.shopName}"></td>
 				<td th:text="${relation.warehouse.warehouseName}"></td>
 				<td>
+					<a th:href="@{/relation/edit/{relationId}(relationId=${relation.relationId})}" class="btn btn-sm btn-warning">編集</a>
 					<form th:action="@{/relation/delete/{id}(id=${relation.relationId})}" method="post"
 						style="display:inline;" onsubmit="return confirm('本当に削除しますか？');">
 						<button type="submit" class="btn btn-sm btn-danger">
