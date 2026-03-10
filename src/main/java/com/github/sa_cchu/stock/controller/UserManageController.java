@@ -17,11 +17,10 @@ public class UserManageController {
 
 	private final CustomUserDetailsService userDetailsService;
 
-	// コンストラクタインジェクション（これがないと final フィールドが初期化されずエラーになります）
 	public UserManageController(CustomUserDetailsService userDetailsService) {
 		this.userDetailsService = userDetailsService;
-
 	}
+	
 	@GetMapping
 	public String list(@AuthenticationPrincipal User operator,
 	                   @RequestParam(name = "belongingId", required = false) Integer belongingId,
