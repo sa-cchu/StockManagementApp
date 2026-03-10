@@ -61,6 +61,12 @@
 				</a>
 			</li>
 
+			<li class="mb-2" sec:authorize="hasRole('SHOP')">
+				<a th:href="@{/shop-stock}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-boxes me-2"></i>店舗在庫管理
+				</a>
+			</li>
+
 			<li class="mb-2" sec:authorize="hasRole('WAREHOUSE')">
 				<a th:href="@{/warehouse-stock}" class="d-flex align-items-center text-decoration-none text-dark">
 					<i class="fas fa-boxes me-2"></i>倉庫在庫管理
