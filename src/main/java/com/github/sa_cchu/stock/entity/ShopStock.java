@@ -28,8 +28,8 @@ public class ShopStock {
 	@JoinColumn(name = "goods_id", nullable = false)
 	private Goods goodsId;
 
-	@Column(name = "quantity", nullable = false)
-	private Integer quantity = 0;
+	@Column(name = "shop_stock_quantity", nullable = false)
+	private Integer shopStockQuantity = 0;
 
 	@Column(name = "delete_flag", nullable = false)
 	private Integer deleteFlag = 0;
@@ -58,12 +58,12 @@ public class ShopStock {
 		this.goodsId = goodsId;
 	}
 
-	public Integer getQuantity() {
-		return quantity;
+	public Integer getShopStockQuantity() {
+		return shopStockQuantity;
 	}
 
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
+	public void setShopStockQuantity(Integer shopStockQuantity) {
+		this.shopStockQuantity = shopStockQuantity;
 	}
 
 	public Integer getDeleteFlag() {

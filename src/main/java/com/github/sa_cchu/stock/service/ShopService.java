@@ -52,7 +52,7 @@ public class ShopService {
 				ShopStock stock = new ShopStock();
 				stock.setShopId(savedShop);
 				stock.setGoodsId(goods);
-				stock.setQuantity(0);
+				stock.setShopStockQuantity(0);
 				shopStockRepository.save(stock);
 			}
 		}
