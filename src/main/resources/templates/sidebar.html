@@ -60,6 +60,13 @@
 					<i class="fas fa-boxes me-2"></i>連携管理
 				</a>
 			</li>
+
+			<li class="mb-2" sec:authorize="hasRole('WAREHOUSE')">
+				<a th:href="@{/warehouse-stock}" class="d-flex align-items-center text-decoration-none text-dark">
+					<i class="fas fa-boxes me-2"></i>倉庫在庫管理
+				</a>
+			</li>
+
 			<li class="mb-2">
 				<a th:href="@{/inquiry}" class="d-flex align-items-center text-decoration-none text-dark">
 					<i class="fas fa-envelope me-2"></i> 問い合わせ対応
