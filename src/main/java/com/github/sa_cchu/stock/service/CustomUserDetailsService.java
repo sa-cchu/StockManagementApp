@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.github.sa_cchu.stock.dto.UserListDTO;
 import com.github.sa_cchu.stock.entity.Authority;
 import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.repository.AuthorityRepository;
@@ -101,5 +102,34 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("ユーザーが存在しません"));
 		user.setDeleteFlag(1);
 		userRepository.save(user);
+	}
+	///////////////////////////////////////////////////////////////////////////////
+	
+	//DTOバージョンで作成//
+	
+	 ////////////////////////////////////////////////////////////////////////////////////
+	public List<UserListDTO> getMyTeamUserList(User operator, Integer belongingId) {
+	    List<User> users;
+	    // 自分の権限（ROLE_SHOP等）を取得
+	    Authority myAuth = operator.getAuthority();
+
+	    if (myAuth.getAuthorityName().contains("SHOP")) {
+	        users = (belongingId == null || belongingId == 0)
+	            ? userRepository.findByAuthorityAndDeleteFlag(myAuth, 0)
+	            : userRepository.findByAuthorityAndShop_ShopIdAndDeleteFlag(myAuth, belongingId, 0);
+	    } else {
+	        users = (belongingId == null || belongingId == 0)
+	            ? userRepository.findByAuthorityAndDeleteFlag(myAuth, 0)
+	            : userRepository.findByAuthorityAndWarehouse_WarehouseIdAndDeleteFlag(myAuth, belongingId, 0);
+	    }
+
+	    return users.stream().map(u -> {
+	        UserListDTO dto = new UserListDTO();
+	        dto.setUserId(u.getUserId());
+	        dto.setUserName(u.getUserName());
+	        dto.setUserGender(u.getUserGender());
+	        dto.setBelongingName(u.getShop() != null ? u.getShop().getShopName() : u.getWarehouse().getWarehouseName());
+	        return dto;
+	    }).toList();
 	}
 }
