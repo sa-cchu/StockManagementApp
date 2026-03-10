@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.github.sa_cchu.stock.dto.UserFormDTO;
 import com.github.sa_cchu.stock.dto.UserListDTO;
 import com.github.sa_cchu.stock.entity.Authority;
 import com.github.sa_cchu.stock.entity.User;
@@ -20,12 +21,16 @@ import com.github.sa_cchu.stock.repository.UserRepository;
 public class CustomUserDetailsService implements UserDetailsService {
 
 	private final AuthorityRepository authorityRepository;
-
 	private final UserRepository userRepository;
+	private final ShopService shopService;
+	private final WarehouseService warehouseService;
 
-	public CustomUserDetailsService(UserRepository userRepository, AuthorityRepository authorityRepository) {
+	public CustomUserDetailsService(UserRepository userRepository, AuthorityRepository authorityRepository,
+			ShopService shopService, WarehouseService warehouseService) {
 		this.userRepository = userRepository;
 		this.authorityRepository = authorityRepository;
+		this.shopService = shopService;
+		this.warehouseService = warehouseService;
 	}
 
 	@Override
@@ -104,32 +109,118 @@ public class CustomUserDetailsService implements UserDetailsService {
 		userRepository.save(user);
 	}
 	///////////////////////////////////////////////////////////////////////////////
-	
-	//DTOバージョンで作成//
-	
-	 ////////////////////////////////////////////////////////////////////////////////////
-	public List<UserListDTO> getMyTeamUserList(User operator, Integer belongingId) {
-	    List<User> users;
-	    // 自分の権限（ROLE_SHOP等）を取得
-	    Authority myAuth = operator.getAuthority();
 
-	    if (myAuth.getAuthorityName().contains("SHOP")) {
-	        users = (belongingId == null || belongingId == 0)
-	            ? userRepository.findByAuthorityAndDeleteFlag(myAuth, 0)
-	            : userRepository.findByAuthorityAndShop_ShopIdAndDeleteFlag(myAuth, belongingId, 0);
-	    } else {
-	        users = (belongingId == null || belongingId == 0)
-	            ? userRepository.findByAuthorityAndDeleteFlag(myAuth, 0)
-	            : userRepository.findByAuthorityAndWarehouse_WarehouseIdAndDeleteFlag(myAuth, belongingId, 0);
-	    }
+	// DTOバージョンで作成//
 
-	    return users.stream().map(u -> {
-	        UserListDTO dto = new UserListDTO();
-	        dto.setUserId(u.getUserId());
-	        dto.setUserName(u.getUserName());
-	        dto.setUserGender(u.getUserGender());
-	        dto.setBelongingName(u.getShop() != null ? u.getShop().getShopName() : u.getWarehouse().getWarehouseName());
-	        return dto;
-	    }).toList();
+	////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * 1. 【一覧用】所属リスト（プルダウン）の取得
+	 */
+	public List<?> getBelongingList(User operator) {
+		if (operator.getAuthority().getAuthorityName().contains("SHOP")) {
+			return shopService.getAllShopDTOs();
+		}
+		return warehouseService.getAllWarehouseDTOs();
 	}
+
+	/**
+	 * 【一覧表示用】管轄権限（SHOPまたはWAREHOUSE）を持つ全ユーザーを取得
+	 */
+	public List<UserListDTO> getUserListForOperator(User operator, Integer belongingId) {
+		String authName = operator.getAuthority().getAuthorityName();
+		List<User> users;
+
+		// 「すべて」が選択されている、またはID指定がない場合の全件取得ロジック
+		if (authName.contains("SHOP")) {
+			if (belongingId == null || belongingId == 0) { // 「すべて」の場合
+				// ROLE_SHOP を持つ全ユーザーを取得（リポジトリにメソッド追加が必要）
+				users = userRepository.findByAuthority_AuthorityNameContainingAndDeleteFlag("SHOP", 0);
+			} else {
+				users = userRepository.findByShop_ShopIdAndDeleteFlag(belongingId, 0);
+			}
+		} else {
+			if (belongingId == null || belongingId == 0) { // 「すべて」の場合
+				// ROLE_WAREHOUSE を持つ全ユーザーを取得
+				users = userRepository.findByAuthority_AuthorityNameContainingAndDeleteFlag("WAREHOUSE", 0);
+			} else {
+				users = userRepository.findByWarehouse_WarehouseIdAndDeleteFlag(belongingId, 0);
+			}
+		}
+
+		return users.stream().map(this::mapToUserListDTO).toList();
+	}
+
+	/**
+	 * 一覧用DTOへの変換（性別・所属名を網羅）
+	 */
+	private UserListDTO mapToUserListDTO(User user) {
+		UserListDTO dto = new UserListDTO();
+		dto.setUserId(user.getUserId());
+		dto.setUserName(user.getUserName());
+		dto.setUserGender(user.getUserGender()); // M or F
+
+		// 所属名をセット（SHOP/WAREHOUSEどちらでも対応）
+		if (user.getShop() != null) {
+			dto.setBelongingName(user.getShop().getShopName());
+		} else if (user.getWarehouse() != null) {
+			dto.setBelongingName(user.getWarehouse().getWarehouseName());
+		} else {
+			dto.setBelongingName("未所属");
+		}
+		return dto;
+	}
+
+	/**
+	 * 3. 【新規用】完全に初期化された空のDTOを作成
+	 */
+	public UserFormDTO createNewUserFormDTO(User operator) {
+		UserFormDTO dto = new UserFormDTO();
+
+		// 自分の情報は一切入れない。
+		// 唯一、これから作るユーザーの「デフォルト権限」だけをセットする。
+		dto.setAuthorityName(operator.getAuthority().getAuthorityName());
+
+		// 他のフィールドは明示的に空（null）であることを確定させる
+		dto.setUserId(null);
+		dto.setUserName("");
+		dto.setUserPassword("");
+		dto.setUserGender(null);
+		dto.setBelongingId(null);
+
+		return dto;
+	}
+
+	/**
+	 * 4. 【編集用】所属に関係なく、指定されたIDのユーザーを取得する
+	 */
+	public UserFormDTO getAuthorizedUserFormDTO(Integer userId, User operator) {
+		// 1. IDで検索（所属チェックを外しました）
+		User target = userRepository.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException("対象が見つかりません ID:" + userId));
+
+		// 2. ターゲットの情報をDTOに移し替える
+		UserFormDTO dto = new UserFormDTO();
+		dto.setUserId(target.getUserId());
+		dto.setUserName(target.getUserName());
+		dto.setUserGender(target.getUserGender());
+
+		// 現在の権限名をセット
+		if (target.getAuthority() != null) {
+			dto.setAuthorityName(target.getAuthority().getAuthorityName());
+		}
+
+		// 現在の所属IDをセット
+		if (target.getShop() != null) {
+			dto.setBelongingId(target.getShop().getShopId());
+			dto.setBelongingName(target.getShop().getShopName());
+		} else if (target.getWarehouse() != null) {
+			dto.setBelongingId(target.getWarehouse().getWarehouseId());
+			dto.setBelongingName(target.getWarehouse().getWarehouseName());
+		}
+
+		// パスワードは編集不可なのでセットしない
+		return dto;
+	}
+
 }

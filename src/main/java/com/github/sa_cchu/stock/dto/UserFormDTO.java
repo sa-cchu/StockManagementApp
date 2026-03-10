@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import lombok.Data;
 
-@Data // Getter, Setter, toString, equals, hashCodeをすべて自動生成
+@Data
 public class UserFormDTO {
 
     private Integer userId;
@@ -14,16 +14,21 @@ public class UserFormDTO {
     @NotBlank(message = "ユーザー名を入力してください")
     private String userName;
 
-    // 入力時のバリデーション（生パスワードの長さチェック）
+    // パスワード（編集時は空でもOKとするため、バリデーションはService側で行うのが実務的です）
     @Size(min = 8, message = "パスワードは8文字以上で入力してください")
     private String userPassword;
 
     @NotBlank(message = "性別を選択してください")
     private String userGender;
 
-    @NotNull(message = "権限を選択してください")
-    private Integer authorityId;
+    // 権限や所属の表示用
+    private String authorityName;
+    private String belongingName;
 
-    private Integer shopId;
-    private Integer warehouseId;
+    /**
+     * 追加：所属先（ShopId または WarehouseId）の値を保持する
+     * Thymeleafのプルダウン選択値を受け取ります
+     */
+    @NotNull(message = "所属先を選択してください")
+    private Integer belongingId;
 }

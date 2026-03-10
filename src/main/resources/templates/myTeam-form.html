@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+
+<div th:fragment="content">
+	<h1 th:text="${userForm.userId == null} ? 'ユーザー新規登録' : 'ユーザー情報編集'"></h1>
+
+	<div th:if="${errorMessage}" class="alert alert-danger mb-3">
+		<span th:text="${errorMessage}"></span>
+	</div>
+
+	<form th:action="@{/user/manage/save}" th:object="${userForm}" method="post" autocomplete="off">
+
+		<input type="hidden" th:field="*{userId}" />
+
+		<div class="row mb-4">
+			<div class="col-md-6">
+				<label class="form-label fw-bold">権限</label>
+				<input type="hidden" th:field="*{authorityName}" />
+				<input type="text" th:value="*{authorityName}" class="form-control-plaintext" readonly>
+			</div>
+
+			<div class="col-md-6">
+				<label for="belongingId" class="form-label fw-bold">所属先</label>
+				<select th:field="*{belongingId}" id="belongingId" class="form-select" required>
+					<option value="">所属を選択してください</option>
+					<option th:each="b : ${belongingList}" th:value="${b.id}" th:text="${b.name}">
+					</option>
+				</select>
+				<div class="text-danger small" th:if="${#fields.hasErrors('belongingId')}" th:errors="*{belongingId}">
+				</div>
+			</div>
+		</div>
+
+		<hr>
+
+		<div class="mb-3">
+			<label for="userName" class="form-label fw-bold">名前</label>
+			<input type="text" th:field="*{userName}" class="form-control" required placeholder="名前を入力"
+				autocomplete="off">
+			<div class="text-danger small" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>
+		</div>
+
+		<div class="mb-3" th:if="${userForm.userId == null}">
+			<label for="userPassword" class="form-label fw-bold">パスワード</label>
+			<input type="password" th:field="*{userPassword}" class="form-control" required minlength="8"
+				autocomplete="new-password">
+			<div class="form-text">8文字以上のパスワードを設定してください。</div>
+			<div class="text-danger small" th:if="${#fields.hasErrors('userPassword')}" th:errors="*{userPassword}">
+			</div>
+		</div>
+
+		<div class="mb-3" th:if="${userForm.userId != null}">
+			<label class="form-label fw-bold text-muted">パスワード</label>
+			<div class="form-control-plaintext text-muted">******** （この画面では変更できません）</div>
+		</div>
+
+		<div class="mb-4">
+			<label class="form-label d-block fw-bold">性別</label>
+			<div class="btn-group" role="group">
+				<input type="radio" class="btn-check" th:field="*{userGender}" value="M" id="genderM" required>
+				<label class="btn btn-outline-primary" for="genderM">男 (M)</label>
+
+				<input type="radio" class="btn-check" th:field="*{userGender}" value="F" id="genderF">
+				<label class="btn btn-outline-danger" for="genderF">女 (F)</label>
+			</div>
+			<div class="text-danger d-block small" th:if="${#fields.hasErrors('userGender')}" th:errors="*{userGender}">
+			</div>
+		</div>
+
+		<div class="mt-5 pt-3 border-top">
+			<button type="submit" class="btn btn-primary px-5" th:text="${userForm.userId == null} ? '新規登録' : '変更保存'">
+			</button>
+			<a th:href="@{/user/manage}" class="btn btn-secondary ms-2">キャンセル</a>
+		</div>
+	</form>
+</div>
+
+</html>
