@@ -30,8 +30,11 @@ public class UserManageController {
 	    // 2. プルダウンの選択肢
 	    model.addAttribute("belongings", userDetailsService.getBelongingList(operator));
 	    model.addAttribute("selectedId", belongingId);
+	    
 	    return "myTeamMG";
 	}
+	
+	
 
 	@GetMapping("/new")
 	public String showRegistrationForm(@AuthenticationPrincipal User operator, Model model) {
