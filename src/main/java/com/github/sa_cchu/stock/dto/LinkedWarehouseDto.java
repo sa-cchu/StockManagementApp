@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WarehouseStockDto {
-    private Integer warehouseStockId;
+public class LinkedWarehouseDto {
+    private Integer warehouseId;
     private String warehouseName;
-    private String categoryName;
-    private String goodsName;
-    private Integer warehouseStockQuantity;
+    private String warehouseAddress;
 }
