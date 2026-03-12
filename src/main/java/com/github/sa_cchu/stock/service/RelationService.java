@@ -6,8 +6,10 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.github.sa_cchu.stock.dto.RelationTargetDto;
 import com.github.sa_cchu.stock.entity.Relation;
 import com.github.sa_cchu.stock.entity.Shop;
+import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.repository.RelationRepository;
 import com.github.sa_cchu.stock.repository.ShopRepository;
@@ -47,6 +49,62 @@ public class RelationService {
 		shop.setShopId(shopId);
 		return relationRepository.findByShopAndDeleteFlag(shop, 0);
 
+	}
+
+	/**
+	 * 自分と連携している倉庫を取得するメソッド
+	 * @param shopId
+	 * @return 連携先のIDと名前のリスト
+	 */
+	public List<RelationTargetDto> getRelationWarehousesByShopId(Integer shopId) {
+		//		if (shopId == null || shopId == 0) {
+		//			return relationRepository.findByDeleteFlag(0);
+		//		}
+		Shop shop = new Shop();
+		shop.setShopId(shopId);
+		relationRepository.findByShopAndDeleteFlag(shop, 0);
+		List<Relation> relations = relationRepository.findByShopAndDeleteFlag(shop, 0);
+
+		return relations.stream()
+				.map(r -> new RelationTargetDto(
+						r.getWarehouse().getWarehouseId(),
+						r.getWarehouse().getWarehouseName()))
+				.toList();
+	}
+
+	/**
+	 * 自分と連携している店舗を取得するメソッド
+	 * @param warehouseId
+	 * @return 連携先のIDと名前のリスト
+	 */
+	public List<RelationTargetDto> getRelationShopsByWarehouseId(Integer warehouseId) {
+		//		if (warehouseId == null || warehouseId == 0) {
+		//			return relationRepository.findByDeleteFlag(0);
+		//		}
+
+		Warehouse warehouse = new Warehouse();
+		warehouse.setWarehouseId(warehouseId);
+		List<Relation> relations = relationRepository.findByWarehouseAndDeleteFlag(warehouse, 0);
+
+		return relations.stream()
+				.map(r -> new RelationTargetDto(
+						r.getShop().getShopId(),
+						r.getShop().getShopName()))
+				.toList();
+	}
+
+	/**
+	 * 指定ユーザーの権限に応じて連携先（店舗 or 倉庫）を取得する
+	 * @param user ログインユーザー
+	 * @return 連携先のリスト
+	 */
+	public List<RelationTargetDto> getTargetsForUser(User user) {
+		if (user.getShop() != null) {
+			return getRelationWarehousesByShopId(user.getShop().getShopId());
+		} else if (user.getWarehouse() != null) {
+			return getRelationShopsByWarehouseId(user.getWarehouse().getWarehouseId());
+		}
+		return List.of();
 	}
 
 	@Transactional

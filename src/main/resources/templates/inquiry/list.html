@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout">
+
+<div th:fragment="content">
+	<!-- 中身 -->
+	<h1 class="mb-3">お問い合わせ一覧</h1>
+	
+	<!-- 管理者権限以外のユーザーでログインしているときだけ表示する -->
+	<a th:if="${!isAdmin}" th:href="@{/inquiry/create}" class="btn btn-primary mb-4">
+	    問い合わせを送信
+	</a>
+
+	<table class="table">
+		<thead class="table-success">
+			<tr>
+				<th>問い合わせ内容</th>
+				<th>送信元</th>
+				<th>所属</th>
+				<th>送信者</th>
+				<th>送信日時</th>
+				<th>ステータス</th>
+				<th>詳細</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr>
+				<td>いつもありがとう</td>
+				<td>店舗</td>
+				<td>御徒町</td>
+				<td>店長</td>
+				<td>送信日時</td>
+				<td>未対応</td>
+				<td>詳細</td>
+			</tr>	
+			<tr>
+				<td>いつもありがとう</td>
+				<td>店舗</td>
+				<td>御徒町</td>
+				<td>店長</td>
+				<td>送信日時</td>
+				<td>未対応</td>
+				<td>詳細</td>
+			</tr>
+		</tbody>
+
+		
+		
+		<!-- 
+	    <tr th:each="inquiry : ${inquiries}">
+			// 最初の10文字だけ表示する
+			<td th:text="${#strings.length(inquiry.content) > 10 
+			    ? #strings.substring(inquiry.content,0,10) + '...' 
+			    : inquiry.content}">
+			</td>
+			
+	        <td th:text="${inquiry.}"></td>
+	        <td th:text="${inquiry.}"></td>
+	        <td th:text="${inquiry.fromRole}"></td>
+	        <td th:text="${inquiry.status}"></td>		
+	    </tr> -->
+
+	</table>
+</div>
+
+</html>
