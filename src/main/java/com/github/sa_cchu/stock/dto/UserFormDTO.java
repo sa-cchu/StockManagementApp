@@ -22,6 +22,8 @@ public class UserFormDTO {
     private String userGender;
 
     // 権限や所属の表示用
+    
+    private Integer authorityId;
     private String authorityName;
     private String belongingName;
 

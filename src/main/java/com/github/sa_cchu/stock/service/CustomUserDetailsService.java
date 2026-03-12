@@ -1,5 +1,4 @@
 
-
 package com.github.sa_cchu.stock.service;
 
 import java.util.List;
@@ -9,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.github.sa_cchu.stock.dto.UserFormDTO;
@@ -25,13 +25,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final ShopService shopService;
 	private final WarehouseService warehouseService;
+	private final PasswordEncoder passwordEncoder;
 
 	public CustomUserDetailsService(UserRepository userRepository, AuthorityRepository authorityRepository,
-			ShopService shopService, WarehouseService warehouseService) {
+			ShopService shopService, WarehouseService warehouseService, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.authorityRepository = authorityRepository;
 		this.shopService = shopService;
 		this.warehouseService = warehouseService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -138,6 +140,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 				// ROLE_SHOP を持つ全ユーザーを取得（リポジトリにメソッド追加が必要）
 				users = userRepository.findByAuthority_AuthorityNameContainingAndDeleteFlag("SHOP", 0);
 			} else {
+				
 				users = userRepository.findByShop_ShopIdAndDeleteFlag(belongingId, 0);
 			}
 		} else {
@@ -172,7 +175,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return dto;
 	}
 
-	
 	/**
 	 * 3. 【新規用】完全に初期化された空のDTOを作成
 	 */
@@ -181,6 +183,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		// 自分の情報は一切入れない。
 		// 唯一、これから作るユーザーの「デフォルト権限」だけをセットする。
+		dto.setAuthorityId(operator.getAuthority().getAuthorityId());
 		dto.setAuthorityName(operator.getAuthority().getAuthorityName());
 
 		// 他のフィールドは明示的に空（null）であることを確定させる
@@ -209,20 +212,51 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		// 現在の権限名をセット
 		if (target.getAuthority() != null) {
+			dto.setAuthorityId(target.getAuthority().getAuthorityId());
 			dto.setAuthorityName(target.getAuthority().getAuthorityName());
 		}
 
 		// 現在の所属IDをセット
 		if (target.getShop() != null) {
 			dto.setBelongingId(target.getShop().getShopId());
-			dto.setBelongingName(target.getShop().getShopName());
+		
 		} else if (target.getWarehouse() != null) {
 			dto.setBelongingId(target.getWarehouse().getWarehouseId());
-			dto.setBelongingName(target.getWarehouse().getWarehouseName());
+			
 		}
 
 		// パスワードは編集不可なのでセットしない
 		return dto;
+	}
+
+	@Transactional
+	public void saveUserFormDTO(UserFormDTO dto) {
+		User user;
+
+		if (dto.getUserId() == null) {
+			user = new User();
+			user.setUserPassword(passwordEncoder.encode(dto.getUserPassword()));
+		} else {
+			user = userRepository.findById(dto.getUserId())
+					.orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
+		}
+		
+		user.setUserName(dto.getUserName());
+		user.setUserGender(dto.getUserGender());
+		
+		Authority authority = authorityRepository.findById(dto.getAuthorityId()).orElseThrow();
+		user.setAuthority(authority);
+		
+		if (authority.getAuthorityName().contains("SHOP")) {
+	        user.setShop(shopService.getShop(dto.getBelongingId()));
+	        user.setWarehouse(null); // 片方をセットしたら、もう片方は必ずクリア
+	    } else {
+	        user.setWarehouse(warehouseService.getWarehouse(dto.getBelongingId()));
+	        user.setShop(null);
+	    }
+
+	    userRepository.save(user);
+		
 	}
 
 }
