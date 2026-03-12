@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.github.sa_cchu.stock.dto.BelongingDTO;
 import com.github.sa_cchu.stock.entity.Goods;
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.entity.WarehouseStock;
@@ -20,21 +21,21 @@ public class WarehouseService {
 	private final GoodsRepository goodsRepository;
 	private final WarehouseStockRepository warehouseStockRepository;
 
-	public WarehouseService(WarehouseRepository warehouseRepository,
-			GoodsRepository goodsRepository, WarehouseStockRepository warehouseStockRepository) {
+	public WarehouseService(WarehouseRepository warehouseRepository, GoodsRepository goodsRepository,
+			WarehouseStockRepository warehouseStockRepository) {
 		this.warehouseRepository = warehouseRepository;
 		this.goodsRepository = goodsRepository;
 		this.warehouseStockRepository = warehouseStockRepository;
 	}
 
-	//リポジトリの操作でエンティティから倉庫データを全部もってきている
-	//一覧表示
+	// リポジトリの操作でエンティティから倉庫データを全部もってきている
+	// 一覧表示
 	@Transactional
 	public List<Warehouse> getAllWarehouses() {
 		return warehouseRepository.findByDeleteFlag(0);
 	}
 
-	//倉庫追加
+	// 倉庫追加
 	@Transactional
 	public Warehouse addWarehouse(Warehouse warehouse) {
 
@@ -42,7 +43,7 @@ public class WarehouseService {
 			throw new IllegalArgumentException("既に倉庫名は存在しています");
 		}
 
-		//リポジトリのメソッドを呼んで受け取った値を変数に代入
+		// リポジトリのメソッドを呼んで受け取った値を変数に代入
 		Warehouse saveWarehouse = warehouseRepository.save(warehouse);
 		List<Goods> allGoods = goodsRepository.findAll();
 
@@ -60,7 +61,7 @@ public class WarehouseService {
 		return saveWarehouse;
 	}
 
-	//編集する倉庫取得
+	// 編集する倉庫取得
 	@Transactional
 	public Warehouse getWarehouse(Integer warehouseId) {
 		return warehouseRepository.findById(warehouseId).get();
@@ -69,24 +70,33 @@ public class WarehouseService {
 	@Transactional
 	public void updateWarehouse(Warehouse warehouse) {
 
-		warehouseRepository.findByWarehouseName(warehouse.getWarehouseName())
-			.ifPresent(existing -> {
-				if (!existing.getWarehouseId().equals(warehouse.getWarehouseId())) {
-					throw new IllegalArgumentException("既に倉庫名は存在しています");
-				}
-			});
+		warehouseRepository.findByWarehouseName(warehouse.getWarehouseName()).ifPresent(existing -> {
+			if (!existing.getWarehouseId().equals(warehouse.getWarehouseId())) {
+				throw new IllegalArgumentException("既に倉庫名は存在しています");
+			}
+		});
 
 		warehouseRepository.save(warehouse);
 	}
-	
-	
+
 	// 論理削除
 	@Transactional
 	public void deleteWarehouse(Integer warehouseId) {
 		Warehouse warehouse = warehouseRepository.findById(warehouseId)
-				.orElseThrow(()->new IllegalArgumentException("倉庫が存在しません"));
+				.orElseThrow(() -> new IllegalArgumentException("倉庫が存在しません"));
 		warehouse.setDeleteFlag(1);
 		warehouseRepository.save(warehouse);
+	}
+	///////////////////////////////////////////////////////////////////////////////
+
+	// DTOバージョンで作成//
+
+	////////////////////////////////////////////////////////////////////////////////////
+
+	// 既存のメソッドの下に追加
+	public List<BelongingDTO> getAllWarehouseDTOs() {
+		return warehouseRepository.findByDeleteFlag(0).stream()
+				.map(w -> new BelongingDTO(w.getWarehouseId(), w.getWarehouseName())).toList();
 	}
 
 }
