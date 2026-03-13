@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GoodsRankingDTO {
  
- private String goods;
+ private String goodsName;
  private Integer goodsAmount;
 }

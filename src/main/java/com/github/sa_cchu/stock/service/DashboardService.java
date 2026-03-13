@@ -40,30 +40,47 @@ public class DashboardService {
 			log.error("{}のバッチ処理中にエラーが発生しました。", yesterday, e);
 		}
 	}
-	//商品ランキング
-	public List<GoodsRankingDTO> getAllShopRanking(){
+
+	// 商品ランキング
+	public List<GoodsRankingDTO> getAllShopRanking() {
 		LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
-		List<Object[]> results = dailyOrderSummaryRepository.findTopGoods(oneMonthAgo); 
+		List<Object[]> results = dailyOrderSummaryRepository.findTopGoods(oneMonthAgo);
 		return convertToDto(results);
 	}
-	
-	//所属店舗所品ランキング
-	public List<GoodsRankingDTO>getMyShopRanking(Integer shopId){
+
+	// 所属店舗所品ランキング
+	public List<GoodsRankingDTO> getMyShopRanking(Integer shopId) {
 		LocalDate oneMonthAgoDate = LocalDate.now().minusMonths(1);
-		List<Object[]> results =dailyOrderSummaryRepository.findTopGoodsByShop(shopId, oneMonthAgoDate);
+		List<Object[]> results = dailyOrderSummaryRepository.findTopGoodsByShop(shopId, oneMonthAgoDate);
 		return convertToDto(results);
 	}
-	
-	
+
 	// Dtoに変換する
 	private List<GoodsRankingDTO> convertToDto(List<Object[]> results) {
-	    return results.stream()
-	            .map(result -> new GoodsRankingDTO(
-	                (String) result[0],              // 商品名
-	                ((Number) result[1]).intValue()  // 合計数
-	            ))
-	            .collect(Collectors.toList());
+		return results.stream().map(result -> new GoodsRankingDTO((String) result[0], // 商品名
+				((Number) result[1]).intValue() // 合計数
+		)).collect(Collectors.toList());
 	}
+
 	
 	
+	
+	
+	//test
+	@Transactional // 削除と挿入をセットで行うため
+	public void refreshDailySummary() {
+		// 1. 集計対象の日付（昨日）を決定
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+
+		// 2. 二重登録防止のため、一旦昨日のデータを消す
+		dailyOrderSummaryRepository.deleteByCountDate(yesterday);
+
+		// 3. 昨日の注文データを集計してインサート
+		// LocalDateTimeの00:00:00〜23:59:59の範囲を指定
+		LocalDateTime start = yesterday.atStartOfDay();
+		LocalDateTime end = yesterday.plusDays(1).atStartOfDay();
+
+		dailyOrderSummaryRepository.insertDailySummary(start, end);
+	}
+
 }

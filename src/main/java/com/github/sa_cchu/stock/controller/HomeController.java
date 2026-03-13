@@ -4,6 +4,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.sa_cchu.stock.entity.Shop;
 import com.github.sa_cchu.stock.entity.User;
@@ -68,6 +69,19 @@ public class HomeController {
 			model.addAttribute("shopRanking", dashboardService.getMyShopRanking(user.getShop().getShopId()));
 		}
 		return "home";
+	}
+	
+	// テスト用URL: http://localhost:8080/test-run
+	@GetMapping("/test-run")
+	@ResponseBody // 画面遷移せず、文字列だけ返す設定
+	public String testRun() {
+	    try {
+	        // バッチ処理（集計ロジック）を強制的に呼び出す
+	        dashboardService.refreshDailySummary();
+	        return "集計バッチを手動実行しました。DBの daily_order_summary を確認してください。";
+	    } catch (Exception e) {
+	        return "エラーが発生しました: " + e.getMessage();
+	    }
 	}
 
 }

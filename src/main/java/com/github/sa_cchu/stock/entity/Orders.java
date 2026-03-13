@@ -32,7 +32,7 @@ public class Orders {
 
     // 倉庫
     @ManyToOne
-    @JoinColumn(name = "wh_id", nullable = false)
+    @JoinColumn(name = "warehouse_id", nullable = false)
     private Warehouse warehouse;
 
     @Column(name = "order_amount", nullable = false)

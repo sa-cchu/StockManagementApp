@@ -24,7 +24,7 @@ public interface DailyOrderSummaryRepository extends JpaRepository<DailyOrderSum
 			FROM orders
 			WHERE order_date >= :targetDate AND order_date < :nextDate
 			  AND delete_flag = 0
-			GROUP BY shop_id, goods_id
+			GROUP BY CAST(order_date AS DATE), shop_id, goods_id
 			""", nativeQuery = true)
 	void insertDailySummary(LocalDateTime targetDate, LocalDateTime nextDate);
 
