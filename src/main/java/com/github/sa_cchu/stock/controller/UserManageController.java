@@ -1,6 +1,9 @@
 package com.github.sa_cchu.stock.controller;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -79,7 +82,12 @@ public class UserManageController {
 
 // 3. 保存実行
 		try {
-			userDetailsService.saveUserFormDTO(userForm);
+			// ★戻り値で保存後の最新Entityを受け取る
+			User savedUser = userDetailsService.saveUserFormDTO(userForm);
+			if (operator != null && savedUser.getUserId().equals(operator.getUserId())) {
+				refreshSession(savedUser);
+			}
+
 		} catch (Exception e) {
 			// 万が一のDBエラーに備える（実務的な保険）
 			model.addAttribute("errorMessage", "保存中にエラーが発生しました");
@@ -90,14 +98,23 @@ public class UserManageController {
 // 4. 二重送信防止のため完了画面（または一覧）へリダイレクト
 		return "redirect:/user/manage";
 	}
-	
+
+	/**
+	 * セッション内の認証情報を最新のユーザー情報で上書きする
+	 */
+	private void refreshSession(User user) {
+		Authentication newAuth = new UsernamePasswordAuthenticationToken(user, user.getPassword(),
+				user.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(newAuth);
+	}
+
 	@PostMapping("/delete/{id}")
 	public String deleteUser(@PathVariable("id") Integer userId) {
-	    // Serviceを呼び出して削除処理を実行
-	    userDetailsService.deleteUser(userId);
-	    
-	    // 削除が終わったら一覧画面にリダイレクト
-	    return "redirect:/user/manage";
+		// Serviceを呼び出して削除処理を実行
+		userDetailsService.deleteUser(userId);
+
+		// 削除が終わったら一覧画面にリダイレクト
+		return "redirect:/user/manage";
 	}
 
 }

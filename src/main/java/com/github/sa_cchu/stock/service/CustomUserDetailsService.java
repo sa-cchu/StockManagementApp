@@ -230,7 +230,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	@Transactional
-	public void saveUserFormDTO(UserFormDTO dto) {
+	public User saveUserFormDTO(UserFormDTO dto) {
 		User user;
 
 		if (dto.getUserId() == null) {
@@ -255,7 +255,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	        user.setShop(null);
 	    }
 
-	    userRepository.save(user);
+	    return userRepository.save(user);
 		
 	}
 
