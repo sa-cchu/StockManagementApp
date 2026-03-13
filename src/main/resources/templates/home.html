@@ -2,8 +2,105 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout">
 
 <div th:fragment="content">
-	<!-- 中身 -->
-	<h1>在庫管理アプリの制作</h1>
+	<div class="mb-4">
+		<h1 class="h3 text-gray-800 font-weight-bold">在庫管理Webアプリ</h1>
+	</div>
+
+	<div class="container-fluid" sec:authorize="hasRole('SHOP')">
+		<div class="row">
+
+			<div class="col-xl-6 col-lg-6 mb-4">
+				<div class="card shadow mb-4 border-left-primary">
+					<div class="card-header py-3 bg-white">
+						<h6 class="m-0 font-weight-bold text-primary">
+							<i class="fas fa-award mr-1"></i>
+							<span th:text="${belongName}">自店舗</span> 売れ筋TOP5
+						</h6>
+					</div>
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table table-hover align-middle">
+								<thead class="thead-light">
+									<tr>
+										<th class="text-center" style="width: 15%">順位</th>
+										<th style="width: 60%">商品名</th>
+										<th class="text-right" style="width: 25%">出荷数</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="item, stat : ${shopRanking}">
+										<td class="text-center font-weight-bold">
+											<span th:if="${stat.count == 1}" class="badge badge-warning p-2">1位</span>
+											<span th:if="${stat.count == 2}" class="badge badge-secondary p-2">2位</span>
+											<span th:if="${stat.count == 3}" class="badge badge-danger p-2"
+												style="background-color: #cd7f32;">3位</span>
+											<span th:if="${stat.count > 3}" th:text="${stat.count} + '位'"
+												class="text-muted small"></span>
+										</td>
+										<td th:text="${item.goodsName}" class="font-weight-bold">商品名</td>
+										<td class="text-right text-primary font-weight-bold">
+											<span
+												th:text="${#numbers.formatInteger(item.goodsAmount, 1, 'COMMA')}">0</span>
+											<small class="text-muted ml-1">個</small>
+										</td>
+									</tr>
+									<tr th:if="${#lists.isEmpty(shopRanking)}">
+										<td colspan="3" class="text-center py-5 text-muted small">
+											<i class="fas fa-info-circle mr-1"></i> 直近1ヶ月の出荷データはありません
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-6 col-lg-6 mb-4">
+				<div class="card shadow mb-4 border-left-secondary">
+					<div class="card-header py-3 bg-white">
+						<h6 class="m-0 font-weight-bold text-secondary">
+							<i class="fas fa-chart-line mr-1"></i> 全店舗 総合TOP5
+						</h6>
+					</div>
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table table-hover align-middle">
+								<thead class="thead-light">
+									<tr>
+										<th class="text-center" style="width: 15%">順位</th>
+										<th style="width: 60%">商品名</th>
+										<th class="text-right" style="width: 25%">出荷数</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="item, stat : ${allRanking}">
+										<td class="text-center font-weight-bold">
+											<span th:text="${stat.count} + '位'"></span>
+										</td>
+										<td th:text="${item.goodsName}">商品名</td>
+										<td class="text-right font-weight-bold">
+											<span
+												th:text="${#numbers.formatInteger(item.goodsAmount, 1, 'COMMA')}">0</span>
+											<small class="text-muted ml-1">個</small>
+										</td>
+									</tr>
+									<tr th:if="${#lists.isEmpty(allRanking)}">
+										<td colspan="3" class="text-center py-5 text-muted small">
+											<i class="fas fa-exclamation-triangle mr-1"></i> 全店舗のデータが集計されていません
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
 </div>
 
 </html>
