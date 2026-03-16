@@ -14,18 +14,12 @@ import com.github.sa_cchu.stock.entity.Inquery;
  */
 @Repository
 public interface InquiryRepository extends JpaRepository<Inquery, Integer> {
-
 	/**
-	* お問い合わせ一覧画面で使用するデータを取得するため、
-	* ユーザー情報（User）、店舗情報（Shop）、倉庫情報（Warehouse）と
-	* 結合して取得した結果を {@link com.github.sa_cchu.stock.dto.InquiryListDto} に
-	* マッピングして返却する。
-	*
-	* <p>
-	* Inquiryテーブルの権限ID（authorityId）を条件にログインユーザーと同じ権限宛の
-	* お問い合わせ情報を取得し、問い合わせ日時の降順で一覧を取得する
-	* </p>
-	* 
+	* お問い合わせ一覧画面で表示する情報を取得する。
+	* お問い合わテーブルの外部キーからユーザー情報（User）、店舗情報（Shop）、倉庫情報（Warehouse）と
+	* 結合して取得した結果を {@link com.github.sa_cchu.stock.dto.InquiryListDto} にマッピングして返却する。
+	* <p>Inquiryテーブルの権限ID（authorityId）を条件にログインユーザーと同じ権限宛かつ、所属宛の
+	* お問い合わせ情報を取得し、問い合わせ日時の降順で一覧を取得する</p>
 	* @param role ログインユーザー情報
 	* @param status ログインユーザー情報
 	* @param isAdmin 管理者権限情報（可否）

@@ -21,9 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * お問い合わせ機能に関する業務ロジックを実装する Service クラス。
- * <p>Inquiryテーブルへの登録処理およびお問い合わせ一覧取得処理を呼び出す。</p>
- * <ul><li>ログインユーザーと同じ権限宛てのお問い合わせ一覧を取得する。</li>
- * <li>送信先によって保存するカラム（店舗・倉庫・管理者宛）を切り替えながら、お問い合わせ情報を DB に登録する。</li></ul>
+ * <p>Inquiryテーブルからのお問い合わせ一覧取得処理および登録処理を呼び出す。</p>
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -31,10 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class InquiryService {
 	private final InquiryRepository inquiryRepository;
 	/**
-	 * Inquiryテーブルの権限ID（authorityId）、ステータス、店舗ID、倉庫IDを条件に、
-	 * ログインユーザーと同じ権限宛のお問い合わせ一覧を取得する。
-	 * <p>条件に合わせてログインユーザーの所属宛に届いたお問い合わせを一覧で取得し、送信日時の降順で取得する。</p>
-	 * <p>権限ID（authorityId）はEnum（AuthorityTypeEnum）を使用して画面表示用の権限名へ変換する。</p>
+	 * 画面で指定されたステータス状態とログインユーザーの権限と店舗ID/倉庫IDを条件に、
+	 * Inquiryテーブルの権限ID、ログインユーザーと同じ権限 & 所属宛（店舗/倉庫の場合）のお問い合わせ一覧を送信日時の降順で取得する。
 	 * @param user ログインユーザー情報
 	 * @param status お問い合わせのステータス（未対応・対応中・対応済）。未指定の場合は全件取得
 	 * @return 条件に一致するお問い合わせ一覧
@@ -42,12 +38,12 @@ public class InquiryService {
 	public List<InquiryListDto> getInquiryListByTargetRole(User user, String status) {
 		// ログインユーザーの権限IDを取得する。
 		Integer role = user.getAuthority().getAuthorityId();
-		// 権限IDが管理者かを判定する。管理者は、権限IDのみで管理者宛のお問い合わせを抽出するため変数に入れてJPQLに渡す。
+		// 権限が管理者かを判定する。管理者は、権限IDのみで管理者宛のお問い合わせを抽出するため変数を取得時に渡す。
 		Boolean isAdmin = role != null && role.intValue() == AuthorityTypeEnum.ADMIN.getAuthorityTypeId();
-		// ログインユーザーの店舗ID・倉庫ID（どちらか null でない方を使用）取得する。
+		// ログインユーザーの店舗ID・倉庫IDの有無を確認する。取得処理時にはどちらか null でない方を使用する。
 	    Integer shopId = user.getShop() != null ? user.getShop().getShopId() : null;
 	    Integer warehouseId = user.getWarehouse() != null ? user.getWarehouse().getWarehouseId() : null;
-	    // 権限ID、ステータス、店舗ID、倉庫IDをもとにinquiryRepositoryで問い合わせリストを取得する。
+	    // 権限ID、ステータス、管理権限の判定結果、店舗ID、倉庫IDをもとにinquiryRepositoryで問い合わせリストを取得する。
 	    List<InquiryListDto> list = inquiryRepository
 	            .findInquiryListByRoleAndOptionalStatusAndLocation(
 	                role,
@@ -63,8 +59,7 @@ public class InquiryService {
 			.fetchAuthorityType(dto.getAuthorityId()) 
 			// 権限IDからEnumを取得する。 
 			.getDisplayName(); 
-			// 画面表示用の名称を取得する。 
-			// DTOに表示用の権限名をセットする。 
+			// 画面表示用の名称を取得し、 DTOに表示用の権限名をセットする。 
 			dto.setDisplayAuthorityName(authorityName); 
 		} 
 		// 変換済みのDTOを返却する。 

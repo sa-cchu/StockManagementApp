@@ -50,19 +50,15 @@ public class InquiryController {
 	/**
 	 * お問い合わせ一覧を表示する。
 	 * @param user ログイン中のユーザー情報
-	 * @param targetId 所属フィルターで選択した所属（連携先）情報
 	 * @param status ステータスフィルターで選択したステータス情報
-	 * @param model 画面に渡すモデル
+	 * @param model 画面に表示する情報
 	 * @return お問い合わせ一覧画面
 	 */
 	@GetMapping("/list")
-	public String viewInquiryList(@AuthenticationPrincipal User user, 
-			@RequestParam(required = false) String status,
-			Model model) {
+	public String viewInquiryList(@RequestParam(required = false) String status,
+			@AuthenticationPrincipal User user, Model model) {
 		// ログインユーザーが管理者かを判定し、お問い合わせボタンを表示制御するために判定結果を画面に渡す
 		model.addAttribute("isAdmin", isAdmin(user));	
-		// 連携している店舗・倉庫の選択肢を取得して画面に渡す。
-		model.addAttribute("targets", relationService.getTargetsForUser(user));
 		// Enumに記載しているステータス情報を選択肢として画面に渡す。
 		model.addAttribute("statusList", StatusEnum.values());
 	    // ログインユーザーと同じ権限（店舗・倉庫の場合は同じ所属）宛へのお問い合わせ一覧を取得する処理を呼び出す。
@@ -84,7 +80,7 @@ public class InquiryController {
 	 */
 	@GetMapping("/create")
 	public String viewInquiryCreate(@ModelAttribute InquiryForm inquiryForm,
-			Model model, @AuthenticationPrincipal User user) {
+			@AuthenticationPrincipal User user, Model model) {
 		// ログインユーザーが管理者かを判定し、管理者の場合は一覧にリダイレクトさせる。
 		if (isAdmin(user)) {
 			return "redirect:/inquiry/list";
@@ -104,8 +100,8 @@ public class InquiryController {
 	 */
 	@PostMapping("/create")
 	public String sendInquiry(@Validated @ModelAttribute InquiryForm inquiryForm,
-			BindingResult result, Model model, @AuthenticationPrincipal User user,
-			RedirectAttributes redirectAttributes) {
+			BindingResult result, @AuthenticationPrincipal User user,
+			RedirectAttributes redirectAttributes, Model model) {
 
 		// 管理者宛てに送信する場合、Formクラスにバリデーションを実装すると
 		// 不要なバリデーションが機能してしまうため、連携先選択のバリデーションをcontrollerで行う。
