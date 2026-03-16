@@ -61,14 +61,12 @@ public class InquiryController {
 			Model model) {
 		// ログインユーザーが管理者かを判定し、お問い合わせボタンを表示制御するために判定結果を画面に渡す
 		model.addAttribute("isAdmin", isAdmin(user));	
-		
-		Integer role = user.getAuthority().getAuthorityId();
 		// 連携している店舗・倉庫の選択肢を取得して画面に渡す。
 		model.addAttribute("targets", relationService.getTargetsForUser(user));
 		// Enumに記載しているステータス情報を選択肢として画面に渡す。
 		model.addAttribute("statusList", StatusEnum.values());
-	    // 権限宛のお問い合わせ一覧を取得する処理を呼び出す。
-	    List<InquiryListDto> inquiryList = inquiryService.getInquiryListByTargetRole(role, status);
+	    // ログインユーザーと同じ権限（店舗・倉庫の場合は同じ所属）宛へのお問い合わせ一覧を取得する処理を呼び出す。
+	    List<InquiryListDto> inquiryList = inquiryService.getInquiryListByTargetRole(user, status);
 	    // 画面に取得した一覧情報を渡す。
 	    model.addAttribute("inquiryList", inquiryList);
 	    // フィルターで選択されているステータスの状況を保持して画面に渡す。

@@ -25,48 +25,41 @@ public interface InquiryRepository extends JpaRepository<Inquery, Integer> {
 	* Inquiryテーブルの権限ID（authorityId）を条件にログインユーザーと同じ権限宛の
 	* お問い合わせ情報を取得し、問い合わせ日時の降順で一覧を取得する
 	* </p>
-	 * 
-	 * @param role ログインユーザーの権限
-	 * @return お問い合わせ一覧の取得結果
-	 */
-	@Query("""
-			SELECT new com.github.sa_cchu.stock.dto.InquiryListDto(
-			    i.inqueryId,
-			    i.inqueryDetail,
-			    i.inqueryDate,
-			    u.authority.authorityId,
-			    COALESCE(s.shopName, w.warehouseName),
-			    u.userName,
-			    i.inqueryStatus
-			)
-			FROM Inquery i
-			JOIN i.user u
-			LEFT JOIN u.shop s
-			LEFT JOIN u.warehouse w
-			WHERE i.authority.authorityId = :role
-			ORDER BY i.inqueryDate DESC
-			""")
-	List<InquiryListDto> findInquiryListByRole(Integer role);
-
-
+	* 
+	* @param role ログインユーザー情報
+	* @param status ログインユーザー情報
+	* @param isAdmin 管理者権限情報（可否）
+	* @param shopId 店舗ID
+	* @param warehouseId 倉庫ID
+	* @return お問い合わせ一覧の取得結果
+	*/
     @Query("""
-    SELECT new com.github.sa_cchu.stock.dto.InquiryListDto(
-        i.inqueryId,
-        i.inqueryDetail,
-        i.inqueryDate,
-        u.authority.authorityId,
-        COALESCE(s.shopName, w.warehouseName),
-        u.userName,
-        i.inqueryStatus
-    )
-    FROM Inquery i
-    JOIN i.user u
-    LEFT JOIN u.shop s
-    LEFT JOIN u.warehouse w
-    WHERE i.authority.authorityId = :role
-    AND i.inqueryStatus = :status
-    ORDER BY i.inqueryDate DESC
-    """)
-    List<InquiryListDto> findInquiryListByRoleAndStatus(Integer role, String status);
-
+    	    SELECT new com.github.sa_cchu.stock.dto.InquiryListDto(
+    	        i.inqueryId,
+    	        i.inqueryDetail,
+    	        i.inqueryDate,
+    	        u.authority.authorityId,
+    	        COALESCE(s.shopName, w.warehouseName),
+    	        u.userName,
+    	        i.inqueryStatus
+    	    )
+    	    FROM Inquery i
+    		 	    JOIN i.user u
+    		 	    LEFT JOIN u.shop s
+    		 	    LEFT JOIN u.warehouse w
+    	    WHERE i.authority.authorityId = :role  
+    		 	    AND (
+				    (:isAdmin = TRUE AND i.authority.authorityId = :role)      
+				    OR (:shopId IS NOT NULL AND i.shop.shopId = :shopId)    
+				    OR (:warehouseId IS NOT NULL AND i.warehouse.warehouseId = :warehouseId)
+			)
+    	    ORDER BY i.inqueryDate DESC
+    	""")
+	List<InquiryListDto> findInquiryListByRoleAndOptionalStatusAndLocation(
+	        Integer role,
+	        String status,
+	        Boolean isAdmin,
+	        Integer shopId,
+	        Integer warehouseId
+    );
 }

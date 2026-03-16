@@ -31,30 +31,32 @@ import lombok.extern.slf4j.Slf4j;
 public class InquiryService {
 	private final InquiryRepository inquiryRepository;
 	/**
-	 * Inquiryテーブルの権限ID（authorityId）を条件に、ログインユーザーと同じ権限宛のお問い合わせ一覧を取得する。
-	 * <p>statusが未指定の場合は全ステータスを取得し、指定されている場合は該当ステータスで絞り込んだ
-	 * お問い合わせ一覧を送信日時の降順で取得する。</p>
+	 * Inquiryテーブルの権限ID（authorityId）、ステータス、店舗ID、倉庫IDを条件に、
+	 * ログインユーザーと同じ権限宛のお問い合わせ一覧を取得する。
+	 * <p>条件に合わせてログインユーザーの所属宛に届いたお問い合わせを一覧で取得し、送信日時の降順で取得する。</p>
 	 * <p>権限ID（authorityId）はEnum（AuthorityTypeEnum）を使用して画面表示用の権限名へ変換する。</p>
-	 * @param role ログインユーザーの権限
-	 * @param targetId 所属（連携先）の選択情報。未指定の場合は全件取得
+	 * @param user ログインユーザー情報
 	 * @param status お問い合わせのステータス（未対応・対応中・対応済）。未指定の場合は全件取得
 	 * @return 条件に一致するお問い合わせ一覧
 	 */
-	public List<InquiryListDto> getInquiryListByTargetRole(Integer role, String status) {
-		// 空のDTOを準備しておく。
-		List<InquiryListDto> list; 
-		// ステータス条件が指定されていない場合、
-		if (status == null || status.isEmpty()) { 
-			
-			// ログインユーザーの権限IDを条件に、お問い合わせ一覧を取得する。 
-			list = inquiryRepository.findInquiryListByRole(role); 
-			// ステータス条件が指定されている場合、
-			} else { 
-				// ログインユーザーの権限IDとステータス状態を条件に、お問い合わせ一覧を取得する。 
-				list = inquiryRepository.findInquiryListByRoleAndStatus(role, status); 
-			} 
-		
-		// DTOに含まれる authorityId（数値）をもとに、Enumを使用して画面表示用の権限名へ変換する 
+	public List<InquiryListDto> getInquiryListByTargetRole(User user, String status) {
+		// ログインユーザーの権限IDを取得する。
+		Integer role = user.getAuthority().getAuthorityId();
+		// 権限IDが管理者かを判定する。管理者は、権限IDのみで管理者宛のお問い合わせを抽出するため変数に入れてJPQLに渡す。
+		Boolean isAdmin = role != null && role.intValue() == AuthorityTypeEnum.ADMIN.getAuthorityTypeId();
+		// ログインユーザーの店舗ID・倉庫ID（どちらか null でない方を使用）取得する。
+	    Integer shopId = user.getShop() != null ? user.getShop().getShopId() : null;
+	    Integer warehouseId = user.getWarehouse() != null ? user.getWarehouse().getWarehouseId() : null;
+	    // 権限ID、ステータス、店舗ID、倉庫IDをもとにinquiryRepositoryで問い合わせリストを取得する。
+	    List<InquiryListDto> list = inquiryRepository
+	            .findInquiryListByRoleAndOptionalStatusAndLocation(
+	                role,
+	                status,
+	                isAdmin,
+	                shopId,
+	                warehouseId
+	            );
+		// DTOに含まれる authorityId（数値）から、Enumを使用して画面表示用の権限名へ変換する 
 		for (InquiryListDto dto : list) { 
 			String authorityName = AuthorityTypeEnum 
 			// 権限IDからEnumを取得する
