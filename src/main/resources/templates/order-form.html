@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http:www.thymeleaf.org" th:replace="~{layout :: layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品発注</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <h1 class="mb-4">商品発注画面</h1>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form th:action="@{/shop-order/execute}" method="post" th:object="${shopOrderFormDto}">
+            <input type="hidden" th:field="*{goodsId}">
+
+            <h5 th:text="'発注商品：' + ${goods.goodsName}"></h5>
+            <p class="text-muted" th:text="'カテゴリ：' + ${goods.category.categoryName}"></p>
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>倉庫名</th>
+                        <th>現在の在庫数</th>
+                        <th>発注個数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="row, stat : *{orderRows}">
+                        <input type="hidden" th:field="*{orderRows[__${stat.index}__].warehouseId}">
+                        <input type="hidden" th:field="*{orderRows[__${stat.index}__].warehouseName}">
+                        <input type="hidden" th:field="*{orderRows[__${stat.index}__].stockQuantity}">
+                        <td th:text="${row.warehouseName}"></td>
+                        <td th:text="${row.stockQuantity} + '個'"></td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm"
+                                th:field="*{orderRows[__${stat.index}__].orderQuantity}" min="1"
+                                th:max="${row.stockQuantity != 0 ? row.stockQuantity : ''}"
+                                th:disabled="${row.stockQuantity == 0}" placeholder="発注数を入力">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{/shop-order/goods-list}" class="btn btn-secondary">キャンセル</a>
+                <button type="submit" class="btn btn-primary">発注を確定する</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

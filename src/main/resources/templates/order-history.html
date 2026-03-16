@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>発注履歴</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <h1 class="mb-4">発注履歴管理</h1>
+
+        <table class="table table-striped align-middle" th:if="${!orderHistoryList.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>発注ID</th>
+                    <th>商品名</th>
+                    <th>発注先倉庫</th>
+                    <th>発注個数</th>
+                    <th>ステータス</th>
+                    <th>発注日時</th>
+                    <th>更新日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orderHistoryList}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.goodsName}"></td>
+                    <td th:text="${order.warehouseName}"></td>
+                    <td th:text="${order.orderAmount} + '個'"></td>
+                    <td th:text="${order.orderStatus}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'yyyy/MM/dd HH:mm')}"></td>
+                    <td th:text="${#temporals.format(order.updateDate, 'yyyy/MM/dd HH:mm')}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${orderHistoryList.isEmpty()}" class="alert alert-info">
+            発注履歴がありません。
+        </div>
+    </div>
+</body>
+
+</html>

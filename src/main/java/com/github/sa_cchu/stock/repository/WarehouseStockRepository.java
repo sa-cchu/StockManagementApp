@@ -25,6 +25,8 @@ public interface WarehouseStockRepository extends JpaRepository<WarehouseStock, 
 	// ひとまず全て取得して、ServiceでDTOに変換してます。
 	List<WarehouseStock> findByWarehouseIdAndDeleteFlag(Warehouse warehouse, Integer deleteFlag);
 
+	WarehouseStock findByWarehouseIdAndGoodsIdAndDeleteFlag(Warehouse warehouse, Goods goods, Integer deleteFlag);
+
 	// カテゴリー別取得
 	List<WarehouseStock> findByWarehouseIdAndGoodsIdCategoryAndDeleteFlag(Warehouse warehouse, Category category,
 			Integer deleteFlag);
