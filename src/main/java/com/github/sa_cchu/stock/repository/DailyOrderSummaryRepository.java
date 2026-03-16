@@ -13,7 +13,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.github.sa_cchu.stock.entity.DailyOrderSummary;
 
 public interface DailyOrderSummaryRepository extends JpaRepository<DailyOrderSummary, Integer> {
-
+	
+	@Modifying
+	@Transactional
 	void deleteByCountDate(LocalDate countDate);
 
 	@Modifying

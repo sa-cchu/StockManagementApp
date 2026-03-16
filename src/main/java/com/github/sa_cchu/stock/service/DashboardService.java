@@ -23,7 +23,7 @@ public class DashboardService {
 	private final DailyOrderSummaryRepository dailyOrderSummaryRepository;
 
 	@Scheduled(cron = "0 10 0 * * *")
-	@Transactional
+	@Transactional(rollbackOn = Exception.class)
 	public void aggregDailyOrders() {
 		LocalDate yesterday = LocalDate.now().minusDays(1);
 		LocalDateTime start = yesterday.atStartOfDay();
@@ -38,6 +38,7 @@ public class DashboardService {
 
 		} catch (Exception e) {
 			log.error("{}のバッチ処理中にエラーが発生しました。", yesterday, e);
+			throw new RuntimeException(e);
 		}
 	}
 
