@@ -24,4 +24,6 @@ public interface ShopStockRepository extends JpaRepository<ShopStock, Integer> {
 	List<ShopStock> findByShopIdAndDeleteFlag(Shop shop, Integer deleteFlag);
 
 	List<ShopStock> findByShopIdAndGoodsIdCategoryAndDeleteFlag(Shop shop, Category category, Integer deleteFlag);
+
+    ShopStock findByShopIdAndGoodsIdAndDeleteFlag(Shop shop, Goods goods, Integer deleteFlag);
 }

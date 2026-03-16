@@ -6,19 +6,21 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.sa_cchu.stock.repository.OrdersRepository;
 import com.github.sa_cchu.stock.repository.RelationRepository;
-import com.github.sa_cchu.stock.entity.Relation;
+import com.github.sa_cchu.stock.repository.WarehouseStockRepository;
+import com.github.sa_cchu.stock.repository.ShopStockRepository;
 
 import com.github.sa_cchu.stock.dto.ShopOrderTargetDto;
 import com.github.sa_cchu.stock.dto.OrderHistoryDto;
 import com.github.sa_cchu.stock.dto.ShopOrderFormDto;
 import com.github.sa_cchu.stock.dto.ShopOrderRowDto;
-import com.github.sa_cchu.stock.repository.WarehouseStockRepository;
 
-import org.springframework.transaction.annotation.Transactional;
-
+import com.github.sa_cchu.stock.entity.Relation;
 import com.github.sa_cchu.stock.entity.Shop;
+import com.github.sa_cchu.stock.entity.ShopStock;
 import com.github.sa_cchu.stock.entity.Goods;
 import com.github.sa_cchu.stock.entity.Orders;
 import com.github.sa_cchu.stock.entity.Warehouse;
@@ -32,15 +34,17 @@ public class ShopOrderService {
     private final WarehouseService warehouseService;
     private final RelationRepository relationRepository;
     private final OrdersRepository ordersRepository;
+    private final ShopStockRepository shopStockRepository;
 
     public ShopOrderService(WarehouseStockRepository warehouseStockRepository, GoodsService goodsService,
             WarehouseService warehouseService,
-            RelationRepository relationRepository, OrdersRepository ordersRepository) {
+            RelationRepository relationRepository, OrdersRepository ordersRepository, ShopStockRepository shopStockRepository) {
         this.warehouseStockRepository = warehouseStockRepository;
         this.goodsService = goodsService;
         this.warehouseService = warehouseService;
         this.relationRepository = relationRepository;
         this.ordersRepository = ordersRepository;
+        this.shopStockRepository = shopStockRepository;
     }
 
     // 商品ごとの総在庫数DTOを作成
@@ -88,12 +92,13 @@ public class ShopOrderService {
         return form;
     }
 
-    // 発注保存処理
+    // 発注保存、店舗在庫更新処理
     @Transactional
     public void executeOrder(Shop shop, Goods goods, ShopOrderFormDto form) throws Exception {
         // throws Exceptionは独自の例外クラスを作成した方が良いかもしれない
 
         int orderedCount = 0;
+        int totalOrderedQuantity = 0;
 
         for (ShopOrderRowDto row : form.getOrderRows()) {
             if (row.getOrderQuantity() == null || row.getOrderQuantity() <= 0) {
@@ -127,11 +132,19 @@ public class ShopOrderService {
             newOrder.setDeleteFlag(0);
 
             ordersRepository.save(newOrder);
+            
+            totalOrderedQuantity += row.getOrderQuantity();
         }
 
         if (orderedCount == 0) {
             throw new Exception("発注数が1つも入力されていません。");
         }
+
+        // 店舗在庫更新
+        ShopStock shopStock = shopStockRepository.findByShopIdAndGoodsIdAndDeleteFlag(shop, goods, 0);
+        if(shopStock == null) throw new Exception("店舗在庫データが見つかりません。");
+        shopStock.setShopStockQuantity(shopStock.getShopStockQuantity() + totalOrderedQuantity);
+        shopStockRepository.save(shopStock);
     }
 
     // 店舗の発注履歴一覧取得
