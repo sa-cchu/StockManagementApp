@@ -4,6 +4,11 @@
 <div th:fragment="content">
     <h1>発注商品選択</h1>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="mb-3">
         <form th:action="@{/shop-order/goods-list}" method="get" class="d-flex align-items-center">
             <label for="categoryId" class="me-2">カテゴリで絞り込む:</label>
@@ -33,14 +38,12 @@
                 <td th:text="${target.goods.goodsName}"></td>
                 <td th:text="${target.categoryName}"></td>
 
-                <!-- 在庫数によって表示を変える -->
                 <td>
                     <span th:if="${target.totalStockQuantity > 0}"
                         th:text="'在庫あり (' + ${target.totalStockQuantity} + '個)'" class="text-success fw-bold"></span>
                     <span th:if="${target.totalStockQuantity <= 0}" class="text-danger">在庫なし</span>
                 </td>
 
-                <!-- 在庫数によってボタンの有効無効を変える（まだ遷移先がないので # にしています） -->
                 <td>
                     <a th:if="${target.totalStockQuantity > 0}"
                         th:href="@{/shop-order/form(goodsId=${target.goods.goodsId})}"
