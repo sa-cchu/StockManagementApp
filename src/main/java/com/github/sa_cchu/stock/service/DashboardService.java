@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.sa_cchu.stock.dto.GoodsRankingDTO;
 import com.github.sa_cchu.stock.repository.DailyOrderSummaryRepository;
+import com.github.sa_cchu.stock.repository.OrdersRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DashboardService {
 	private final DailyOrderSummaryRepository dailyOrderSummaryRepository;
-
+	private final OrdersRepository ordersRepository;
+	
 	@Scheduled(cron = "0 10 0 * * *")
 	@Transactional(rollbackOn = Exception.class)
 	public void aggregDailyOrders() {
@@ -31,6 +33,11 @@ public class DashboardService {
 
 		try {
 			log.info("{}の集計バッチを開始します。", yesterday);
+			long count = ordersRepository.countByOrderDateBetween(start, end);
+	        if (count == 0) {
+	            log.info("{} は注文データがないため、集計をスキップします。", yesterday);
+	            return;
+	        }
 			dailyOrderSummaryRepository.deleteByCountDate(yesterday);
 			dailyOrderSummaryRepository.insertDailySummary(start, end);
 
@@ -63,25 +70,25 @@ public class DashboardService {
 		)).collect(Collectors.toList());
 	}
 
-	
-	
-	
-	
-	//test
+	// test
 	@Transactional // 削除と挿入をセットで行うため
 	public void refreshDailySummary() {
-		// 1. 集計対象の日付（昨日）を決定
 		LocalDate yesterday = LocalDate.now().minusDays(1);
-
-		// 2. 二重登録防止のため、一旦昨日のデータを消す
-		dailyOrderSummaryRepository.deleteByCountDate(yesterday);
-
-		// 3. 昨日の注文データを集計してインサート
-		// LocalDateTimeの00:00:00〜23:59:59の範囲を指定
 		LocalDateTime start = yesterday.atStartOfDay();
 		LocalDateTime end = yesterday.plusDays(1).atStartOfDay();
 
+		long count = ordersRepository.countByOrderDateBetween(start, end);
+	    System.out.println(yesterday + " の注文件数: " + count + "件");
+
+	    if (count == 0) {
+	        System.out.println("集計対象がないため、処理をスキップします。");
+	        return;
+	    }
+	    System.out.println("集計処理開始");
+		dailyOrderSummaryRepository.deleteByCountDate(yesterday);
 		dailyOrderSummaryRepository.insertDailySummary(start, end);
+		
+		System.out.println("集計処理終了");
 	}
 
 }

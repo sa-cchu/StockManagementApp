@@ -75,11 +75,14 @@ public class HomeController {
 	@GetMapping("/test-run")
 	@ResponseBody // 画面遷移せず、文字列だけ返す設定
 	public String testRun() {
+		System.out.print("バッチテスト開始");
 	    try {
 	        // バッチ処理（集計ロジック）を強制的に呼び出す
 	        dashboardService.refreshDailySummary();
+	        System.out.print("バッチテスト完了");
 	        return "集計バッチを手動実行しました。DBの daily_order_summary を確認してください。";
 	    } catch (Exception e) {
+	    		e.printStackTrace();
 	        return "エラーが発生しました: " + e.getMessage();
 	    }
 	}

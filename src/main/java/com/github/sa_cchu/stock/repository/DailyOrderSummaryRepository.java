@@ -21,6 +21,7 @@ public interface DailyOrderSummaryRepository extends JpaRepository<DailyOrderSum
 	@Modifying
 	@Transactional
 	@Query(value = """
+			
 			INSERT INTO daily_order_summary (count_date, shop_id, goods_id, goods_amount)
 			SELECT CAST(order_date AS DATE), shop_id, goods_id, SUM(order_amount)
 			FROM orders
