@@ -2,6 +2,7 @@ package com.github.sa_cchu.stock.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,11 +24,14 @@ public interface WarehouseStockRepository extends JpaRepository<WarehouseStock, 
 
 	// 直で@QueryにSQLを書いてもいいかもしれない。
 	// ひとまず全て取得して、ServiceでDTOに変換してます。
+	@EntityGraph(attributePaths = {"goodsId", "warehouseId", "goodsId.category"})
 	List<WarehouseStock> findByWarehouseIdAndDeleteFlag(Warehouse warehouse, Integer deleteFlag);
 
+	@EntityGraph(attributePaths = {"goodsId", "warehouseId"})
 	WarehouseStock findByWarehouseIdAndGoodsIdAndDeleteFlag(Warehouse warehouse, Goods goods, Integer deleteFlag);
 
 	// カテゴリー別取得
+	@EntityGraph(attributePaths = {"goodsId", "warehouseId", "goodsId.category"})
 	List<WarehouseStock> findByWarehouseIdAndGoodsIdCategoryAndDeleteFlag(Warehouse warehouse, Category category,
 			Integer deleteFlag);
 
@@ -43,4 +47,16 @@ public interface WarehouseStockRepository extends JpaRepository<WarehouseStock, 
 			"AND ws.goodsId = :goods " +
 			"AND ws.deleteFlag = 0")
 	Integer getTotalStockByLinkedWarehouses(@Param("shop") Shop shop, @Param("goods") Goods goods);
+
+	/**
+	 * 指定した店舗(Shop)に連携(Relation)している全倉庫の在庫合計を、商品(Goods)ごとに一括取得する
+	 */
+	@Query("SELECT ws.goodsId.goodsId, SUM(ws.warehouseStockQuantity) " +
+			"FROM WarehouseStock ws " +
+			"JOIN Relation r ON ws.warehouseId = r.warehouse " +
+			"WHERE r.shop = :shop " +
+			"AND r.deleteFlag = 0 " +
+			"AND ws.deleteFlag = 0 " +
+			"GROUP BY ws.goodsId.goodsId")
+	List<Object[]> getTotalStockMapByLinkedWarehouses(@Param("shop") Shop shop);
 }

@@ -2,6 +2,7 @@ package com.github.sa_cchu.stock.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,9 +22,12 @@ public interface ShopStockRepository extends JpaRepository<ShopStock, Integer> {
     @Query("UPDATE ShopStock s SET s.deleteFlag = 1 WHERE s.goodsId.goodsId = :goodsId")
     void bulkDeleteByGoodsId(@Param("goodsId") Integer goodsId);
     
+	@EntityGraph(attributePaths = {"goodsId", "shopId", "goodsId.category"})
 	List<ShopStock> findByShopIdAndDeleteFlag(Shop shop, Integer deleteFlag);
 
+	@EntityGraph(attributePaths = {"goodsId", "shopId", "goodsId.category"})
 	List<ShopStock> findByShopIdAndGoodsIdCategoryAndDeleteFlag(Shop shop, Category category, Integer deleteFlag);
 
-    ShopStock findByShopIdAndGoodsIdAndDeleteFlag(Shop shop, Goods goods, Integer deleteFlag);
+	@EntityGraph(attributePaths = {"goodsId", "shopId"})
+	ShopStock findByShopIdAndGoodsIdAndDeleteFlag(Shop shop, Goods goods, Integer deleteFlag);
 }

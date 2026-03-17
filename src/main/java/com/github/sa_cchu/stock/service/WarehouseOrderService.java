@@ -21,12 +21,19 @@ public class WarehouseOrderService {
         this.ordersRepository = ordersRepository;
     }
 
-    // 受注一覧取得
-    public List<OrderHistoryDto> getOrderHistoryList(Warehouse warehouse, String status) {
+    // 受注一覧取得（ステータス＋期間絞り込み対応）
+    public List<OrderHistoryDto> getOrderHistoryList(Warehouse warehouse, String status, LocalDateTime startDate, LocalDateTime endDate) {
         List<Orders> ordersList;
 
-        if (status != null && !status.isEmpty()) {
+        boolean hasStatus = status != null && !status.isEmpty();
+        boolean hasDateRange = startDate != null && endDate != null;
+
+        if (hasStatus && hasDateRange) {
+            ordersList = ordersRepository.findByWarehouseAndOrderStatusAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(warehouse, status, startDate, endDate, 0);
+        } else if (hasStatus) {
             ordersList = ordersRepository.findByWarehouseAndOrderStatusAndDeleteFlagOrderByOrderDateDesc(warehouse, status, 0);
+        } else if (hasDateRange) {
+            ordersList = ordersRepository.findByWarehouseAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(warehouse, startDate, endDate, 0);
         } else {
             ordersList = ordersRepository.findByWarehouseAndDeleteFlagOrderByOrderDateDesc(warehouse, 0);
         }
