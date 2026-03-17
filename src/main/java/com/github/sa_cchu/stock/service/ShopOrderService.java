@@ -147,9 +147,16 @@ public class ShopOrderService {
         shopStockRepository.save(shopStock);
     }
 
-    // 店舗の発注履歴一覧取得
-    public List<OrderHistoryDto> getOrderHistoryList(Shop shop) {
-        List<Orders> ordersList = ordersRepository.findByShopAndDeleteFlagOrderByOrderDateDesc(shop, 0);
+    // 店舗の発注履歴一覧取得（ステータス絞り込みあり/なし）
+    public List<OrderHistoryDto> getOrderHistoryList(Shop shop, String status) {
+        List<Orders> ordersList;
+
+        if (status != null && !status.isEmpty()) {
+            ordersList = ordersRepository.findByShopAndOrderStatusAndDeleteFlagOrderByOrderDateDesc(shop, status, 0);
+        } else {
+            ordersList = ordersRepository.findByShopAndDeleteFlagOrderByOrderDateDesc(shop, 0);
+        }
+
         return ordersList.stream().map(order -> {
             OrderHistoryDto dto = new OrderHistoryDto();
             dto.setOrderId(order.getOrderId());

@@ -93,11 +93,17 @@ public class ShopOrderController {
     }
 
     @GetMapping("/shop-order/history")
-    public String showOrderHistory(@AuthenticationPrincipal User user, Model model){
+    public String showOrderHistory(
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "status", required = false) String status,
+            Model model) {
+
         Shop shop = user.getShop();
         if (shop == null) return "redirect:/error";
-        List<OrderHistoryDto> orderHistoryList = shopOrderService.getOrderHistoryList(shop);
+
+        List<OrderHistoryDto> orderHistoryList = shopOrderService.getOrderHistoryList(shop, status);
         model.addAttribute("orderHistoryList", orderHistoryList);
+        model.addAttribute("selectedStatus", status);
         return "order-history";
     }
 }
