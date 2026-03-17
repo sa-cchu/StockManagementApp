@@ -61,7 +61,7 @@ public class InquiryController {
 		model.addAttribute("isAdmin", isAdmin(user));	
 		// Enumに記載しているステータス情報を選択肢として画面に渡す。
 		model.addAttribute("statusList", StatusEnum.values());
-		// statusId → Enum に型に変換する。（すべてを選択している場合はnullで使用）
+		// statusId → Enum に変換する。（すべてを選択している場合はnullで使用）
 	    StatusEnum statusEnum = null;
 	    if (status != null) {
 	        statusEnum = StatusEnum.fromId(status);
@@ -107,7 +107,6 @@ public class InquiryController {
 	public String sendInquiry(@Validated @ModelAttribute InquiryForm inquiryForm,
 			BindingResult result, @AuthenticationPrincipal User user,
 			RedirectAttributes redirectAttributes, Model model) {
-
 		// 管理者宛てに送信する場合、Formクラスにバリデーションを実装すると
 		// 不要なバリデーションが機能してしまうため、連携先選択のバリデーションをcontrollerで行う。
 		if (!ADMIN_ID.equals(inquiryForm.getAuthorityId()) && inquiryForm.getTargetId() == null) {
@@ -138,11 +137,50 @@ public class InquiryController {
 		return "redirect:/inquiry/create";
 	}
 
-	// TODO あとで実装予定
-	//	@GetMapping("/detail")
-	//	public String viewInquiryCreate(@Validated @ModelAttribute InquiryForm inquiryForm) {
-	//		return "/inquiry/create";
-	//	}
+    /**
+     * お問い合わせIDをもとにお問い合わせ詳細を表示する
+     * @param inquiryForm
+     * @param id
+     * @param model
+     * @return idに紐づいたお問い合わせ詳細画面
+     */
+	@GetMapping("/detail")
+	public String viewInquiryCreate(@RequestParam("id") Integer id, Model model){
+		// Enumに記載しているステータス情報を選択肢として画面に渡す。
+		model.addAttribute("statusList", StatusEnum.values());
+		InquiryListDto inquiry = inquiryService.getInquiryById(id);
+	    model.addAttribute("inquiry", inquiry);
+		// 詳細情報を取得してを表示する。
+		return "/inquiry/detail";
+	}
+	/**
+	 * お問い合わせ詳細画面で行われたステータス変更を更新する。
+	 * @param id
+	 * @param status
+	 * @return 更新完了メッセージと詳細画面
+	 */
+	@PostMapping("/updateStatus")
+	public String updateStatus(@RequestParam Integer id, @RequestParam Integer status,
+			RedirectAttributes redirectAttributes){
+		try {
+			// statusId → Enum に変換する。（すべてを選択している場合はnullで使用）
+		    StatusEnum statusEnum = null;
+		    if (status != null) {
+		        statusEnum = StatusEnum.fromId(status);
+		    }
+		    // 問い合わせIDに紐づくお問い合わせのステータスを更新する。
+		    inquiryService.updateStatus(id, statusEnum);
+		    // 更新が成功した場合、メッセージを追加し画面で表示する。
+		    redirectAttributes.addFlashAttribute("successMessage", "ステータスを更新しました");
+		} catch (Exception e) {
+			// 空データだった場合やデータ取得に失敗した場合、メッセージを追加し画面で表示する。
+	        redirectAttributes.addFlashAttribute("errorMessage", "ステータスの更新に失敗しました");
+	        // ログ出力する。
+	        e.printStackTrace();
+		}
+	    // 更新完了メッセージを出力して再度詳細画面を表示する。
+	    return "redirect:/inquiry/detail?id=" + id;
+	}
 
 	/**
 	 * ログインユーザーが管理者かどうか判定するメソッド

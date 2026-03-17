@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout">
+
+<div th:fragment="content">
+	<!-- 中身 -->
+	<h1 class="mb-3">お問い合わせ詳細</h1>
+	
+	<!-- ボタン -->
+	<div class="mt-4 mb-4">
+		<a th:href="@{/inquiry/list}" class="btn btn-secondary">お問い合わせ一覧に戻る</a>
+	</div>
+	<!-- お問い合わせIDから取得した詳細情報 -->
+	<div class="card shadow-sm">
+		<div class="card-body">
+			<!-- 更新成功メッセージを表示 -->
+			<div th:if="${successMessage}" class="successMessage alert alert-success">
+			    <span th:text="${successMessage}"></span>
+			</div>
+			<!-- 更新失敗メッセージを表示 -->
+			<div th:if="${errorMessage}" class="alert alert-danger">
+			    <span th:text="${errorMessage}"></span>
+			</div>
+			<form th:action="@{/inquiry/updateStatus}" method="post">
+				<!-- お問い合わせID情報（非表示） -->
+				<input type="hidden" name="id" th:value="${inquiry.inquiryId}">
+				<!-- ステータス -->
+				<div class="border rounded p-3 mb-4 bg-light">
+				    <h5 class="fw-bold mb-3">ステータス変更</h5>
+
+				    <!-- 現在のステータス -->
+				    <div class="mb-2">
+				        <span class="fw-bold">現在：</span>
+				        <span class="badge bg-secondary"
+				              th:text="${inquiry.inquiryStatus}"></span>
+				    </div>
+
+				    <!-- ステータス変更 -->
+				    <div class="d-flex align-items-center gap-4">
+				        <select name="status" class="form-select w-auto">
+				            <option th:each="st : ${statusList}" 
+				                    th:value="${st.statusId}" 
+				                    th:text="${st.displayStatusName}"
+				                    th:selected="${st.displayStatusName == inquiry.inquiryStatus}">
+				            </option>
+				        </select>
+				        <button class="btn btn-primary">ステータスを更新</button>
+				    </div>
+				</div>
+				<!-- 問い合わせ内容 -->
+				<div class="row mb-3">
+					<label class="col-sm-3 col-form-label fw-bold">問い合わせ内容</label>
+					<div class="col-sm-9">
+						<p class="form-control-plaintext" style="white-space: pre-wrap;"
+							th:text="${inquiry.inquiryDetail}">
+						</p>
+					</div>
+				</div>
+				<!-- 送信日時 -->
+				<div class="row mb-3">
+					<label class="col-sm-3 col-form-label fw-bold">送信日時</label>
+					<div class="col-sm-9">
+						<p class="form-control-plaintext"
+							th:text="${#temporals.format(inquiry.inquiryDate,'yyyy/MM/dd HH:mm')}">
+						</p>
+					</div>
+				</div>
+				
+				<!-- 権限 -->
+				<div class="row mb-3">
+					<label class="col-sm-3 col-form-label fw-bold">権限</label>
+					<div class="col-sm-9">
+						<p class="form-control-plaintext" th:text="${inquiry.displayAuthorityName}">
+						</p>
+					</div>
+				</div>
+				<!-- 所属 -->
+				<div class="row mb-3">
+					<label class="col-sm-3 col-form-label fw-bold">所属</label>
+					<div class="col-sm-9">
+						<p class="form-control-plaintext" th:text="${inquiry.locationName}">
+						</p>
+					</div>
+				</div>
+				<!-- 名前 -->
+				<div class="row mb-3">
+					<label class="col-sm-3 col-form-label fw-bold">名前</label>
+					<div class="col-sm-9">
+						<p class="form-control-plaintext" th:text="${inquiry.userName}">
+						</p>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</html>

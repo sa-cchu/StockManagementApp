@@ -124,4 +124,42 @@ public class InquiryService {
 		// お問い合わせ情報をDBに登録する。
 		inquiryRepository.save(inquiry);
 	}
+	
+	/**
+	 * お問い合わせ詳細を取得する。
+	 * @param id お問い合わせID
+	 * @return
+	 */
+	public InquiryListDto getInquiryById(Integer id){
+		// 指定されたIDのお問い合わせ情報を取得する
+		InquiryListDto dto = inquiryRepository.findInquiryById(id);
+		// DTOに含まれる authorityId（数値）から、Enumを使用して画面表示用の権限名へ変換する 
+		String authorityName = AuthorityTypeEnum 
+			// 権限IDからEnumを取得する
+			.fetchAuthorityType(dto.getAuthorityId()) 
+			// 権限IDからEnumを取得する。 
+			.getDisplayName(); 
+			// 画面表示用の名称を取得し、 DTOに表示用の権限名をセットする。 
+			dto.setDisplayAuthorityName(authorityName); 
+		// 変換済みのDTOを返却する。 
+		return dto;
+    }
+	/**
+	 * お問い合わせ詳細画面で変更されたステータスを更新する。
+	 *  <p>画面から送信されたステータスは {@link StatusEnum} で受け取り、
+	 * DBで管理している文字列形式（未対応 / 対応中 / 対応済）へ変換して対象のお問い合わせレコードを更新する。</p>
+	 * @param id 更新対象のお問い合わせID
+	 * @param statusEnum 更新するステータス（Enum）
+	 */
+	@Transactional
+	public void updateStatus(Integer id, StatusEnum statusEnum) {
+		// ステータス情報をEnum → DB用文字列に変換する（未対応/対応中/対応済）
+	    String status = statusEnum != null
+	            ? statusEnum.getDisplayStatusName()
+	            : null;
+	    // 指定されたIDのお問い合わせ情報を取得する
+	    Inquery inquiry = inquiryRepository.findById(id).orElseThrow();
+	    // ステータスを更新する
+	    inquiry.setInqueryStatus(status);
+	}
 }
