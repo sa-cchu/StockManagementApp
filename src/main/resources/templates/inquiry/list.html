@@ -15,18 +15,18 @@
 			<strong class="me-2">フィルター</strong>
 			
 			<!-- ステータスフィルター -->
-			<label>ステータス：</label>
-			<select name="status" class="form-select w-auto">
+			<label for="statusFilter">ステータス：</label>
+			<select id="statusFilter"
+			        name="status"
+			        class="form-select w-auto"
+			        onchange="this.form.submit()">
 				<option value="">すべて</option>
-				<option th:each="st : ${statusList}" th:value="${st.displayStatusName}"
-					th:text="${st.displayStatusName}" th:selected="${status == st.displayStatusName}">
+				<option th:each="st : ${statusList}" 
+						th:value="${st.statusId}"
+						th:text="${st.displayStatusName}" 
+						th:selected="${status == st.statusId}">
 				</option>
 			</select>
-
-			<!-- 検索ボタン -->
-			<button type="submit" class="btn btn-secondary">
-				検索
-			</button>
 		</form>
 	</div>
 

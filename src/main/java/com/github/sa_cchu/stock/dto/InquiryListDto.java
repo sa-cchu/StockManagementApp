@@ -37,7 +37,7 @@ public class InquiryListDto {
 	private String displayAuthorityName;
 
 	/**
-	 * JPQL（お問い合わせ一覧取得時のメソッド：findInquiryListByRole）の
+	 * JPQL（お問い合わせ一覧取得時のメソッド：findInquiryListByRoleAndOptionalStatusAndLocation）の
 	 * DTOコンストラクタ式で使用するコンストラクタ。
 	 * <p>
 	 * Repositoryの以下のクエリで使用される。
