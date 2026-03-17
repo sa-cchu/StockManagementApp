@@ -1,5 +1,6 @@
 package com.github.sa_cchu.stock.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,10 @@ import com.github.sa_cchu.stock.dto.OrderHistoryDto;
 import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.service.WarehouseOrderService;
+import com.github.sa_cchu.stock.util.CsvExportUtil;
+import com.github.sa_cchu.stock.util.DateTimeUtil;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class WarehouseOrderController {
@@ -29,14 +34,21 @@ public class WarehouseOrderController {
     public String showOrderList(
             @AuthenticationPrincipal User user,
             @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "startDate", required = false) String startDateStr,
+            @RequestParam(name = "endDate", required = false) String endDateStr,
             Model model) {
 
         Warehouse warehouse = user.getWarehouse();
         if (warehouse == null) return "redirect:/error";
 
-        List<OrderHistoryDto> orderHistoryList = warehouseOrderService.getOrderHistoryList(warehouse, status);
+        LocalDateTime startDate = com.github.sa_cchu.stock.util.DateTimeUtil.parseStartDate(startDateStr);
+        LocalDateTime endDate = com.github.sa_cchu.stock.util.DateTimeUtil.parseEndDate(endDateStr);
+
+        List<OrderHistoryDto> orderHistoryList = warehouseOrderService.getOrderHistoryList(warehouse, status, startDate, endDate);
         model.addAttribute("orderHistoryList", orderHistoryList);
         model.addAttribute("selectedStatus", status);
+        model.addAttribute("startDate", startDateStr);
+        model.addAttribute("endDate", endDateStr);
         return "warehouse-order-list";
     }
 
@@ -57,5 +69,24 @@ public class WarehouseOrderController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/warehouse-order/list";
+    }
+
+    // CSV エクスポート
+    @GetMapping("/warehouse-order/list/csv")
+    public void exportCsv(
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "startDate", required = false) String startDateStr,
+            @RequestParam(name = "endDate", required = false) String endDateStr,
+            HttpServletResponse response) throws Exception {
+
+        Warehouse warehouse = user.getWarehouse();
+
+        LocalDateTime startDate = DateTimeUtil.parseStartDate(startDateStr);
+        LocalDateTime endDate = DateTimeUtil.parseEndDate(endDateStr);
+
+        List<OrderHistoryDto> list = warehouseOrderService.getOrderHistoryList(warehouse, status, startDate, endDate);
+
+        CsvExportUtil.exportOrderHistoryCsv(response, "received_order_list.csv", list, false);
     }
 }

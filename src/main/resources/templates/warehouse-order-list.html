@@ -21,17 +21,30 @@
         </div>
 
         <div class="mb-3">
-            <form th:action="@{/warehouse-order/list}" method="get" class="d-flex align-items-center">
-                <label for="status" class="me-2">ステータスで絞り込む:</label>
-                <select name="status" id="status" class="form-select w-auto me-2" onchange="this.form.submit()">
+            <form id="filterForm" th:action="@{/warehouse-order/list}" method="get" class="d-flex align-items-center flex-wrap gap-2">
+                <label for="startDate" class="me-1">期間:</label>
+                <input type="date" name="startDate" id="startDate" class="form-control w-auto"
+                       th:value="${startDate}">
+                <span>〜</span>
+                <input type="date" name="endDate" id="endDate" class="form-control w-auto"
+                       th:value="${endDate}">
+
+                <label for="status" class="ms-2 me-1">ステータス:</label>
+                <select name="status" id="status" class="form-select w-auto">
                     <option value="">すべて</option>
                     <option value="準備中" th:selected="${selectedStatus == '準備中'}">準備中</option>
                     <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
                 </select>
-                <noscript>
-                    <button type="submit" class="btn btn-secondary btn-sm">絞り込み</button>
-                </noscript>
+
+                <button type="submit" class="btn btn-primary btn-sm">絞り込み</button>
             </form>
+        </div>
+
+        <div class="mb-3">
+            <a class="btn btn-outline-success btn-sm"
+               th:href="@{/warehouse-order/list/csv(status=${selectedStatus}, startDate=${startDate}, endDate=${endDate})}">
+                <i class="fas fa-file-csv me-1"></i>CSV出力
+            </a>
         </div>
 
         <table class="table table-striped align-middle" th:if="${!orderHistoryList.isEmpty()}">
@@ -68,7 +81,6 @@
                         <button th:if="${order.orderStatus == '発送済み'}" class="btn btn-secondary btn-sm"
                             disabled>変更済み</button>
                     </td>
-
                 </tr>
             </tbody>
         </table>

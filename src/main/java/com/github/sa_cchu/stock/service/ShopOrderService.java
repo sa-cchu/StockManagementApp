@@ -3,6 +3,7 @@ package com.github.sa_cchu.stock.service;
 import java.util.stream.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -51,13 +52,21 @@ public class ShopOrderService {
     public List<ShopOrderTargetDto> getShopOrderTargetDtoList(Shop shop, Integer categoryId) {
         List<Goods> goodsList = goodsService.getGoodsList(categoryId);
 
+        // 連携倉庫の在庫合計を一括取得してマップ化 (goodsId -> totalQuantity)
+        List<Object[]> stockSummaryList = warehouseStockRepository.getTotalStockMapByLinkedWarehouses(shop);
+        Map<Integer, Integer> stockMap = stockSummaryList.stream()
+            .collect(Collectors.toMap(
+                row -> (Integer) row[0],
+                row -> ((Number) row[1]).intValue()
+            ));
+
         return goodsList.stream()
                 .map(goods -> {
                     ShopOrderTargetDto dto = new ShopOrderTargetDto();
                     dto.setGoods(goods);
                     dto.setCategoryName(goods.getCategory().getCategoryName());
 
-                    Integer totalQuantity = warehouseStockRepository.getTotalStockByLinkedWarehouses(shop, goods);
+                    Integer totalQuantity = stockMap.get(goods.getGoodsId());
                     dto.setTotalStockQuantity(totalQuantity != null ? totalQuantity : 0);
 
                     return dto;
@@ -95,7 +104,6 @@ public class ShopOrderService {
     // 発注保存、店舗在庫更新処理
     @Transactional
     public void executeOrder(Shop shop, Goods goods, ShopOrderFormDto form) throws Exception {
-        // throws Exceptionは独自の例外クラスを作成した方が良いかもしれない
 
         int orderedCount = 0;
         int totalOrderedQuantity = 0;
@@ -147,12 +155,19 @@ public class ShopOrderService {
         shopStockRepository.save(shopStock);
     }
 
-    // 店舗の発注履歴一覧取得（ステータス絞り込みあり/なし）
-    public List<OrderHistoryDto> getOrderHistoryList(Shop shop, String status) {
+    // 店舗の発注履歴一覧取得（ステータス＋期間絞り込み対応）
+    public List<OrderHistoryDto> getOrderHistoryList(Shop shop, String status, LocalDateTime startDate, LocalDateTime endDate) {
         List<Orders> ordersList;
 
-        if (status != null && !status.isEmpty()) {
+        boolean hasStatus = status != null && !status.isEmpty();
+        boolean hasDateRange = startDate != null && endDate != null;
+
+        if (hasStatus && hasDateRange) {
+            ordersList = ordersRepository.findByShopAndOrderStatusAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(shop, status, startDate, endDate, 0);
+        } else if (hasStatus) {
             ordersList = ordersRepository.findByShopAndOrderStatusAndDeleteFlagOrderByOrderDateDesc(shop, status, 0);
+        } else if (hasDateRange) {
+            ordersList = ordersRepository.findByShopAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(shop, startDate, endDate, 0);
         } else {
             ordersList = ordersRepository.findByShopAndDeleteFlagOrderByOrderDateDesc(shop, 0);
         }
