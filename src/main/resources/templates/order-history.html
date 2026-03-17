@@ -21,30 +21,39 @@
         </div>
 
         <div class="mb-3">
-            <form id="filterForm" th:action="@{/shop-order/history}" method="get" class="d-flex align-items-center flex-wrap gap-2">
-                <label for="startDate" class="me-1">期間:</label>
-                <input type="date" name="startDate" id="startDate" class="form-control w-auto"
-                       th:value="${startDate}">
-                <span>〜</span>
-                <input type="date" name="endDate" id="endDate" class="form-control w-auto"
-                       th:value="${endDate}">
+            <form id="filterForm" th:action="@{/shop-order/history}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-auto">
+                    <label class="form-label">期間:</label>
+                    <div class="input-group">
+                        <input type="date" name="startDate" id="startDate" class="form-control" th:value="${startDate}">
+                        <span class="input-group-text">〜</span>
+                        <input type="date" name="endDate" id="endDate" class="form-control" th:value="${endDate}">
+                    </div>
+                </div>
+                <div class="col-md-auto">
+                    <label class="form-label">ステータス:</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">すべて</option>
+                        <option value="準備中" th:selected="${selectedStatus == '準備中'}">準備中</option>
+                        <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
+                    </select>
+                </div>
 
-                <label for="status" class="ms-2 me-1">ステータス:</label>
-                <select name="status" id="status" class="form-select w-auto">
-                    <option value="">すべて</option>
-                    <option value="準備中" th:selected="${selectedStatus == '準備中'}">準備中</option>
-                    <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
-                </select>
+                <!-- アクションボタン（左寄せ: 絞り込み・クリア） -->
+                <div class="col-md-auto d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">絞り込み</button>
+                    <!-- クリアボタン -->
+                    <a th:href="@{/shop-order/history}" class="btn btn-secondary">クリア</a>
+                </div>
 
-                <button type="submit" class="btn btn-primary btn-sm">絞り込み</button>
+                <!-- エクスポートボタン（右寄せ: CSV・PDF） -->
+                <div class="col-md-auto ms-auto d-flex align-items-end gap-2">
+                    <!-- formactionで送信先を上書きしてCSV出力 -->
+                    <button type="submit" class="btn btn-success" th:formaction="@{/shop-order/history/csv}">CSV出力</button>
+                    <!-- formactionで送信先を上書きしてPDF出力 -->
+                    <button type="submit" class="btn btn-danger" th:formaction="@{/shop-order/history/pdf}">PDF出力</button>
+                </div>
             </form>
-        </div>
-
-        <div class="mb-3">
-            <a class="btn btn-outline-success btn-sm"
-               th:href="@{/shop-order/history/csv(status=${selectedStatus}, startDate=${startDate}, endDate=${endDate})}">
-                <i class="fas fa-file-csv me-1"></i>CSV出力
-            </a>
         </div>
 
         <table class="table table-striped align-middle" th:if="${!orderHistoryList.isEmpty()}">

@@ -17,6 +17,7 @@ import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.service.WarehouseOrderService;
 import com.github.sa_cchu.stock.util.CsvExportUtil;
 import com.github.sa_cchu.stock.util.DateTimeUtil;
+import com.github.sa_cchu.stock.util.PdfExportUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -88,5 +89,24 @@ public class WarehouseOrderController {
         List<OrderHistoryDto> list = warehouseOrderService.getOrderHistoryList(warehouse, status, startDate, endDate);
 
         CsvExportUtil.exportOrderHistoryCsv(response, "received_order_list.csv", list, false);
+    }
+
+    // PDFエクスポート
+    @GetMapping("/warehouse-order/list/pdf")
+    public void exportPdf(
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "startDate", required = false) String startDateStr,
+            @RequestParam(name = "endDate", required = false) String endDateStr,
+            HttpServletResponse response) throws Exception {
+
+        Warehouse warehouse = user.getWarehouse();
+
+        LocalDateTime startDate = DateTimeUtil.parseStartDate(startDateStr);
+        LocalDateTime endDate = DateTimeUtil.parseEndDate(endDateStr);
+
+        List<OrderHistoryDto> list = warehouseOrderService.getOrderHistoryList(warehouse, status, startDate, endDate);
+
+        PdfExportUtil.exportOrderHistoryPdf(response, "received_order_list.pdf", list, false);
     }
 }
