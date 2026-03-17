@@ -4,19 +4,40 @@
 <div th:fragment="content">
 	<!-- 中身 -->
 	<h1 class="mb-3">お問い合わせ一覧</h1>
-	
-	<!-- 管理者権限以外のユーザーでログインしているときだけ表示する -->
-	<a th:if="${!isAdmin}" th:href="@{/inquiry/create}" class="btn btn-primary mb-4">
-	    問い合わせを送信
-	</a>
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<!-- 管理者権限以外のユーザーでログインしているときだけ表示する -->
+		<a th:if="${!isAdmin}" th:href="@{/inquiry/create}" class="btn btn-primary">
+			問い合わせを送信
+		</a>
 
+		<!-- フィルターエリア：ステータスで並び替えを行う -->
+		<form th:action="@{/inquiry/list}" method="get" class="d-flex align-items-center gap-2 ms-auto">
+			<strong class="me-2">フィルター</strong>
+			
+			<!-- ステータスフィルター -->
+			<label>ステータス：</label>
+			<select name="status" class="form-select w-auto">
+				<option value="">すべて</option>
+				<option th:each="st : ${statusList}" th:value="${st.displayStatusName}"
+					th:text="${st.displayStatusName}" th:selected="${status == st.displayStatusName}">
+				</option>
+			</select>
+
+			<!-- 検索ボタン -->
+			<button type="submit" class="btn btn-secondary">
+				検索
+			</button>
+		</form>
+	</div>
+
+	<!-- お問い合わせ一覧テーブルエリア -->
 	<table class="table">
 		<thead class="table-success">
 			<tr>
 				<th>問い合わせ内容</th>
-				<th>送信元</th>
+				<th>権限</th>
 				<th>所属</th>
-				<th>送信者</th>
+				<th>名前</th>
 				<th>送信日時</th>
 				<th>ステータス</th>
 				<th>詳細</th>
@@ -24,42 +45,44 @@
 		</thead>
 
 		<tbody>
-			<tr>
-				<td>いつもありがとう</td>
-				<td>店舗</td>
-				<td>御徒町</td>
-				<td>店長</td>
-				<td>送信日時</td>
-				<td>未対応</td>
-				<td>詳細</td>
-			</tr>	
-			<tr>
-				<td>いつもありがとう</td>
-				<td>店舗</td>
-				<td>御徒町</td>
-				<td>店長</td>
-				<td>送信日時</td>
-				<td>未対応</td>
-				<td>詳細</td>
+			<tr th:if="${inquiryList == null or #lists.isEmpty(inquiryList)}">
+				<td colspan="7" class="text-center text-muted">
+					条件に一致するお問い合わせはありません。
+				</td>
+			</tr>
+
+			<tr th:each="inquiry : ${inquiryList}">
+
+				<!-- 問い合わせ内容（10文字まで） -->
+				<td th:text="${#strings.length(inquiry.inquiryDetail) > 10 
+					? #strings.substring(inquiry.inquiryDetail,0,10) + '...' 
+					: inquiry.inquiryDetail}">
+				</td>
+
+				<!-- 送信元 -->
+				<td th:text="${inquiry.displayAuthorityName}"></td>
+
+				<!-- 所属 -->
+				<td th:text="${inquiry.locationName}"></td>
+
+				<!-- 送信者 -->
+				<td th:text="${inquiry.userName}"></td>
+
+				<!-- 送信日時 -->
+				<td th:text="${#temporals.format(inquiry.inquiryDate,'yyyy/MM/dd HH:mm')}"></td>
+
+				<!-- ステータス -->
+				<td th:text="${inquiry.inquiryStatus}"></td>
+
+				<!-- 詳細 -->
+				<td>
+					<a th:href="@{/inquiry/detail(id=${inquiry.inquiryId})}" class="btn btn-sm btn-info">
+						詳細
+					</a>
+				</td>
+
 			</tr>
 		</tbody>
-
-		
-		
-		<!-- 
-	    <tr th:each="inquiry : ${inquiries}">
-			// 最初の10文字だけ表示する
-			<td th:text="${#strings.length(inquiry.content) > 10 
-			    ? #strings.substring(inquiry.content,0,10) + '...' 
-			    : inquiry.content}">
-			</td>
-			
-	        <td th:text="${inquiry.}"></td>
-	        <td th:text="${inquiry.}"></td>
-	        <td th:text="${inquiry.fromRole}"></td>
-	        <td th:text="${inquiry.status}"></td>		
-	    </tr> -->
-
 	</table>
 </div>
 
