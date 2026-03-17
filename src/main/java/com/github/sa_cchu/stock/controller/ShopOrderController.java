@@ -25,6 +25,7 @@ import com.github.sa_cchu.stock.service.ShopOrderService;
 import com.github.sa_cchu.stock.service.GoodsService;
 import com.github.sa_cchu.stock.util.CsvExportUtil;
 import com.github.sa_cchu.stock.util.DateTimeUtil;
+import com.github.sa_cchu.stock.util.PdfExportUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -148,5 +149,24 @@ public class ShopOrderController {
         List<OrderHistoryDto> list = shopOrderService.getOrderHistoryList(shop, status, startDate, endDate);
 
         CsvExportUtil.exportOrderHistoryCsv(response, "order_history.csv", list, true);
+    }
+
+    // PDFエクスポート
+    @GetMapping("/shop-order/history/pdf")
+    public void exportPdf(
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "startDate", required = false) String startDateStr,
+            @RequestParam(name = "endDate", required = false) String endDateStr,
+            HttpServletResponse response) throws Exception {
+
+        Shop shop = user.getShop();
+
+        LocalDateTime startDate = DateTimeUtil.parseStartDate(startDateStr);
+        LocalDateTime endDate = DateTimeUtil.parseEndDate(endDateStr);
+
+        List<OrderHistoryDto> list = shopOrderService.getOrderHistoryList(shop, status, startDate, endDate);
+
+        PdfExportUtil.exportOrderHistoryPdf(response, "order_history.pdf", list, true);
     }
 }

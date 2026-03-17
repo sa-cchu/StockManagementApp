@@ -21,31 +21,51 @@
         </div>
 
         <div class="mb-3">
-            <form id="filterForm" th:action="@{/warehouse-order/list}" method="get" class="d-flex align-items-center flex-wrap gap-2">
-                <label for="startDate" class="me-1">期間:</label>
-                <input type="date" name="startDate" id="startDate" class="form-control w-auto"
-                       th:value="${startDate}">
-                <span>〜</span>
-                <input type="date" name="endDate" id="endDate" class="form-control w-auto"
-                       th:value="${endDate}">
+            <form id="filterForm" th:action="@{/warehouse-order/list}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-auto">
+                    <label for="startDate" class="form-label">期間:</label>
+                    <input type="date" name="startDate" id="startDate" class="form-control"
+                           th:value="${startDate}">
+                </div>
+                <div class="col-md-auto">
+                    <label for="endDate" class="form-label visually-hidden">〜</label>
+                    <input type="date" name="endDate" id="endDate" class="form-control"
+                           th:value="${endDate}">
+                </div>
 
-                <label for="status" class="ms-2 me-1">ステータス:</label>
-                <select name="status" id="status" class="form-select w-auto">
-                    <option value="">すべて</option>
-                    <option value="準備中" th:selected="${selectedStatus == '準備中'}">準備中</option>
-                    <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
-                </select>
+                <div class="col-md-auto">
+                    <label for="status" class="form-label">ステータス:</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">すべて</option>
+                        <option value="準備中" th:selected="${selectedStatus == '準備中'}">準備中</option>
+                        <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
+                    </select>
+                </div>
 
-                <button type="submit" class="btn btn-primary btn-sm">絞り込み</button>
+                <!-- アクションボタン -->
+                <div class="col-md-auto d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">絞り込み</button>
+                    <!-- スクリプトでフォームのactionを書き換えてCSV出力 -->
+                    <button type="button" class="btn btn-success" onclick="exportFile('csv')">CSV出力</button>
+                    <!-- スクリプトでフォームのactionを書き換えてPDF出力 -->
+                    <button type="button" class="btn btn-danger" onclick="exportFile('pdf')">PDF出力</button>
+                    <!-- クリアボタン -->
+                    <a th:href="@{/warehouse-order/list}" class="btn btn-secondary">クリア</a>
+                </div>
             </form>
         </div>
 
-        <div class="mb-3">
-            <a class="btn btn-outline-success btn-sm"
-               th:href="@{/warehouse-order/list/csv(status=${selectedStatus}, startDate=${startDate}, endDate=${endDate})}">
-                <i class="fas fa-file-csv me-1"></i>CSV出力
-            </a>
-        </div>
+        <script>
+            function exportFile(type) {
+                const form = document.getElementById('filterForm');
+                const originalAction = form.action;
+                // JSでアクション先を動的に切り替える（/warehouse-order/list/csv または pdf）
+                form.action = '/warehouse-order/list/' + type;
+                form.submit();
+                // すぐに元の状態に戻す（次の操作で困らないように）
+                form.action = originalAction;
+            }
+        </script>
 
         <table class="table table-striped align-middle" th:if="${!orderHistoryList.isEmpty()}">
             <thead>
