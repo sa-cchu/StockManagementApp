@@ -48,25 +48,13 @@
 
                 <!-- エクスポートボタン（右寄せ: CSV・PDF） -->
                 <div class="col-md-auto ms-auto d-flex align-items-end gap-2">
-                    <!-- スクリプトでフォームのactionを書き換えてCSV出力 -->
-                    <button type="button" class="btn btn-success" onclick="exportFile('csv')">CSV出力</button>
-                    <!-- スクリプトでフォームのactionを書き換えてPDF出力 -->
-                    <button type="button" class="btn btn-danger" onclick="exportFile('pdf')">PDF出力</button>
+                    <!-- formactionで送信先を上書きしてCSV出力 -->
+                    <button type="submit" class="btn btn-success" th:formaction="@{/shop-order/history/csv}">CSV出力</button>
+                    <!-- formactionで送信先を上書きしてPDF出力 -->
+                    <button type="submit" class="btn btn-danger" th:formaction="@{/shop-order/history/pdf}">PDF出力</button>
                 </div>
             </form>
         </div>
-
-        <script>
-            function exportFile(type) {
-                const form = document.getElementById('filterForm');
-                const originalAction = form.action;
-                // JSでアクション先を動的に切り替える（/shop-order/history/csv または pdf）
-                form.action = '/shop-order/history/' + type;
-                form.submit();
-                // すぐに元の状態に戻す（次の操作で困らないように）
-                form.action = originalAction;
-            }
-        </script>
 
         <table class="table table-striped align-middle" th:if="${!orderHistoryList.isEmpty()}">
             <thead>
