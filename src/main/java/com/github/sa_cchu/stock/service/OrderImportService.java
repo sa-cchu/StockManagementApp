@@ -46,9 +46,10 @@ public class OrderImportService {
 	 */
 	public List<OrderImportDto> parseExcel(MultipartFile file) throws Exception {
 		List<OrderImportDto> dtoList = new ArrayList<>();
-
+			
+		//送られてきたエクセルファイルを開いて変数に入れる
 		try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
-			// 全シートをループで回す
+			
 			for (int s = 0; s < workbook.getNumberOfSheets(); s++) {
 				Sheet sheet = workbook.getSheetAt(s);
 				System.out.println("シート名: " + sheet.getSheetName() + " を処理中...");
@@ -71,12 +72,7 @@ public class OrderImportService {
 		return dtoList;
 	}
 
-	/**
-	 * 一括インポート実行
-	 * 
-	 * @param sessionShop セッションから取得したログイン店舗
-	 * @throws Exception 1件でもエラーがあれば例外を投げ、全ロールバックする
-	 */
+	
 	@Transactional(rollbackFor = Exception.class)
 	public void executeImport(Shop shop, List<OrderImportDto> dtoList) throws Exception {
 		for (int i = 0; i < dtoList.size(); i++) {
