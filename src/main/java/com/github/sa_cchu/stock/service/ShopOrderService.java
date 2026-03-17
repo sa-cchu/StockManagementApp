@@ -157,20 +157,7 @@ public class ShopOrderService {
 
     // 店舗の発注履歴一覧取得（ステータス＋期間絞り込み対応）
     public List<OrderHistoryDto> getOrderHistoryList(Shop shop, String status, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Orders> ordersList;
-
-        boolean hasStatus = status != null && !status.isEmpty();
-        boolean hasDateRange = startDate != null && endDate != null;
-
-        if (hasStatus && hasDateRange) {
-            ordersList = ordersRepository.findByShopAndOrderStatusAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(shop, status, startDate, endDate, 0);
-        } else if (hasStatus) {
-            ordersList = ordersRepository.findByShopAndOrderStatusAndDeleteFlagOrderByOrderDateDesc(shop, status, 0);
-        } else if (hasDateRange) {
-            ordersList = ordersRepository.findByShopAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(shop, startDate, endDate, 0);
-        } else {
-            ordersList = ordersRepository.findByShopAndDeleteFlagOrderByOrderDateDesc(shop, 0);
-        }
+        List<Orders> ordersList = ordersRepository.findByShopWithFilters(shop, status, startDate, endDate, 0);
 
         return ordersList.stream().map(order -> {
             OrderHistoryDto dto = new OrderHistoryDto();

@@ -23,20 +23,7 @@ public class WarehouseOrderService {
 
     // 受注一覧取得（ステータス＋期間絞り込み対応）
     public List<OrderHistoryDto> getOrderHistoryList(Warehouse warehouse, String status, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Orders> ordersList;
-
-        boolean hasStatus = status != null && !status.isEmpty();
-        boolean hasDateRange = startDate != null && endDate != null;
-
-        if (hasStatus && hasDateRange) {
-            ordersList = ordersRepository.findByWarehouseAndOrderStatusAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(warehouse, status, startDate, endDate, 0);
-        } else if (hasStatus) {
-            ordersList = ordersRepository.findByWarehouseAndOrderStatusAndDeleteFlagOrderByOrderDateDesc(warehouse, status, 0);
-        } else if (hasDateRange) {
-            ordersList = ordersRepository.findByWarehouseAndOrderDateBetweenAndDeleteFlagOrderByOrderDateDesc(warehouse, startDate, endDate, 0);
-        } else {
-            ordersList = ordersRepository.findByWarehouseAndDeleteFlagOrderByOrderDateDesc(warehouse, 0);
-        }
+        List<Orders> ordersList = ordersRepository.findByWarehouseWithFilters(warehouse, status, startDate, endDate, 0);
 
         return ordersList.stream().map(order -> {
             OrderHistoryDto dto = new OrderHistoryDto();
