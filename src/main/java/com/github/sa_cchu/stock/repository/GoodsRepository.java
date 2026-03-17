@@ -14,6 +14,9 @@ public interface GoodsRepository extends JpaRepository<Goods, Integer> {
 	List<Goods> findByDeleteFlag(Integer deleteFlag);
 
 	List<Goods> findByCategoryAndDeleteFlag(Category category, Integer deleteFlag);
+
+	Optional<Goods> findByGoodsNameAndDeleteFlag(String goodsName, int i);
+	
 	
 	
 }
