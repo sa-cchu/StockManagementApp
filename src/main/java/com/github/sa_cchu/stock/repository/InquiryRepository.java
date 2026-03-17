@@ -64,4 +64,28 @@ public interface InquiryRepository extends JpaRepository<Inquery, Integer> {
 	        Integer shopId,
 	        Integer warehouseId
     );
+    
+    /**
+     * お問い合わせ詳細取得用
+     * 
+     * @param id
+     * @return
+     */
+    @Query("""
+    	    SELECT new com.github.sa_cchu.stock.dto.InquiryListDto(
+    	        i.inqueryId,
+    	        i.inqueryDetail,
+    	        i.inqueryDate,
+    	        u.authority.authorityId,
+    	        COALESCE(s.shopName, w.warehouseName),
+    	        u.userName,
+    	        i.inqueryStatus
+    	    )
+    	    FROM Inquery i
+    	        JOIN i.user u
+    	        LEFT JOIN u.shop s
+    	        LEFT JOIN u.warehouse w
+    	    WHERE i.inqueryId = :id
+    	""")
+    	InquiryListDto findInquiryById(Integer id);
 }
