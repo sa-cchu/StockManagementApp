@@ -35,15 +35,19 @@
                     <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
                 </select>
 
-                <!-- アクションボタン -->
-                <div class="col-md-5 d-flex align-items-end mb-3 gap-2">
-                    <button type="submit" class="btn btn-primary w-100">絞り込み</button>
-                    <!-- スクリプトでフォームのactionを書き換えてCSV出力 -->
-                    <button type="button" class="btn btn-success w-100" onclick="exportFile('csv')">CSV出力</button>
-                    <!-- スクリプトでフォームのactionを書き換えてPDF出力 -->
-                    <button type="button" class="btn btn-danger w-100" onclick="exportFile('pdf')">PDF出力</button>
+                <!-- アクションボタン（左寄せ: 絞り込み・クリア） -->
+                <div class="col-md-auto d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">絞り込み</button>
                     <!-- クリアボタン -->
-                    <a th:href="@{/shop-order/history}" class="btn btn-secondary w-100">クリア</a>
+                    <a th:href="@{/shop-order/history}" class="btn btn-secondary">クリア</a>
+                </div>
+
+                <!-- エクスポートボタン（右寄せ: CSV・PDF） -->
+                <div class="col-md-auto ms-auto d-flex align-items-end gap-2">
+                    <!-- スクリプトでフォームのactionを書き換えてCSV出力 -->
+                    <button type="button" class="btn btn-success" onclick="exportFile('csv')">CSV出力</button>
+                    <!-- スクリプトでフォームのactionを書き換えてPDF出力 -->
+                    <button type="button" class="btn btn-danger" onclick="exportFile('pdf')">PDF出力</button>
                 </div>
             </form>
         </div>

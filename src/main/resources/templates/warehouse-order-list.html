@@ -42,15 +42,19 @@
                     </select>
                 </div>
 
-                <!-- アクションボタン -->
+                <!-- アクションボタン（左寄せ: 絞り込み・クリア） -->
                 <div class="col-md-auto d-flex align-items-end gap-2">
                     <button type="submit" class="btn btn-primary">絞り込み</button>
+                    <!-- クリアボタン -->
+                    <a th:href="@{/warehouse-order/list}" class="btn btn-secondary">クリア</a>
+                </div>
+
+                <!-- エクスポートボタン（右寄せ: CSV・PDF） -->
+                <div class="col-md-auto ms-auto d-flex align-items-end gap-2">
                     <!-- スクリプトでフォームのactionを書き換えてCSV出力 -->
                     <button type="button" class="btn btn-success" onclick="exportFile('csv')">CSV出力</button>
                     <!-- スクリプトでフォームのactionを書き換えてPDF出力 -->
                     <button type="button" class="btn btn-danger" onclick="exportFile('pdf')">PDF出力</button>
-                    <!-- クリアボタン -->
-                    <a th:href="@{/warehouse-order/list}" class="btn btn-secondary">クリア</a>
                 </div>
             </form>
         </div>
