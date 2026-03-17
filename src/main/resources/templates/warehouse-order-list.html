@@ -23,14 +23,12 @@
         <div class="mb-3">
             <form id="filterForm" th:action="@{/warehouse-order/list}" method="get" class="row g-3 align-items-end">
                 <div class="col-md-auto">
-                    <label for="startDate" class="form-label">期間:</label>
-                    <input type="date" name="startDate" id="startDate" class="form-control"
-                           th:value="${startDate}">
-                </div>
-                <div class="col-md-auto">
-                    <label for="endDate" class="form-label visually-hidden">〜</label>
-                    <input type="date" name="endDate" id="endDate" class="form-control"
-                           th:value="${endDate}">
+                    <label class="form-label">期間:</label>
+                    <div class="input-group">
+                        <input type="date" name="startDate" id="startDate" class="form-control" th:value="${startDate}">
+                        <span class="input-group-text">〜</span>
+                        <input type="date" name="endDate" id="endDate" class="form-control" th:value="${endDate}">
+                    </div>
                 </div>
 
                 <div class="col-md-auto">
