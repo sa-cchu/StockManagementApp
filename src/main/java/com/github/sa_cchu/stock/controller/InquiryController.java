@@ -55,14 +55,19 @@ public class InquiryController {
 	 * @return お問い合わせ一覧画面
 	 */
 	@GetMapping("/list")
-	public String viewInquiryList(@RequestParam(required = false) String status,
+	public String viewInquiryList(@RequestParam(required = false) Integer status,
 			@AuthenticationPrincipal User user, Model model) {
 		// ログインユーザーが管理者かを判定し、お問い合わせボタンを表示制御するために判定結果を画面に渡す
 		model.addAttribute("isAdmin", isAdmin(user));	
 		// Enumに記載しているステータス情報を選択肢として画面に渡す。
 		model.addAttribute("statusList", StatusEnum.values());
+		// statusId → Enum に型に変換する。（すべてを選択している場合はnullで使用）
+	    StatusEnum statusEnum = null;
+	    if (status != null) {
+	        statusEnum = StatusEnum.fromId(status);
+	    }
 	    // ログインユーザーと同じ権限（店舗・倉庫の場合は同じ所属）宛へのお問い合わせ一覧を取得する処理を呼び出す。
-	    List<InquiryListDto> inquiryList = inquiryService.getInquiryListByTargetRole(user, status);
+	    List<InquiryListDto> inquiryList = inquiryService.getInquiryListByTargetRole(user, statusEnum);
 	    // 画面に取得した一覧情報を渡す。
 	    model.addAttribute("inquiryList", inquiryList);
 	    // フィルターで選択されているステータスの状況を保持して画面に渡す。

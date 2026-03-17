@@ -41,12 +41,20 @@ public interface InquiryRepository extends JpaRepository<Inquery, Integer> {
     		 	    JOIN i.user u
     		 	    LEFT JOIN u.shop s
     		 	    LEFT JOIN u.warehouse w
-    	    WHERE i.authority.authorityId = :role  
-    		 	    AND (
-				    (:isAdmin = TRUE AND i.authority.authorityId = :role)      
-				    OR (:shopId IS NOT NULL AND i.shop.shopId = :shopId)    
-				    OR (:warehouseId IS NOT NULL AND i.warehouse.warehouseId = :warehouseId)
-			)
+    	    WHERE 
+    			(
+    				i.authority.authorityId = :role
+    			)
+    			AND 
+    		 	(
+					:isAdmin = TRUE
+	    			OR (:shopId IS NOT NULL AND i.shop.shopId = :shopId)    
+	    			OR (:warehouseId IS NOT NULL AND i.warehouse.warehouseId = :warehouseId)
+				)
+			 	AND 
+			 	(
+			 		:status IS NULL OR i.inqueryStatus = :status
+			 	)
     	    ORDER BY i.inqueryDate DESC
     	""")
 	List<InquiryListDto> findInquiryListByRoleAndOptionalStatusAndLocation(

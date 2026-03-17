@@ -14,6 +14,7 @@ import com.github.sa_cchu.stock.entity.Shop;
 import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.enums.AuthorityTypeEnum;
+import com.github.sa_cchu.stock.enums.StatusEnum;
 import com.github.sa_cchu.stock.repository.InquiryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,11 @@ public class InquiryService {
 	 * @param status お問い合わせのステータス（未対応・対応中・対応済）。未指定の場合は全件取得
 	 * @return 条件に一致するお問い合わせ一覧
 	 */
-	public List<InquiryListDto> getInquiryListByTargetRole(User user, String status) {
+	public List<InquiryListDto> getInquiryListByTargetRole(User user, StatusEnum statusEnum) {
+		// ステータス情報をEnum → DB用文字列に変換する（未対応/対応中/対応済）
+	    String status = statusEnum != null
+	            ? statusEnum.getDisplayStatusName()
+	            : null;
 		// ログインユーザーの権限IDを取得する。
 		Integer role = user.getAuthority().getAuthorityId();
 		// 権限が管理者かを判定する。管理者は、権限IDのみで管理者宛のお問い合わせを抽出するため変数を取得時に渡す。
