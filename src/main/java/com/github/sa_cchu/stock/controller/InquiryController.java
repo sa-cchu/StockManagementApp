@@ -156,15 +156,15 @@ public class InquiryController {
 	
 	/**
 	 * 未ログイン状態でお問い合わせ送信画面で入力した情報をテーブルへの保存する際の処理制御を行う。
-	 * @param inquiryForm 画面の入力情報
+	 * @param guestInquiryForm 未ログイン入力情報
 	 * @param result フォームバインド
+	 * @param redirectAttributes 一時的に表示したい内容
 	 * @param model 画面に渡すモデル
-	 * @param user ログイン中のユーザー情報
 	 * @return 一覧画面
 	 */
 	@PostMapping("/guest/create")
 	public String sendGuestInquiry(@Validated @ModelAttribute GuestInquiryForm guestInquiryForm,
-	        BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+	        BindingResult result, RedirectAttributes redirectAttributes, Model model) {
 		// 画面にEnumから管理者の選択肢のみを渡す
 		model.addAttribute("adminLabel", AuthorityTypeEnum.ADMIN.getDisplayName());
 		// エラー時がある場合、画面バリデーションを発生させて選択肢の情報を再度渡す。
@@ -209,7 +209,7 @@ public class InquiryController {
 	 * @param status
 	 * @return 更新完了メッセージと詳細画面
 	 */
-	@PostMapping("/updateStatus")
+	@PostMapping("/update/status")
 	public String updateStatus(@RequestParam Integer id, @RequestParam Integer status,
 			RedirectAttributes redirectAttributes){
 		try {

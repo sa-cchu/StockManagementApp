@@ -58,12 +58,17 @@ public class InquiryService {
 	                warehouseId
 	            );
 		// DTOに含まれる authorityId（数値）から、Enumを使用して画面表示用の権限名へ変換する 
-		for (InquiryListDto dto : list) { 
-			String authorityName = AuthorityTypeEnum 
-			// 権限IDからEnumを取得する
-			.fetchAuthorityType(dto.getAuthorityId()) 
-			// 権限IDからEnumを取得する。 
-			.getDisplayName(); 
+		for (InquiryListDto dto : list) {
+			Integer authorityId = dto.getAuthorityId();
+		    String authorityName;
+		    // authorityId 取得有無によってゲストとログイン済みユーザーかを判定する
+		    if (authorityId == null) {
+		        // ゲストの場合はゲストを権限名に渡す。
+		        authorityName = "ゲスト";
+		    } else {
+		    	// 権限IDをもとにEnumから画面表示用の権限名を取得する。
+				authorityName = AuthorityTypeEnum.fetchAuthorityType(authorityId).getDisplayName(); 
+		    }
 			// 画面表示用の名称を取得し、 DTOに表示用の権限名をセットする。 
 			dto.setDisplayAuthorityName(authorityName); 
 		} 
@@ -134,13 +139,19 @@ public class InquiryService {
 		// 指定されたIDのお問い合わせ情報を取得する
 		InquiryListDto dto = inquiryRepository.findInquiryById(id);
 		// DTOに含まれる authorityId（数値）から、Enumを使用して画面表示用の権限名へ変換する 
-		String authorityName = AuthorityTypeEnum 
-			// 権限IDからEnumを取得する
-			.fetchAuthorityType(dto.getAuthorityId()) 
-			// 権限IDからEnumを取得する。 
-			.getDisplayName(); 
-			// 画面表示用の名称を取得し、 DTOに表示用の権限名をセットする。 
-			dto.setDisplayAuthorityName(authorityName); 
+		Integer authorityId = dto.getAuthorityId();
+	    String authorityName;
+	    String userName = dto.getUserName();
+	    // authorityId 取得有無によってゲストとログイン済みユーザーかを判定する
+	    if (authorityId == null) {
+	        // ゲストの場合はゲストを権限名に渡す。
+	        authorityName = "ゲスト";
+	    } else {
+	    	// 権限IDをもとにEnumから画面表示用の権限名を取得する。
+			authorityName = AuthorityTypeEnum.fetchAuthorityType(authorityId).getDisplayName(); 
+	    }
+		// 画面表示用の名称を取得し、 DTOに表示用の権限名をセットする。 
+		dto.setDisplayAuthorityName(authorityName); 
 		// 変換済みのDTOを返却する。 
 		return dto;
     }

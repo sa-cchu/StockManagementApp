@@ -25,7 +25,7 @@ public class SecurityConfig {
 						// 「/login」へのアクセスは、誰でも（未ログインでも）許可します
 						.requestMatchers("/login").permitAll()
 						// 「/inquiry/guestCreate」（お問い合わせ）へのアクセスは、誰でも（未ログインでも）許可します
-						.requestMatchers("/inquiry/guestCreate/**").permitAll()
+						.requestMatchers("/inquiry/guest/create/**").permitAll()
 						// 静的ファイルの読み込みを許可する
 					    .requestMatchers("/webjars/**").permitAll()
 					    .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()

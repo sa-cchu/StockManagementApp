@@ -17,9 +17,8 @@
 
 		<div class="card">
 			<div class="card-body">
-
 				<!-- 入力フォームエリア -->
-				<form th:action="@{/inquiry/guestCreate}" th:object="${guestInquiryForm}" method="post">
+				<form th:action="@{/inquiry/guest/create}" th:object="${guestInquiryForm}" method="post">
 					<!-- 入力項目に不備がある場合に全体のエラーメッセージを表示 -->
 					<div th:if="${#fields.hasAnyErrors()}" class="errorMessage alert alert-danger mb-3">
 						入力内容に誤りがあります。
