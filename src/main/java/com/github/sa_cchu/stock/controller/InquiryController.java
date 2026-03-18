@@ -112,7 +112,7 @@ public class InquiryController {
 		// 不要なバリデーションが機能してしまうため、連携先選択のバリデーションをcontrollerで行う。
 		if (!ADMIN_ID.equals(inquiryForm.getAuthorityId()) && inquiryForm.getTargetId() == null) {
 			// 店舗・倉庫に送信する際に連携先が選択されていない場合は、エラーとしメッセージを表示する。
-			result.rejectValue("target", null, "連携している店舗・倉庫の選択は必須です");
+			result.rejectValue("targetId", null, "連携している店舗・倉庫の選択は必須です");
 		}
 		// バリデーションエラー時はフォームを戻す
 		if (result.hasErrors()) {

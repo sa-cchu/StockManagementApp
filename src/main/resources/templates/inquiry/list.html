@@ -59,9 +59,9 @@
 					: inquiry.inquiryDetail}">
 				</td>
 
-				<!-- 送信元 -->
-				<td th:text="${inquiry.displayAuthorityName}"></td>
-
+				<!-- 権限表示（ゲスト含む） -->
+				<td th:text="${inquiry.authorityDisplayName}"></td>
+				
 				<!-- 所属 -->
 				<td th:text="${inquiry.locationName}"></td>
 
