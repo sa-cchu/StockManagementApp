@@ -2,6 +2,8 @@ package com.github.sa_cchu.stock.dto;
 
 import java.time.LocalDateTime;
 
+import com.github.sa_cchu.stock.enums.AuthorityTypeEnum;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,32 +23,23 @@ public class InquiryListDto {
 	/**	送信日時 */
 	private LocalDateTime inquiryDate;
 
-	/** 送信元の権限ID */
-	private Integer authorityId; // 1:管理者, 2:店舗, 3:倉庫
+	/** 送信元の権限ID（AuthorityTypeEnumに対応） */
+	private Integer authorityId;
 
 	/**	所属（店舗名 / 倉庫名） */
 	private String locationName;
 
-	/** 送信者の名前 */
+	/** 送信者名 */
 	private String userName; // 
 
 	/**	お問い合わせステータス */
 	private String inquiryStatus;
 
-	/** 画面表示用の権限名（Service層でEnumを使用して設定する） */
-	private String displayAuthorityName;
-
 	/**
 	 * JPQL（お問い合わせ一覧取得時のメソッド：findInquiryListByRoleAndOptionalStatusAndLocation）の
 	 * DTOコンストラクタ式で使用するコンストラクタ。
-	 * <p>
-	 * Repositoryの以下のクエリで使用される。
-	 * </p>
-	 * <pre>
-	 * SELECT new InquiryListDto(...)
-	 * </pre>
-	 * authorityName はService層でEnum変換して設定するため
-	 * 引数には含めていない。
+	 * <p>Repositoryの以下のクエリで使用される。</p>
+	 * <pre>SELECT new InquiryListDto(...)</pre>
 	 */
 	public InquiryListDto(
 			Integer inquiryId,
@@ -64,5 +57,19 @@ public class InquiryListDto {
 		this.userName = userName;
 		this.inquiryStatus = inquiryStatus;
 	}
-
+	
+	/**
+	 * 権限IDに応じた表示用の権限名を取得する。
+	 * <p> authorityId が null の場合は「ゲスト」を返却する。
+	 * それ以外の場合は {@link AuthorityTypeEnum} から対応する表示名を取得する。 </p>
+	 * @return 表示用の権限名（例：管理者、店舗、倉庫、ゲスト）
+	 */
+	public String getAuthorityDisplayName() {
+        if (authorityId == null) {
+            return "ゲスト";
+        }
+        return AuthorityTypeEnum
+                .fetchAuthorityType(authorityId)
+                .getDisplayName();
+    }
 }
