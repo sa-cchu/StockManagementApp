@@ -33,12 +33,12 @@ public interface InquiryRepository extends JpaRepository<Inquery, Integer> {
     	        i.inqueryDetail,
     	        i.inqueryDate,
     	        u.authority.authorityId,
-    	        COALESCE(s.shopName, w.warehouseName),
-    	        u.userName,
+    	        COALESCE(s.shopName, w.warehouseName, 'なし'),
+    	        COALESCE(u.userName, 'ゲスト'),
     	        i.inqueryStatus
     	    )
     	    FROM Inquery i
-    		 	    JOIN i.user u
+    		 	    LEFT JOIN i.user u
     		 	    LEFT JOIN u.shop s
     		 	    LEFT JOIN u.warehouse w
     	    WHERE 
@@ -66,10 +66,10 @@ public interface InquiryRepository extends JpaRepository<Inquery, Integer> {
     );
     
     /**
-     * お問い合わせ詳細取得用
+     * お問い合わせIDに紐づくお問い合わせ詳細を取得する。
      * 
-     * @param id
-     * @return
+     * @param id お問い合わせID
+     * @return お問い合わせ詳細の検索結果
      */
     @Query("""
     	    SELECT new com.github.sa_cchu.stock.dto.InquiryListDto(
@@ -77,12 +77,12 @@ public interface InquiryRepository extends JpaRepository<Inquery, Integer> {
     	        i.inqueryDetail,
     	        i.inqueryDate,
     	        u.authority.authorityId,
-    	        COALESCE(s.shopName, w.warehouseName),
-    	        u.userName,
+    	        COALESCE(s.shopName, w.warehouseName, 'なし'),
+    	        COALESCE(u.userName, 'ゲスト'),
     	        i.inqueryStatus
     	    )
     	    FROM Inquery i
-    	        JOIN i.user u
+    	        LEFT JOIN i.user u
     	        LEFT JOIN u.shop s
     	        LEFT JOIN u.warehouse w
     	    WHERE i.inqueryId = :id

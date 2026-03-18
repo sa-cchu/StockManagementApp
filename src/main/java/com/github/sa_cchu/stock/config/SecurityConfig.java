@@ -22,8 +22,9 @@ public class SecurityConfig {
 		http
 				// 1. URLごとのアクセス権限を設定開始
 				.authorizeHttpRequests(auth -> auth
+
 						// 「/login」や静的リソースへのアクセスは、誰でも（未ログインでも）許可します
-						.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+						.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**","/inquiry/guest/create/**","/error").permitAll()
 						// ADMIN権限のみアクセス可能なURL
 						.requestMatchers("/user/**", "/shop/**", "/warehouse/**", "/goods/**", "/relation/**").hasRole("ADMIN")
 						// SHOP権限のみアクセス可能なURL
@@ -31,6 +32,7 @@ public class SecurityConfig {
 						// WAREHOUSE権限のみアクセス可能なURL
 						.requestMatchers("/warehouse-staff/**", "/warehouse-stock/**", "/warehouse-order/**").hasRole("WAREHOUSE")
 						// 今後、どの権限でもアクセスできるがログインは必要な問い合わせなどはanyRequestで拾うか、.hasAnyRoleで複数割り当て可能
+
 						// それ以外のすべてのリクエストは、ログイン済みユーザーのみ許可します
 						.anyRequest().authenticated())
 

@@ -20,7 +20,7 @@
 			<div th:if="${errorMessage}" class="alert alert-danger">
 			    <span th:text="${errorMessage}"></span>
 			</div>
-			<form th:action="@{/inquiry/updateStatus}" method="post">
+			<form th:action="@{/inquiry/update/status}" method="post">
 				<!-- お問い合わせID情報（非表示） -->
 				<input type="hidden" name="id" th:value="${inquiry.inquiryId}">
 				<!-- ステータス -->
