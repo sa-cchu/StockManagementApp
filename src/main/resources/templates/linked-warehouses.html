@@ -10,7 +10,6 @@
                 <th>倉庫名</th>
                 <th>住所</th>
                 <th></th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -18,12 +17,8 @@
                 <td th:text="${linkedWarehouse.warehouseName}"></td>
                 <td th:text="${linkedWarehouse.warehouseAddress}"></td>
                 <td>
-                    <a th:href="@{/linked-warehouses/{id}(id=${linkedWarehouse.warehouseId})}"
-                        class="btn btn-primary">在庫一覧</a>
-                </td>
-                <td>
-                    <a th:href="@{/linked-warehouses/{id}/inquiry(id=${linkedWarehouse.warehouseId})}"
-                        class="btn btn-primary">問い合わせ</a>
+                    <a th:href="@{/inquiry/create(authorityId=3,targetId=${linkedWarehouse.warehouseId})}"
+                        class="btn btn-primary">お問い合わせ</a>
                 </td>
             </tr>
         </tbody>
