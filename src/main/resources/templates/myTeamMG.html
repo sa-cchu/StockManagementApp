@@ -5,9 +5,9 @@
 <div th:fragment="content">
     <h1>ユーザー管理</h1>
     <div class="mb-3 d-flex justify-content-between align-items-center">
-        <a th:href="@{/user/manage/new}" class="btn btn-primary">新規追加</a>
+        <a th:href="@{${baseUrl} + '/new'}" class="btn btn-primary">新規追加</a>
 
-        <form th:action="@{/user/manage}" method="get" class="d-inline-flex align-items-center">
+        <form th:action="@{${baseUrl}}" method="get" class="d-inline-flex align-items-center">
             <label for="belongingId" class="me-2 mb-0" style="white-space: nowrap;">所属:</label>
             <select name="belongingId" id="belongingId" class="form-select" onchange="this.form.submit()">
                 <option value="0">すべて</option>
@@ -34,12 +34,7 @@
                 <td th:text="${u.userGender}"></td>
                 <td th:text="${u.belongingName}"></td>
                 <td>
-                    <a th:href="@{/user/manage/edit/{id}(id=${u.userId})}" class="btn btn-sm btn-warning">編集</a>
-                    
-                    <form th:action="@{/user/manage/delete/{id}(id=${u.userId})}" method="post" style="display:inline;"
-                        onsubmit="return confirm('本当に削除しますか？');">
-                        <button type="submit" class="btn btn-sm btn-danger">削除</button>
-                    </form>
+                    <a th:href="@{${baseUrl} + '/edit/' + ${u.userId}}" class="btn btn-sm btn-warning">編集</a>
                 </td>
             </tr>
         </tbody>

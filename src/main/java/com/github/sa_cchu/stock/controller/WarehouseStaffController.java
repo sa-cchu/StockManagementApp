@@ -20,12 +20,12 @@ import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.service.CustomUserDetailsService;
 
 @Controller
-@RequestMapping("/user/manage")
-public class UserManageController {
+@RequestMapping("/warehouse-staff")
+public class WarehouseStaffController {
 
 	private final CustomUserDetailsService userDetailsService;
 
-	public UserManageController(CustomUserDetailsService userDetailsService) {
+	public WarehouseStaffController(CustomUserDetailsService userDetailsService) {
 		this.userDetailsService = userDetailsService;
 	}
 
@@ -36,6 +36,7 @@ public class UserManageController {
 		model.addAttribute("userList", userDetailsService.getUserListForOperator(operator, belongingId));
 		// 2. プルダウンの選択肢
 		model.addAttribute("belongings", userDetailsService.getBelongingList(operator));
+		model.addAttribute("baseUrl", "/warehouse-staff");
 		return "myTeamMG";
 	}
 
@@ -43,6 +44,7 @@ public class UserManageController {
 	public String showRegistrationForm(@AuthenticationPrincipal User operator, Model model) {
 		model.addAttribute("userForm", userDetailsService.createNewUserFormDTO(operator));
 		model.addAttribute("belongingList", userDetailsService.getBelongingList(operator));
+		model.addAttribute("baseUrl", "/warehouse-staff");
 		return "myTeam-form";
 	}
 
@@ -52,10 +54,11 @@ public class UserManageController {
 		try {
 			model.addAttribute("userForm", userDetailsService.getAuthorizedUserFormDTO(userId, operator));
 			model.addAttribute("belongingList", userDetailsService.getBelongingList(operator));
+			model.addAttribute("baseUrl", "/warehouse-staff");
 			return "myTeam-form";
 
 		} catch (SecurityException e) {
-			return "redirect:/user/manage?error=unauthorized";
+			return "redirect:/warehouse-staff?error=unauthorized";
 		}
 	}
 
@@ -75,6 +78,7 @@ public class UserManageController {
 		if (result.hasErrors()) {
 			// プルダウン（所属先リスト）が消えるのを防ぐため再セット
 			model.addAttribute("belongingList", userDetailsService.getBelongingList(operator));
+			model.addAttribute("baseUrl", "/warehouse-staff");
 
 			// 入力された値（userForm）を保持したままフォーム画面に戻る
 			return "myTeam-form";
@@ -92,11 +96,12 @@ public class UserManageController {
 			// 万が一のDBエラーに備える（実務的な保険）
 			model.addAttribute("errorMessage", "保存中にエラーが発生しました");
 			model.addAttribute("belongingList", userDetailsService.getBelongingList(operator));
+			model.addAttribute("baseUrl", "/warehouse-staff");
 			return "myTeam-form";
 		}
 
 // 4. 二重送信防止のため完了画面（または一覧）へリダイレクト
-		return "redirect:/user/manage";
+		return "redirect:/warehouse-staff";
 	}
 
 	/**
@@ -106,6 +111,15 @@ public class UserManageController {
 		Authentication newAuth = new UsernamePasswordAuthenticationToken(user, user.getPassword(),
 				user.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(newAuth);
+	}
+
+	@PostMapping("/delete/{id}")
+	public String deleteUser(@PathVariable("id") Integer userId) {
+		// Serviceを呼び出して削除処理を実行
+		userDetailsService.deleteUser(userId);
+
+		// 削除が終わったら一覧画面にリダイレクト
+		return "redirect:/warehouse-staff";
 	}
 
 }

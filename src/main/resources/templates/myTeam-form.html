@@ -8,7 +8,7 @@
 		<span th:text="${errorMessage}"></span>
 	</div>
 
-	<form th:action="@{/user/manage/save}" th:object="${userForm}" method="post" autocomplete="off">
+	<form th:action="@{${baseUrl} + '/save'}" th:object="${userForm}" method="post" autocomplete="off">
 
 		<input type="hidden" th:field="*{userId}" />
 
@@ -35,8 +35,14 @@
 
 		<div class="mb-3">
 			<label for="userName" class="form-label fw-bold">名前</label>
-			<input type="text" th:field="*{userName}" class="form-control" placeholder="名前を入力" autocomplete="off">
-			<div class="text-danger small" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>
+			<div th:if="${userForm.userId == null}">
+				<input type="text" th:field="*{userName}" class="form-control" placeholder="名前を入力" autocomplete="off">
+				<div class="text-danger small" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>
+			</div>
+			<div th:if="${userForm.userId != null}">
+				<input type="hidden" th:field="*{userName}" />
+				<div class="form-control-plaintext text-muted" th:text="*{userName}"></div>
+			</div>
 		</div>
 
 		<div class="mb-3" th:if="${userForm.userId == null}">
@@ -49,26 +55,34 @@
 
 		<div class="mb-3" th:if="${userForm.userId != null}">
 			<label class="form-label fw-bold text-muted">パスワード</label>
-			<div class="form-control-plaintext text-muted">******** （この画面では変更できません）</div>
+			<div class="form-control-plaintext text-muted">********</div>
 		</div>
 
 		<div class="mb-4">
 			<label class="form-label d-block fw-bold">性別</label>
-			<div class="btn-group" role="group">
-				<input type="radio" class="btn-check" th:field="*{userGender}" value="M" id="genderM">
-				<label class="btn btn-outline-primary" for="genderM">男 (M)</label>
-
-				<input type="radio" class="btn-check" th:field="*{userGender}" value="F" id="genderF">
-				<label class="btn btn-outline-danger" for="genderF">女 (F)</label>
+			
+			<div th:if="${userForm.userId == null}">
+				<div class="btn-group" role="group">
+					<input type="radio" class="btn-check" th:field="*{userGender}" value="M" id="genderM">
+					<label class="btn btn-outline-primary" for="genderM">男 (M)</label>
+	
+					<input type="radio" class="btn-check" th:field="*{userGender}" value="F" id="genderF">
+					<label class="btn btn-outline-danger" for="genderF">女 (F)</label>
+				</div>
+				<div class="text-danger d-block small" th:if="${#fields.hasErrors('userGender')}" th:errors="*{userGender}">
+				</div>
 			</div>
-			<div class="text-danger d-block small" th:if="${#fields.hasErrors('userGender')}" th:errors="*{userGender}">
+
+			<div th:if="${userForm.userId != null}">
+				<input type="hidden" th:field="*{userGender}" />
+				<div class="form-control-plaintext text-muted" th:text="*{userGender}"></div>
 			</div>
 		</div>
 
 		<div class="mt-5 pt-3 border-top">
 			<button type="submit" class="btn btn-primary px-5" th:text="${userForm.userId == null} ? '新規登録' : '変更保存'">
 			</button>
-			<a th:href="@{/user/manage}" class="btn btn-secondary ms-2">キャンセル</a>
+			<a th:href="@{${baseUrl}}" class="btn btn-secondary ms-2">キャンセル</a>
 		</div>
 	</form>
 </div>

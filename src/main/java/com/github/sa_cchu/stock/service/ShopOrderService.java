@@ -1,31 +1,28 @@
 package com.github.sa_cchu.stock.service;
 
-import java.util.stream.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.sa_cchu.stock.repository.OrdersRepository;
-import com.github.sa_cchu.stock.repository.RelationRepository;
-import com.github.sa_cchu.stock.repository.WarehouseStockRepository;
-import com.github.sa_cchu.stock.repository.ShopStockRepository;
-
-import com.github.sa_cchu.stock.dto.ShopOrderTargetDto;
 import com.github.sa_cchu.stock.dto.OrderHistoryDto;
 import com.github.sa_cchu.stock.dto.ShopOrderFormDto;
 import com.github.sa_cchu.stock.dto.ShopOrderRowDto;
-
+import com.github.sa_cchu.stock.dto.ShopOrderTargetDto;
+import com.github.sa_cchu.stock.entity.Goods;
+import com.github.sa_cchu.stock.entity.Orders;
 import com.github.sa_cchu.stock.entity.Relation;
 import com.github.sa_cchu.stock.entity.Shop;
 import com.github.sa_cchu.stock.entity.ShopStock;
-import com.github.sa_cchu.stock.entity.Goods;
-import com.github.sa_cchu.stock.entity.Orders;
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.entity.WarehouseStock;
+import com.github.sa_cchu.stock.repository.OrdersRepository;
+import com.github.sa_cchu.stock.repository.RelationRepository;
+import com.github.sa_cchu.stock.repository.ShopStockRepository;
+import com.github.sa_cchu.stock.repository.WarehouseStockRepository;
 
 @Service
 public class ShopOrderService {

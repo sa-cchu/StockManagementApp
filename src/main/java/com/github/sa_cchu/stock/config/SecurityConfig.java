@@ -22,15 +22,17 @@ public class SecurityConfig {
 		http
 				// 1. URLごとのアクセス権限を設定開始
 				.authorizeHttpRequests(auth -> auth
-						// 「/login」へのアクセスは、誰でも（未ログインでも）許可します
-						.requestMatchers("/login").permitAll()
-						// 「/inquiry/guestCreate」（お問い合わせ）へのアクセスは、誰でも（未ログインでも）許可します
-						.requestMatchers("/inquiry/guest/create/**").permitAll()
-						// 静的ファイルの読み込みを許可する
-					    .requestMatchers("/webjars/**").permitAll()
-					    .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-					    // エラー時のアクセスを許可する。
-					    .requestMatchers("/error").permitAll()
+
+						// 「/login」や静的リソースへのアクセスは、誰でも（未ログインでも）許可します
+						.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**","/inquiry/guest/create/**","/error").permitAll()
+						// ADMIN権限のみアクセス可能なURL
+						.requestMatchers("/user/**", "/shop/**", "/warehouse/**", "/goods/**", "/relation/**").hasRole("ADMIN")
+						// SHOP権限のみアクセス可能なURL
+						.requestMatchers("/shop-staff/**", "/shop-stock/**", "/linked-warehouses/**", "/shop-order/**", "/order/**").hasRole("SHOP")
+						// WAREHOUSE権限のみアクセス可能なURL
+						.requestMatchers("/warehouse-staff/**", "/warehouse-stock/**", "/warehouse-order/**").hasRole("WAREHOUSE")
+						// 今後、どの権限でもアクセスできるがログインは必要な問い合わせなどはanyRequestで拾うか、.hasAnyRoleで複数割り当て可能
+
 						// それ以外のすべてのリクエストは、ログイン済みユーザーのみ許可します
 						.anyRequest().authenticated())
 
