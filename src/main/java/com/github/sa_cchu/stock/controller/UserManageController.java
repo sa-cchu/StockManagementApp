@@ -108,13 +108,4 @@ public class UserManageController {
 		SecurityContextHolder.getContext().setAuthentication(newAuth);
 	}
 
-	@PostMapping("/delete/{id}")
-	public String deleteUser(@PathVariable("id") Integer userId) {
-		// Serviceを呼び出して削除処理を実行
-		userDetailsService.deleteUser(userId);
-
-		// 削除が終わったら一覧画面にリダイレクト
-		return "redirect:/user/manage";
-	}
-
 }

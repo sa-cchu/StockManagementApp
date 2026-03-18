@@ -35,11 +35,6 @@
                 <td th:text="${u.belongingName}"></td>
                 <td>
                     <a th:href="@{${baseUrl} + '/edit/' + ${u.userId}}" class="btn btn-sm btn-warning">編集</a>
-                    
-                    <form th:action="@{${baseUrl} + '/delete/' + ${u.userId}}" method="post" style="display:inline;"
-                        onsubmit="return confirm('本当に削除しますか？');">
-                        <button type="submit" class="btn btn-sm btn-danger">削除</button>
-                    </form>
                 </td>
             </tr>
         </tbody>
