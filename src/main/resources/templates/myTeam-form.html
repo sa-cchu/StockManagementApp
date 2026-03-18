@@ -8,7 +8,7 @@
 		<span th:text="${errorMessage}"></span>
 	</div>
 
-	<form th:action="@{/user/manage/save}" th:object="${userForm}" method="post" autocomplete="off">
+	<form th:action="@{${baseUrl} + '/save'}" th:object="${userForm}" method="post" autocomplete="off">
 
 		<input type="hidden" th:field="*{userId}" />
 
@@ -68,7 +68,7 @@
 		<div class="mt-5 pt-3 border-top">
 			<button type="submit" class="btn btn-primary px-5" th:text="${userForm.userId == null} ? '新規登録' : '変更保存'">
 			</button>
-			<a th:href="@{/user/manage}" class="btn btn-secondary ms-2">キャンセル</a>
+			<a th:href="@{${baseUrl}}" class="btn btn-secondary ms-2">キャンセル</a>
 		</div>
 	</form>
 </div>
