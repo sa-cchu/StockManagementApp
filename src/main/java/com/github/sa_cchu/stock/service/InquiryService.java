@@ -37,7 +37,7 @@ public class InquiryService {
 	 * @return 条件に一致するお問い合わせ一覧
 	 */
 	public List<InquiryListDto> getInquiryListByTargetRole(User user, StatusEnum statusEnum) {
-		// ステータス情報をEnum → DB用文字列に変換する（未対応/対応中/対応済）
+		// ステータス情報をEnum → DB用文字列を取得する（未対応/対応中/対応済）
 	    String status = statusEnum != null
 	            ? statusEnum.getDisplayStatusName()
 	            : null;

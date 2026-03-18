@@ -24,6 +24,13 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						// 「/login」へのアクセスは、誰でも（未ログインでも）許可します
 						.requestMatchers("/login").permitAll()
+						// 「/inquiry/guestCreate」（お問い合わせ）へのアクセスは、誰でも（未ログインでも）許可します
+						.requestMatchers("/inquiry/guestCreate/**").permitAll()
+						// 静的ファイルの読み込みを許可する
+					    .requestMatchers("/webjars/**").permitAll()
+					    .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+					    // エラー時のアクセスを許可する。
+					    .requestMatchers("/error").permitAll()
 						// それ以外のすべてのリクエストは、ログイン済みユーザーのみ許可します
 						.anyRequest().authenticated())
 

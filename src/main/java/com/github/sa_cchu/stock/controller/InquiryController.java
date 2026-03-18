@@ -22,6 +22,7 @@ import com.github.sa_cchu.stock.dto.InquiryRequestDto;
 import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.enums.AuthorityTypeEnum;
 import com.github.sa_cchu.stock.enums.StatusEnum;
+import com.github.sa_cchu.stock.form.GuestInquiryForm;
 import com.github.sa_cchu.stock.form.InquiryForm;
 import com.github.sa_cchu.stock.service.CustomUserDetailsService;
 import com.github.sa_cchu.stock.service.InquiryService;
@@ -75,7 +76,7 @@ public class InquiryController {
 	    // お問い合わせ一覧画面を返却する。
 		return "/inquiry/list";
 	}
-
+	
 	/**
 	 * 選択肢を取得した状態でお問い合わせフォームを表示する
 	 * @param inquiryForm 画面の入力情報
@@ -94,9 +95,9 @@ public class InquiryController {
 		setCommonModel(model, user);
 		return "/inquiry/create";
 	}
-
+	
 	/**
-	 * お問い合わせ画面で入力した情報をテーブルへの保存する際の処理制御を行う。
+	 * お問い合わせ送信画面で入力した情報をテーブルへの保存する際の処理制御を行う。
 	 * @param inquiryForm 画面の入力情報
 	 * @param result フォームバインド
 	 * @param model 画面に渡すモデル
@@ -120,10 +121,9 @@ public class InquiryController {
 			return "inquiry/create";
 		}
 		try {
-			// 画面からの入力された情報をサービスに渡すための DTO 内で変換する。
-			InquiryRequestDto request = InquiryRequestDto.from(inquiryForm);
+			// 画面からの入力された情報を DTO 内で変換し、
 			// ログイン中のユーザー情報とお問い合わせフォームでの入力情報を渡して保存処理を呼び出す。
-			inquiryService.createInquiry(request, user);
+			inquiryService.createInquiry(InquiryRequestDto.fromLoggedInUser(inquiryForm), user);
 		} catch (IllegalArgumentException e) {
 			// フォーム全体のエラーとしてユーザー向けにエラーメッセージをセット
 			result.reject(null, e.getMessage());
@@ -131,12 +131,62 @@ public class InquiryController {
 			setCommonModel(model, user);
 			return "inquiry/create";
 		}
-		// 登録が完了したらフラッシュメッセージを表示する。
+		// 保存が完了したらフラッシュメッセージを表示する。
 	    redirectAttributes.addFlashAttribute("successMessage", "送信が完了しました");
-		// 登録が完了したらリストを表示する。
+		// 保存が完了したら送信画面を再度表示する。
 		return "redirect:/inquiry/create";
 	}
-
+	
+	/**
+	 * 未ログイン状態でお問い合わせ送信画面のフォームを表示する
+	 * @param guestInquiryForm 未ログイン入力情報
+	 * @param model 画面に渡すモデル
+	 * @return 一覧画面
+	 */
+	@GetMapping("/guest/create")
+	public String viewGuesInquiryCreate(@ModelAttribute GuestInquiryForm guestInquiryForm, Model model) {
+		// 初回だけデフォルト値のADMIN_IDをセットして表示する。
+	    if (guestInquiryForm.getAuthorityId() == null) {
+	        guestInquiryForm.setAuthorityId(ADMIN_ID);
+	    }
+		// 画面にEnumから管理者の選択肢のみを渡す
+		model.addAttribute("adminLabel", AuthorityTypeEnum.ADMIN.getDisplayName());
+		return "inquiry/guestCreate";
+	}
+	
+	/**
+	 * 未ログイン状態でお問い合わせ送信画面で入力した情報をテーブルへの保存する際の処理制御を行う。
+	 * @param inquiryForm 画面の入力情報
+	 * @param result フォームバインド
+	 * @param model 画面に渡すモデル
+	 * @param user ログイン中のユーザー情報
+	 * @return 一覧画面
+	 */
+	@PostMapping("/guest/create")
+	public String sendGuestInquiry(@Validated @ModelAttribute GuestInquiryForm guestInquiryForm,
+	        BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+		// 画面にEnumから管理者の選択肢のみを渡す
+		model.addAttribute("adminLabel", AuthorityTypeEnum.ADMIN.getDisplayName());
+		// エラー時がある場合、画面バリデーションを発生させて選択肢の情報を再度渡す。
+	    if (result.hasErrors()) {
+	        return "inquiry/guestCreate";
+	    }
+	    try {
+			// 画面からの入力された情報を DTO 内で変換し、
+			// ログイン中のユーザー情報（未ログインのためnull）とお問い合わせフォームでの入力情報を渡して保存処理を呼び出す。
+		    inquiryService.createInquiry(InquiryRequestDto.fromGuestUser(guestInquiryForm), null);
+	    } catch (IllegalArgumentException e) {
+			// フォーム全体のエラーとしてユーザー向けにエラーメッセージをセット
+			result.reject(null, e.getMessage());
+			// 入力フォームに戻す
+			return "inquiry/guestCreate";
+		}
+	    // 保存が完了したらフラッシュメッセージを表示する。
+	    redirectAttributes.addFlashAttribute("successMessage", "送信が完了しました");
+		// 保存が完了したら送信画面を再度表示する。
+	    return "redirect:/inquiry/guest/create";
+	}
+	
     /**
      * お問い合わせIDをもとにお問い合わせ詳細を表示する
      * @param inquiryForm
@@ -202,10 +252,13 @@ public class InquiryController {
 	private void setCommonModel(Model model, User user) {
 		// 全ての権限IDと権限名を取得し画面に渡す。
 		model.addAttribute("authorities", customUserDetailsService.getAllAuthorities());
+		// 未ログイン対策
+	    if (user != null) {
 		// ログインユーザーの権限以外を送信先の選択肢として表示するため、ログインユーザーの権限IDを画面に渡す。※画面側で判定を行う。
 		model.addAttribute("myAuthorityId", user.getAuthority().getAuthorityId());
 		// 連携している店舗・倉庫の選択肢を取得して画面に渡す。
 		model.addAttribute("targets", relationService.getTargetsForUser(user));
+	    }
 		// 管理者の権限IDを画面に渡す。（管理者以外の送信先を選択した場合に画面で表示制御を行う）
 		model.addAttribute("adminId", ADMIN_ID);
 	}
