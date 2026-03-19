@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<head>
+	<meta charset="UTF-8">
+	<title>エラーが発生しました</title>
+	<!-- Bootstrap CSS -->
+	<link href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+	<div class="container vh-100 d-flex justify-content-center align-items-center">
+		<div class="text-center">
+			<!-- タイトル -->
+			<h1 class="fw-bold text-primary mb-4">
+				エラーが発生しました
+			</h1>
+			<!-- 説明 -->
+			<p class="text-secondary mb-2">
+				ご迷惑をおかけして申し訳ありません。
+			</p>
+			<!-- 説明 -->
+			<p class="text-secondary mb-2">
+				ホームに戻って操作をやり直すか、時間を置いて再度お試しください。
+			</p>
+			<!-- ステータス -->
+			<p class="text-muted mb-4">
+				ステータスコード: <span th:text="${status}"></span>
+			</p>
+			<p class="text-muted mb-4">
+				エラー内容: <span th:text="${error}"></span>
+			</p>
+			<!-- ボタン -->
+			<a th:href="@{/login}" class="btn btn-primary px-4 rounded-pill shadow-sm">
+				ホームへ戻る
+			</a>
+		</div>
+	</div>
+</body>
+</html>
