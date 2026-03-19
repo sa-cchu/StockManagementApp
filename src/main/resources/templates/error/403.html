@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>アクセスが拒否されました</title>
+	<!-- Bootstrap CSS -->
+	<link href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+	<div class="container vh-100 d-flex justify-content-center align-items-center">
+		<div class="text-center">
+			<!-- タイトル -->
+			<h1 class="fw-bold text-primary mb-4">
+				アクセスが拒否されました
+			</h1>
+			<!-- 説明 -->
+			<p class="text-secondary mb-2">
+				このページにアクセスする権限がありません。
+			</p>
+			<!-- 説明 -->
+			<p class="text-secondary mb-3">
+				ログイン中のアカウントにお間違いがないか、一度ご確認ください。
+			</p>
+			<!-- ステータス -->
+			<p class="text-muted mb-4">
+				ステータスコード: 403
+			</p>
+			<!-- ボタン -->
+			<a th:href="@{/login}" class="btn btn-primary px-4 rounded-pill shadow-sm">
+				ホームへ戻る
+			</a>
+		</div>
+	</div>
+</body>
+</html>
