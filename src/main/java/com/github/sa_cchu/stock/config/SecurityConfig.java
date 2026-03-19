@@ -24,7 +24,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 
 						// 「/login」や静的リソースへのアクセスは、誰でも（未ログインでも）許可します
-						.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**","/inquiry/guest/create/**","/error").permitAll()
+						.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**","/inquiry/guest/create/**","/error/**").permitAll()
 						// ADMIN権限のみアクセス可能なURL
 						.requestMatchers("/user/**", "/shop/**", "/warehouse/**", "/goods/**", "/relation/**").hasRole("ADMIN")
 						// SHOP権限のみアクセス可能なURL
