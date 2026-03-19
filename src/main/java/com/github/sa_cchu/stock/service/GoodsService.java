@@ -48,6 +48,11 @@ public class GoodsService {
 		return categoryRepository.findByDeleteFlag(0);
 	}
 
+	// IDから商品情報を取得
+	public Goods getGoods(Integer goodsId) {
+		return goodsRepository.findById(goodsId).orElse(null);
+	}
+
 	/**
 	 * 商品一覧を取得（カテゴリーIDで絞り込み対応）
 	 */
@@ -75,7 +80,7 @@ public class GoodsService {
 			ShopStock shopStock = new ShopStock();
 			shopStock.setShopId(shop);
 			shopStock.setGoodsId(savedGoods);
-			shopStock.setQuantity(0);
+			shopStock.setShopStockQuantity(0);
 			shopStock.setDeleteFlag(0);
 			shopStockRepository.save(shopStock);
 		}

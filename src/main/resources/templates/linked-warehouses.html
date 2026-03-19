@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+
+<div th:fragment="content">
+    <h1>連携倉庫管理</h1>
+
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>倉庫名</th>
+                <th>住所</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="linkedWarehouse : ${linkedWarehouses}">
+                <td th:text="${linkedWarehouse.warehouseName}"></td>
+                <td th:text="${linkedWarehouse.warehouseAddress}"></td>
+                <td>
+                    <a th:href="@{/inquiry/create(authorityId=3,targetId=${linkedWarehouse.warehouseId})}"
+                        class="btn btn-primary">お問い合わせ</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</html>

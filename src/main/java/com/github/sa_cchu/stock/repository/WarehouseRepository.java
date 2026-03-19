@@ -12,4 +12,6 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
 	Optional<Warehouse> findByWarehouseName(String warehouseNamw);
 
 	List<Warehouse> findByDeleteFlag(Integer deleteFlag);
+
+	Optional<Warehouse > findByWarehouseNameAndDeleteFlag(String warehouseName, int i);
 }

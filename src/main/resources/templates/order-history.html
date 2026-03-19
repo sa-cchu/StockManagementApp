@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>発注管理</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <h1 class="mb-4">発注管理</h1>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="mb-3">
+            <form id="filterForm" th:action="@{/shop-order/history}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-auto">
+                    <label class="form-label">期間:</label>
+                    <div class="input-group">
+                        <input type="date" name="startDate" id="startDate" class="form-control" th:value="${startDate}">
+                        <span class="input-group-text">〜</span>
+                        <input type="date" name="endDate" id="endDate" class="form-control" th:value="${endDate}">
+                    </div>
+                </div>
+                <div class="col-md-auto">
+                    <label class="form-label">ステータス:</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">すべて</option>
+                        <option value="準備中" th:selected="${selectedStatus == '準備中'}">準備中</option>
+                        <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
+                    </select>
+                </div>
+
+                <!-- アクションボタン（左寄せ: 絞り込み・クリア） -->
+                <div class="col-md-auto d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">絞り込み</button>
+                    <!-- クリアボタン -->
+                    <a th:href="@{/shop-order/history}" class="btn btn-secondary">クリア</a>
+                </div>
+
+                <!-- エクスポートボタン（右寄せ: CSV・PDF） -->
+                <div class="col-md-auto ms-auto d-flex align-items-end gap-2">
+                    <!-- formactionで送信先を上書きしてCSV出力 -->
+                    <button type="submit" class="btn btn-success" th:formaction="@{/shop-order/history/csv}">CSV出力</button>
+                    <!-- formactionで送信先を上書きしてPDF出力 -->
+                    <button type="submit" class="btn btn-danger" th:formaction="@{/shop-order/history/pdf}">PDF出力</button>
+                </div>
+            </form>
+        </div>
+
+        <table class="table table-striped align-middle" th:if="${!orderHistoryList.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>発注ID</th>
+                    <th>商品名</th>
+                    <th>発注先倉庫</th>
+                    <th>発注個数</th>
+                    <th>ステータス</th>
+                    <th>発注日時</th>
+                    <th>更新日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orderHistoryList}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.goodsName}"></td>
+                    <td th:text="${order.warehouseName}"></td>
+                    <td th:text="${order.orderAmount} + '個'"></td>
+                    <td>
+                        <span th:if="${order.orderStatus == '準備中'}" class="badge bg-warning text-dark">準備中</span>
+                        <span th:if="${order.orderStatus == '発送済み'}" class="badge bg-success">発送済み</span>
+                    </td>
+                    <td th:text="${#temporals.format(order.orderDate, 'yyyy/MM/dd HH:mm')}"></td>
+                    <td th:text="${#temporals.format(order.updateDate, 'yyyy/MM/dd HH:mm')}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${orderHistoryList.isEmpty()}" class="alert alert-info">
+            発注履歴がありません。
+        </div>
+    </div>
+</body>
+
+</html>

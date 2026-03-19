@@ -1,9 +1,108 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
 
 <div th:fragment="content">
-	<!-- 中身 -->
-	<h1>在庫管理アプリの制作</h1>
-</div>
+    <div class="container-fluid py-4">
+        <div class="mb-4">
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">
+                <i class="fas fa-tachometer-alt me-2 text-primary"></i>在庫管理Webアプリ
+            </h1>
+        </div>
 
+        <div class="row" sec:authorize="hasRole('SHOP')">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow border-0 h-100">
+                    <div class="card-header py-3 bg-primary text-white border-0">
+                        <h6 class="m-0 fw-bold text-center">
+                            <i class="fas fa-award me-1"></i> <span th:text="${belongName}">所属店舗</span> TOP5
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center w-25">順位</th>
+                                        <th class="w-50">商品名</th>
+                                        <th class="text-end w-25 pe-4">出荷数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="i : ${#numbers.sequence(0, 4)}">
+                                        <td class="text-center">
+                                            <span th:if="${i == 0}" class="badge rounded-pill bg-warning text-dark px-3 shadow-sm">1位</span>
+                                            <span th:if="${i == 1}" class="badge rounded-pill bg-secondary px-3 shadow-sm">2位</span>
+                                            <span th:if="${i == 2}" class="badge rounded-pill bg-danger px-3 shadow-sm">3位</span>
+                                            <span th:if="${i >= 3}" class="badge rounded-pill bg-light text-muted border px-3" th:text="${i + 1} + '位'">4位</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${shopRanking != null and shopRanking.size() > i}" 
+                                                  th:text="${shopRanking[i].goodsName}" class="fw-bold text-dark">商品名</span>
+                                            <span th:unless="${shopRanking != null and shopRanking.size() > i}" class="text-muted small">---</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <div th:if="${shopRanking != null and shopRanking.size() > i}">
+                                                <span class="h6 fw-bold text-primary mb-0" 
+                                                      th:text="${#numbers.formatInteger(shopRanking[i].goodsAmount, 1, 'COMMA')}">0</span>
+                                                <small class="text-muted ms-1">個</small>
+                                            </div>
+                                            <span th:unless="${shopRanking != null and shopRanking.size() > i}" class="text-muted small">0</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+			
+            <div class="col-md-6 mb-4">
+                <div class="card shadow border-0 h-100">
+                    <div class="card-header py-3 bg-dark text-white border-0">
+                        <h6 class="m-0 fw-bold text-center">
+                            <i class="fas fa-chart-line me-1"></i> 全店舗 総合TOP5
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center w-25">順位</th>
+                                        <th class="w-50">商品名</th>
+                                        <th class="text-end w-25 pe-4">出荷数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="i : ${#numbers.sequence(0, 4)}">
+                                        <td class="text-center">
+                                            <span th:if="${i == 0}" class="badge rounded-pill bg-warning text-dark px-3 shadow-sm">1位</span>
+                                            <span th:if="${i == 1}" class="badge rounded-pill bg-secondary px-3 shadow-sm">2位</span>
+                                            <span th:if="${i == 2}" class="badge rounded-pill bg-danger px-3 shadow-sm">3位</span>
+                                            <span th:if="${i >= 3}" class="badge rounded-pill bg-light text-muted border px-3" th:text="${i + 1} + '位'">4位</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${allRanking != null and allRanking.size() > i}" 
+                                                  th:text="${allRanking[i].goodsName}" class="fw-bold text-dark">商品名</span>
+                                            <span th:unless="${allRanking != null and allRanking.size() > i}" class="text-muted small">---</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <div th:if="${allRanking != null and allRanking.size() > i}">
+                                                <span class="h6 fw-bold mb-0" 
+                                                      th:text="${#numbers.formatInteger(allRanking[i].goodsAmount, 1, 'COMMA')}">0</span>
+                                                <small class="text-muted ms-1">個</small>
+                                            </div>
+                                            <span th:unless="${allRanking != null and allRanking.size() > i}" class="text-muted small">0</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </html>

@@ -1,0 +1,94 @@
+package com.github.sa_cchu.stock.service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.github.sa_cchu.stock.dto.GoodsRankingDTO;
+import com.github.sa_cchu.stock.repository.DailyOrderSummaryRepository;
+import com.github.sa_cchu.stock.repository.OrdersRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class DashboardService {
+	private final DailyOrderSummaryRepository dailyOrderSummaryRepository;
+	private final OrdersRepository ordersRepository;
+	
+	@Scheduled(cron = "0 10 0 * * *")
+	@Transactional(rollbackOn = Exception.class)
+	public void aggregDailyOrders() {
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		LocalDateTime start = yesterday.atStartOfDay();
+		LocalDateTime end = LocalDate.now().atStartOfDay();
+
+		try {
+			log.info("{}の集計バッチを開始します。", yesterday);
+			long count = ordersRepository.countByOrderDateBetween(start, end);
+	        if (count == 0) {
+	            log.info("{} は注文データがないため、集計をスキップします。", yesterday);
+	            return;
+	        }
+			dailyOrderSummaryRepository.deleteByCountDate(yesterday);
+			dailyOrderSummaryRepository.insertDailySummary(start, end);
+
+			log.info("{}の集計バッチが正常に完了しました。。", yesterday);
+
+		} catch (Exception e) {
+			log.error("{}のバッチ処理中にエラーが発生しました。", yesterday, e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	// 商品ランキング
+	public List<GoodsRankingDTO> getAllShopRanking() {
+		LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+		List<Object[]> results = dailyOrderSummaryRepository.findTopGoods(oneMonthAgo);
+		return convertToDto(results);
+	}
+
+	// 所属店舗所品ランキング
+	public List<GoodsRankingDTO> getMyShopRanking(Integer shopId) {
+		LocalDate oneMonthAgoDate = LocalDate.now().minusMonths(1);
+		List<Object[]> results = dailyOrderSummaryRepository.findTopGoodsByShop(shopId, oneMonthAgoDate);
+		return convertToDto(results);
+	}
+
+	// Dtoに変換する
+	private List<GoodsRankingDTO> convertToDto(List<Object[]> results) {
+		return results.stream().map(result -> new GoodsRankingDTO((String) result[0], // 商品名
+				((Number) result[1]).intValue() // 合計数
+		)).collect(Collectors.toList());
+	}
+
+	// test
+	@Transactional // 削除と挿入をセットで行うため
+	public void refreshDailySummary() {
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		LocalDateTime start = yesterday.atStartOfDay();
+		LocalDateTime end = yesterday.plusDays(1).atStartOfDay();
+
+		long count = ordersRepository.countByOrderDateBetween(start, end);
+	    System.out.println(yesterday + " の注文件数: " + count + "件");
+
+	    if (count == 0) {
+	        System.out.println("集計対象がないため、処理をスキップします。");
+	        return;
+	    }
+	    System.out.println("集計処理開始");
+		dailyOrderSummaryRepository.deleteByCountDate(yesterday);
+		dailyOrderSummaryRepository.insertDailySummary(start, end);
+		
+		System.out.println("集計処理終了");
+	}
+
+}

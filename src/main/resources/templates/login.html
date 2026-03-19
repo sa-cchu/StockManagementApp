@@ -39,11 +39,15 @@
             <div class="d-grid gap-2 mt-4">
                 <button type="submit" class="btn btn-primary btn-lg">ログイン</button>
             </div>
+			<div class="text-center mt-3">
+			    <p class="small text-muted mb-2">ログインできない方・お困りの方はこちら</p>
+			    <a th:href="@{/inquiry/guest/create}" class="btn btn-outline-secondary">
+			        お問い合わせ
+			    </a>
+			</div>
         </form>
     </div>
 </div>
-
-
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

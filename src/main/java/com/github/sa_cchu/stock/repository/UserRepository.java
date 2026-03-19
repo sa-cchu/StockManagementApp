@@ -28,4 +28,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {//<>の中
 	boolean existsByUserNameAndUserIdNot(String userName, Integer UserId);
 
 	boolean existsByUserName(String userName);
+
+	List<User> findByShop_ShopIdAndDeleteFlag(Integer targetId, int i);
+
+	List<User> findByWarehouse_WarehouseIdAndDeleteFlag(Integer targetId, int i);
+	// UserRepository.java に追加
+	List<User> findByAuthority_AuthorityNameContainingAndDeleteFlag(String authPart, Integer deleteFlag);
+
 }

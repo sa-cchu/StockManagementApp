@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.github.sa_cchu.stock.dto.BelongingDTO;
 import com.github.sa_cchu.stock.entity.Goods;
 import com.github.sa_cchu.stock.entity.Shop;
 import com.github.sa_cchu.stock.entity.ShopStock;
@@ -52,7 +53,7 @@ public class ShopService {
 				ShopStock stock = new ShopStock();
 				stock.setShopId(savedShop);
 				stock.setGoodsId(goods);
-				stock.setQuantity(0);
+				stock.setShopStockQuantity(0);
 				shopStockRepository.save(stock);
 			}
 		}
@@ -86,5 +87,16 @@ public class ShopService {
 		shopRepository.save(shop);
 
 	}
+	///////////////////////////////////////////////////////////////////////////////
+	
+	//DTOバージョンで作成//
+	
+	 ////////////////////////////////////////////////////////////////////////////////////
 
+		// 既存のメソッドの下に追加
+		public List<BelongingDTO> getAllShopDTOs() {
+	    return shopRepository.findByDeleteFlag(0).stream()
+	            .map(s -> new BelongingDTO(s.getShopId(), s.getShopName()))
+	            .toList();
+	}
 }

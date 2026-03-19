@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>お問い合わせ送信（ゲスト）</title>
+
+	<!-- Bootstrap CSS -->
+	<link href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+	<!-- 中身 -->
+	<div class="container mt-4">
+
+		<h1 class="mb-4">お問い合わせ送信</h1>
+
+		<div class="card">
+			<div class="card-body">
+				<!-- 入力フォームエリア -->
+				<form th:action="@{/inquiry/guest/create}" th:object="${guestInquiryForm}" method="post">
+					<!-- 入力項目に不備がある場合に全体のエラーメッセージを表示 -->
+					<div th:if="${#fields.hasAnyErrors()}" class="errorMessage alert alert-danger mb-3">
+						入力内容に誤りがあります。
+					</div>
+					<!-- 保存に失敗した場合にグローバルエラーメッセージを表示 -->
+					<div th:each="globalErr : ${#fields.globalErrors()}" class="errorMessage alert alert-danger mb-2"
+						th:text="${err.defaultMessage}"></div>
+					<!-- 登録完了メッセージを表示 -->
+					<div th:if="${successMessage}" class="successMessage alert alert-success">
+						<span th:text="${successMessage}"></span>
+					</div>
+
+					<!-- ゲスト用フォームの送信先（非活性） -->
+					<div class="mb-3">
+					    <label class="form-label">送信先</label>
+					    <input type="text" class="form-control" th:value="${T(com.github.sa_cchu.stock.enums.AuthorityTypeEnum).ADMIN.displayName}" disabled>
+					    <input type="hidden" th:field="*{authorityId}">
+					</div>
+					<!-- 送信内容エリア -->
+					<div class="mb-4">
+						<label class="form-label">内容</label>
+						<textarea th:field="*{inquiryDetail}" class="form-control" rows="5"></textarea>
+						<!-- 入力・選択不備時にエラーメッセージを出力 -->
+						<div class="text-danger d-block small" th:errors="*{inquiryDetail}"></div>
+					</div>
+
+					<button type="submit" class="btn btn-primary btn-lg">
+						送信
+					</button>
+
+					<a th:href="@{/inquiry/list}" class="btn btn-secondary btn-lg ms-2">
+						一覧へ戻る
+					</a>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

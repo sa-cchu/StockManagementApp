@@ -6,8 +6,10 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.github.sa_cchu.stock.dto.RelationTargetDto;
 import com.github.sa_cchu.stock.entity.Relation;
 import com.github.sa_cchu.stock.entity.Shop;
+import com.github.sa_cchu.stock.entity.User;
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.repository.RelationRepository;
 import com.github.sa_cchu.stock.repository.ShopRepository;
@@ -49,6 +51,59 @@ public class RelationService {
 
 	}
 
+	/**
+	 * ログインユーザー情報を判定して権限に応じた連携先（店舗 or 倉庫）を取得処理を呼び出し
+	 * リストでcontrollerに返却するメソッド
+	 * @param user ログインユーザー
+	 * @return 連携先のリスト
+	 */
+	public List<RelationTargetDto> getTargetsForUser(User user) {	
+		if (user.getShop() != null) {
+			// 店舗権限でログインしている場合は、店舗IDを使用して連携している倉庫取得し、リスト形式で返却する。
+			return getRelationWarehousesByShopId(user.getShop().getShopId());
+		} else if (user.getWarehouse() != null) {
+			// 倉庫権限でログインしている場合は、倉庫IDを使用して連携している店舗取得し、リスト形式で返却する。
+			return getRelationShopsByWarehouseId(user.getWarehouse().getWarehouseId());
+		}
+		// 取得情報がない場合、空のリストを返却する。
+		return List.of();
+	}
+	/**
+	 * DB層から連携している倉庫情報を取得するメソッド
+	 * @param shopId
+	 * @return 連携先のIDと名前のリスト
+	 */
+	public List<RelationTargetDto> getRelationWarehousesByShopId(Integer shopId) {
+		Shop shop = new Shop();
+		shop.setShopId(shopId);
+		// 削除されていない店舗IDに紐づく連携先を一覧で取得する。
+		List<Relation> relations = relationRepository.findByShopAndDeleteFlag(shop, 0);
+		// 取得した値をDTOに変換してリスト化する。
+		return relations.stream()
+				.map(r -> new RelationTargetDto(
+						r.getWarehouse().getWarehouseId(),
+						r.getWarehouse().getWarehouseName()))
+				.toList();
+	}
+	/**
+	 * DB層から連携している店舗情報を取得するメソッド
+	 * @param warehouseId
+	 * @return 連携先のIDと名前のリスト
+	 */
+	public List<RelationTargetDto> getRelationShopsByWarehouseId(Integer warehouseId) {
+		Warehouse warehouse = new Warehouse();
+		warehouse.setWarehouseId(warehouseId);
+		
+		 List<Relation> relations =
+		            relationRepository.findByWarehouseAndDeleteFlag(warehouse, 0);
+
+		    return relations.stream()
+		            .map(r -> new RelationTargetDto(
+		                    r.getShop().getShopId(),
+		                    r.getShop().getShopName()))
+		            .toList();
+	}
+	
 	@Transactional
 	public void saveRelation(Relation relation) throws Exception {
 		// 重複チェック (論理削除されていない有効なデータが対象)

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout">
+
+<div th:fragment="content">
+	<!-- 中身 -->
+	<div class="container mt-4">
+
+		<h1 class="mb-4">お問い合わせ送信</h1>
+
+		<div class="card">
+			<div class="card-body">
+
+				<!-- 入力フォームエリア -->
+				<form th:action="@{/inquiry/create}" th:object="${inquiryForm}" method="post">
+					<!-- 入力項目に不備がある場合に全体のエラーメッセージを表示 -->
+					<div th:if="${#fields.hasAnyErrors()}" class="errorMessage alert alert-danger mb-3">
+						入力内容に誤りがあります。
+					</div>
+					<!-- 保存に失敗した場合にグローバルエラーメッセージを表示 -->
+					<div th:each="globalErr : ${#fields.globalErrors()}" class="errorMessage alert alert-danger mb-2" 
+						 th:text="${err.defaultMessage}"></div>
+					 <!-- 登録完了メッセージを表示 -->
+					 <div th:if="${successMessage}" class="successMessage alert alert-success">
+					     <span th:text="${successMessage}"></span>
+					 </div>
+					 
+					<!-- 送信先選択エリア -->
+					<div class="mb-3">
+						<label class="form-label">送信先</label>
+						<!-- 送信先権限の選択 -->
+						<div class="mb-3">
+							<select th:field="*{authorityId}" class="form-select" id="authoritySelect">
+								<option value="">送信先を選択してください</option>
+								<!-- ログインユーザーの権限以外を表示する -->
+								<option th:each="auth : ${authorities}" 
+										th:if="${auth.authorityId != myAuthorityId}"
+										th:value="${auth.authorityId}" 
+										th:text="${auth.authorityName == 'ROLE_ADMIN' ? '管理者' : 
+										          (auth.authorityName == 'ROLE_SHOP' ? '店舗' : 
+										          (auth.authorityName == 'ROLE_WAREHOUSE' ? '倉庫' : auth.authorityName))}">
+								</option>
+							</select>
+							<!-- 入力・選択不備時にエラーメッセージを出力 -->
+							<div class="text-danger d-block small" th:errors="*{authorityId}"></div>
+						</div>
+						<!-- 送信先ID -->
+						<div class="mb-3" id="targetArea">
+							<label class="form-label">連携している店舗・倉庫</label>
+
+							<select th:field="*{targetId}" class="form-select">
+								<option value="">選択してください</option>
+
+								<option th:each="target : ${targets}" th:value="${target.relationTargetId}"
+									th:text="${target.relationTargetName}">
+								</option>
+							</select>
+							<!-- 入力・選択不備時にエラーメッセージを出力 -->
+							<div class="text-danger d-block small" th:errors="*{targetId}"></div>
+							<!-- 連携先がない場合はメッセージを表示する -->
+							<div th:if="${#lists.isEmpty(targets)}" class="text-danger mt-2 mb-3">
+							    連携対象が存在しません。管理者に連携登録を依頼してください。
+							</div>
+						</div>
+					</div>
+					<!-- 送信内容エリア -->
+					<div class="mb-4">
+						<label class="form-label">内容</label>
+						<textarea th:field="*{inquiryDetail}" class="form-control" rows="5"></textarea>
+						<!-- 入力・選択不備時にエラーメッセージを出力 -->
+						<div class="text-danger d-block small" th:errors="*{inquiryDetail}"></div>
+					</div>
+
+					<button type="submit" class="btn btn-primary btn-lg">
+						送信
+					</button>
+
+					<a th:href="@{/inquiry/list}" class="btn btn-secondary btn-lg ms-2">
+						一覧へ戻る
+					</a>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- 送信先を管理者以外で選択したときにだけ、連携している店舗・倉庫の選択肢を出現させる -->
+	<script th:inline="javascript">
+		document.addEventListener("DOMContentLoaded", function () {
+
+			const authoritySelect = document.getElementById("authoritySelect");
+			const targetArea = document.getElementById("targetArea");
+			const adminId = /*[[${adminId}]]*/ 1;
+
+			function toggleTarget() {
+				const val = authoritySelect.value;
+				if (val !== "" && val !== adminId.toString()) {
+					targetArea.style.display = "block";
+				} else {
+					targetArea.style.display = "none";
+				}
+			}
+			// 初期状態
+			toggleTarget();
+			// 選択変更時
+			authoritySelect.addEventListener("change", toggleTarget);
+		});
+	</script>
+</div>
+
+</html>

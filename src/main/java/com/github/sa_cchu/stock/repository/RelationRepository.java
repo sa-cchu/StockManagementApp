@@ -15,6 +15,7 @@ public interface RelationRepository extends JpaRepository<Relation, Integer> {
 	List<Relation> findByDeleteFlag(Integer deleteFrag);
 	List<Relation> findByShopAndDeleteFlag(Shop shop,Integer deleteFlag);
 	
+	List<Relation> findByWarehouseAndDeleteFlag(Warehouse warehouse,Integer deleteFlag);
 	
 	    // 指定した店舗・倉庫で、削除されていない(deleteFlag=0)データがあるか確認
 	    boolean existsByShopAndWarehouseAndDeleteFlag(Shop shop, Warehouse warehouse, Integer deleteFlag);
