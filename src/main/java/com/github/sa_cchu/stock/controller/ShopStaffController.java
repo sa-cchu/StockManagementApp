@@ -36,6 +36,7 @@ public class ShopStaffController {
 		model.addAttribute("userList", userDetailsService.getUserListForOperator(operator, belongingId));
 		// 2. プルダウンの選択肢
 		model.addAttribute("belongings", userDetailsService.getBelongingList(operator));
+		model.addAttribute("selectedId", belongingId);
 		model.addAttribute("baseUrl", "/shop-staff");
 		return "myTeamMG";
 	}
