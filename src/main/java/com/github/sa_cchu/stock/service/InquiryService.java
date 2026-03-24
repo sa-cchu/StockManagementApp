@@ -145,4 +145,16 @@ public class InquiryService {
 	    // ステータスを更新する
 	    inquiry.setInqueryStatus(status);
 	}
+	
+	/**
+	 * お問い合わせIDに紐づくお問い合わせの削除フラグを切り替えて論理削除として更新する。
+	 * @param id お問い合わせID
+	 */
+	@Transactional
+	public void softDeleteInquery(Integer id) {
+		// 指定されたIDのお問い合わせ情報を取得する
+		Inquery inquiry = inquiryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ユーザーが存在しません"));
+		// 削除フラグの値を 1 (true)で更新して論理削除実行する。
+	    inquiry.setDeleteFlag(1);
+	}
 }

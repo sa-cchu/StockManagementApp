@@ -231,7 +231,29 @@ public class InquiryController {
 	    // 更新完了メッセージを出力して再度詳細画面を表示する。
 	    return "redirect:/inquiry/detail?id=" + id;
 	}
-
+	
+	/**
+	 * お問い合わせ一覧にて削除ボタンを押された際に削除処理を呼び出す。
+	 * @param id id お問い合わせID
+	 * @param redirectAttributes フラッシュメッセージの情報
+	 * @return 削除完了メッセージと論理削除後の一覧結果
+	 */
+	@PostMapping("/delete")
+	public String deleteInquiry(@RequestParam Integer id, RedirectAttributes redirectAttributes) {
+		try {
+		    // 問い合わせIDに紐づくお問い合わせを論理削除処理を呼ぶ。
+			inquiryService.softDeleteInquery(id);
+		    // 更新が成功した場合、メッセージを追加し画面で表示する。
+		    redirectAttributes.addFlashAttribute("successMessage", "お問い合わせの削除が完了しました");
+		} catch (Exception e) {
+			// 空データだった場合やデータ取得に失敗した場合、メッセージを追加し画面で表示する。
+	        redirectAttributes.addFlashAttribute("errorMessage", "お問い合わせの削除に失敗しました");
+	        // ログ出力する。
+	        e.printStackTrace();
+		}
+		return "redirect:/inquiry/list";
+	}
+	
 	/**
 	 * ログインユーザーが管理者かどうか判定するメソッド
 	 * @param user ログイン中のユーザー情報

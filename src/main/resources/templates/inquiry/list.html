@@ -29,6 +29,15 @@
 			</select>
 		</form>
 	</div>
+	
+	<!-- 削除成功メッセージを表示 -->
+	<div th:if="${successMessage}" class="successMessage alert alert-success">
+	    <span th:text="${successMessage}"></span>
+	</div>
+	<!-- 削除失敗メッセージを表示 -->
+	<div th:if="${errorMessage}" class="alert alert-danger">
+	    <span th:text="${errorMessage}"></span>
+	</div>
 
 	<!-- お問い合わせ一覧テーブルエリア -->
 	<table class="table">
@@ -40,7 +49,7 @@
 				<th>名前</th>
 				<th>送信日時</th>
 				<th>ステータス</th>
-				<th>詳細</th>
+				<th>アクション</th>
 			</tr>
 		</thead>
 
@@ -79,6 +88,10 @@
 					<a th:href="@{/inquiry/detail(id=${inquiry.inquiryId})}" class="btn btn-sm btn-info">
 						詳細
 					</a>
+					<form th:action="@{/inquiry/delete(id=${inquiry.inquiryId})}" method="post" style="display:inline;"
+						onsubmit="return confirm('本当に削除しますか？');">
+						<button type="submit" class="btn btn-sm btn-danger">削除</button>
+					</form>
 				</td>
 
 			</tr>
