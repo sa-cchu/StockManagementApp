@@ -19,7 +19,7 @@ public class InquiryForm {
     private Integer targetId;
 	/**	お問い合わせ内容 */
     @Size(max = 255, message = "お問い合わせ内容は255文字以内で入力してください")
-    @Pattern(regexp = ".*[^\\s　].*", message = "お問い合わせ内容の入力は必須です（※スペースのみの入力不可）")
+    @Pattern(regexp = "(?s).*[^\\s　].*", message = "お問い合わせ内容の入力は必須です（※スペースのみの入力不可）")
     private String inquiryDetail;
     
 }
