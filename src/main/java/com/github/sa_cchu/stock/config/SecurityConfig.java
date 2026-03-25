@@ -48,7 +48,15 @@ public class SecurityConfig {
 				// 3. ログアウトの設定開始
 				.logout(logout -> logout
 						// ログアウト成功後、「?logout」という印を付けてログイン画面へ戻します
-						.logoutSuccessUrl("/login?logout"));
+						.logoutSuccessUrl("/login?logout")
+						.invalidateHttpSession(true) // セッションを無効にする
+					    .deleteCookies("JSESSIONID") // クッキーも削除する
+					    .permitAll())
+				
+				// 4. セッション管理の設定
+				.sessionManagement(session -> session
+						// セッションが切れた（無効になった）時の遷移先を指定 → ログイン画面に戻す
+						.invalidSessionUrl("/login?timeout"));
 
 		// 設定を組み立てて完成した「ルール一式」をSpringに返します
 		return http.build();

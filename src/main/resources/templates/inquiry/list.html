@@ -4,6 +4,16 @@
 <div th:fragment="content">
 	<!-- 中身 -->
 	<h1 class="mb-3">お問い合わせ一覧</h1>
+	
+	<!-- 削除成功メッセージを表示 -->
+	<div th:if="${successMessage}" class="successMessage alert alert-success mb-3" role="alert"> 
+	    <span th:text="${successMessage}"></span>
+	</div>
+	<!-- 削除失敗メッセージを表示 -->
+	<div th:if="${errorMessage}" class="errorMessage alert alert-danger mb-3" role="alert">
+	    <span th:text="${errorMessage}"></span>
+	</div>
+	
 	<div class="d-flex justify-content-between align-items-center mb-3">
 		<!-- 管理者権限以外のユーザーでログインしているときだけ表示する -->
 		<a th:if="${!isAdmin}" th:href="@{/inquiry/create}" class="btn btn-primary">
@@ -29,19 +39,10 @@
 			</select>
 		</form>
 	</div>
-	
-	<!-- 削除成功メッセージを表示 -->
-	<div th:if="${successMessage}" class="successMessage alert alert-success">
-	    <span th:text="${successMessage}"></span>
-	</div>
-	<!-- 削除失敗メッセージを表示 -->
-	<div th:if="${errorMessage}" class="alert alert-danger">
-	    <span th:text="${errorMessage}"></span>
-	</div>
 
 	<!-- お問い合わせ一覧テーブルエリア -->
 	<table class="table">
-		<thead class="table-success">
+		<thead class="table-info">
 			<tr>
 				<th>問い合わせ内容</th>
 				<th>権限</th>

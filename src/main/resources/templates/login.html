@@ -21,8 +21,13 @@
             ユーザー名またはパスワードが違います
         </div>
 
+		<!-- ログアウト時メッセージを表示する -->
         <div th:if="${param.logout}" class="alert alert-success" role="alert">
             ログアウトしました
+        </div>
+		<!-- セッション切れにより、自動でログイン画面に遷移時にメッセージ表示する -->
+		<div th:if="${param.timeout}" class="alert alert-warning" role="alert">
+            セッションの有効期限が切れました。<br>再度ログインしてください。
         </div>
 
         <form th:action="@{/login}" method="post">

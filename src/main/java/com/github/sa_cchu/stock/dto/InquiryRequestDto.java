@@ -45,7 +45,7 @@ public class InquiryRequestDto {
     	InquiryRequestDto dto = new InquiryRequestDto();
         dto.setInquiryDetail(form.getInquiryDetail());
         dto.setTargetId(form.getTargetId());
-        // authorityId を管理者に固定する。
+        // 念の為、DTOでもauthorityId を管理者に固定する。
         dto.setAuthorityId(AuthorityTypeEnum.ADMIN.getAuthorityTypeId());
         return dto;
     }
