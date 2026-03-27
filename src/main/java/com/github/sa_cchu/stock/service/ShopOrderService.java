@@ -103,7 +103,6 @@ public class ShopOrderService {
     public void executeOrder(Shop shop, Goods goods, ShopOrderFormDto form) throws Exception {
 
         int orderedCount = 0;
-        int totalOrderedQuantity = 0;
 
         for (ShopOrderRowDto row : form.getOrderRows()) {
             if (row.getOrderQuantity() == null || row.getOrderQuantity() <= 0) {
@@ -137,19 +136,18 @@ public class ShopOrderService {
             newOrder.setDeleteFlag(0);
 
             ordersRepository.save(newOrder);
-            
-            totalOrderedQuantity += row.getOrderQuantity();
         }
 
         if (orderedCount == 0) {
             throw new Exception("発注数が1つも入力されていません。");
         }
 
-        // 店舗在庫更新
-        ShopStock shopStock = shopStockRepository.findByShopIdAndGoodsIdAndDeleteFlag(shop, goods, 0);
-        if(shopStock == null) throw new Exception("店舗在庫データが見つかりません。");
-        shopStock.setShopStockQuantity(shopStock.getShopStockQuantity() + totalOrderedQuantity);
-        shopStockRepository.save(shopStock);
+        // 店舗在庫更新（ここではまだ増やさない。納品済みステータスに変更されたタイミングで増やす）
+        // ShopStock shopStock = shopStockRepository.findByShopIdAndGoodsIdAndDeleteFlag(shop, goods, 0);
+        // if(shopStock == null) throw new Exception("店舗在庫データが見つかりません。");
+        // shopStock.setShopStockQuantity(shopStock.getShopStockQuantity() + totalOrderedQuantity);
+        // shopStockRepository.save(shopStock);
+
     }
 
     // 店舗の発注履歴一覧取得（ステータス＋期間絞り込み対応）
@@ -167,5 +165,33 @@ public class ShopOrderService {
             dto.setUpdateDate(order.getUpdateDate());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    // ステータス更新（「納品済み」にして店舗在庫を増やす）
+    @Transactional
+    public void updateOrderStatusToDelivered(Integer orderId, Shop shop) throws Exception {
+        Orders order = ordersRepository.findById(orderId).orElse(null);
+
+        if (order == null) {
+            throw new Exception("発注データが見つかりません。");
+        }
+        // 自分の店舗の発注かチェック（セキュリティ対策）
+        if (!order.getShop().getShopId().equals(shop.getShopId())) {
+            throw new Exception("この発注を変更する権限がありません。");
+        }
+        // 「発送済み」からしか処理できないようにする
+        if (!"発送済み".equals(order.getOrderStatus())) {
+            throw new Exception("発送済みの発注のみ納品済みに変更できます。");
+        }
+
+        order.setOrderStatus("納品済み");
+        order.setUpdateDate(LocalDateTime.now());
+        ordersRepository.save(order);
+
+        // ここで店舗在庫を増やす
+        ShopStock shopStock = shopStockRepository.findByShopIdAndGoodsIdAndDeleteFlag(shop, order.getGoods(), 0);
+        if(shopStock == null) throw new Exception("店舗在庫データが見つかりません。");
+        shopStock.setShopStockQuantity(shopStock.getShopStockQuantity() + order.getOrderAmount());
+        shopStockRepository.save(shopStock);
     }
 }

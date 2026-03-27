@@ -109,6 +109,25 @@ public class ShopOrderController {
         return "redirect:/shop-order/goods-list";
     }
 
+    // ステータス変更（納品済みにする）
+    @PostMapping("/shop-order/update-status")
+    public String updateStatus(
+            @AuthenticationPrincipal User user,
+            @RequestParam("orderId") Integer orderId,
+            RedirectAttributes redirectAttributes) {
+
+        Shop shop = user.getShop();
+        if (shop == null) return "redirect:/error";
+
+        try {
+            shopOrderService.updateOrderStatusToDelivered(orderId, shop);
+            redirectAttributes.addFlashAttribute("successMessage", "ステータスを更新し、在庫を追加しました。");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/shop-order/history";
+    }
+
     // 発注履歴表示
     @GetMapping("/shop-order/history")
     public String showOrderHistory(

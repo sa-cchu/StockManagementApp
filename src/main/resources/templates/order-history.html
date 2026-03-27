@@ -36,6 +36,7 @@
                         <option value="">すべて</option>
                         <option value="準備中" th:selected="${selectedStatus == '準備中'}">準備中</option>
                         <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
+                        <option value="納品済み" th:selected="${selectedStatus == '納品済み'}">納品済み</option>
                     </select>
                 </div>
 
@@ -66,6 +67,7 @@
                     <th>ステータス</th>
                     <th>発注日時</th>
                     <th>更新日時</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -77,9 +79,21 @@
                     <td>
                         <span th:if="${order.orderStatus == '準備中'}" class="badge bg-warning text-dark">準備中</span>
                         <span th:if="${order.orderStatus == '発送済み'}" class="badge bg-success">発送済み</span>
+                        <span th:if="${order.orderStatus == '納品済み'}" class="badge bg-primary">納品済み</span>
                     </td>
                     <td th:text="${#temporals.format(order.orderDate, 'yyyy/MM/dd HH:mm')}"></td>
                     <td th:text="${#temporals.format(order.updateDate, 'yyyy/MM/dd HH:mm')}"></td>
+                    <td>
+                        <form th:if="${order.orderStatus == '発送済み'}" th:action="@{/shop-order/update-status}"
+                            method="post" style="display:inline;">
+                            <input type="hidden" name="orderId" th:value="${order.orderId}">
+                            <button type="submit" class="btn btn-primary btn-sm">納品済みにする</button>
+                        </form>
+                        <button th:if="${order.orderStatus == '準備中'}" class="btn btn-secondary btn-sm"
+                            disabled>発送待ち</button>
+                        <button th:if="${order.orderStatus == '納品済み'}" class="btn btn-secondary btn-sm"
+                            disabled>納品済み</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
