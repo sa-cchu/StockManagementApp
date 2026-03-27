@@ -18,12 +18,12 @@
 
 			<div class="mb-3">
 				<label class="form-label">店舗名</label>
-				<input type="text" th:field="*{shopName}" class="form-control" required>
+				<input type="text" th:field="*{shopName}" class="form-control">
 			</div>
 
 			<div class="mb-3">
 				<label class="form-label">店舗住所</label>
-				<input type="text" th:field="*{shopAddress}" class="form-control" required>
+				<input type="text" th:field="*{shopAddress}" class="form-control">
 			</div>
 			<div class="ms-3">
 				<button type="submit" class="btn btn-primary" th:text="${shop.shopId == null} ? '追加' : '編集'">

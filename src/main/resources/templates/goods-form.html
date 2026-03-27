@@ -20,7 +20,7 @@
 
 		<div class="mb-3">
 			<label for="category" class="form-label">カテゴリー <span style="color:red">*</span></label>
-			<select id="category" th:field="*{category.categoryId}" class="form-select" required>
+			<select id="category" th:field="*{category.categoryId}" class="form-select">
 				<option value="">-- カテゴリーを選択してください --</option>
 				<option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}">
 				</option>
