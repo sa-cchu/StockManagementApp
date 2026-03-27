@@ -18,13 +18,11 @@ import com.github.sa_cchu.stock.dto.OrderImportDto;
 import com.github.sa_cchu.stock.entity.Goods;
 import com.github.sa_cchu.stock.entity.Orders;
 import com.github.sa_cchu.stock.entity.Shop;
-import com.github.sa_cchu.stock.entity.ShopStock;
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.entity.WarehouseStock;
 import com.github.sa_cchu.stock.repository.GoodsRepository;
 import com.github.sa_cchu.stock.repository.OrdersRepository;
 import com.github.sa_cchu.stock.repository.RelationRepository;
-import com.github.sa_cchu.stock.repository.ShopStockRepository;
 import com.github.sa_cchu.stock.repository.WarehouseRepository;
 import com.github.sa_cchu.stock.repository.WarehouseStockRepository;
 
@@ -38,7 +36,6 @@ public class OrderImportService {
 	private final WarehouseRepository warehouseRepository;
 	private final RelationRepository relationRepository;
 	private final WarehouseStockRepository warehouseStockRepository;
-	private final ShopStockRepository shopStockRepository;
 	private final OrdersRepository ordersRepository;
 
 	/**
@@ -126,12 +123,12 @@ public class OrderImportService {
 				order.setDeleteFlag(0);
 				ordersRepository.save(order);
 
-				// 店舗在庫加算
-				ShopStock sStock = shopStockRepository.findByShopIdAndGoodsIdAndDeleteFlag(shop, goods, 0);
-				if (sStock == null)
-					throw new Exception("店舗在庫データが未登録です。");
-				sStock.setShopStockQuantity(sStock.getShopStockQuantity() + amount);
-				shopStockRepository.save(sStock);
+				// 店舗在庫加算（ここではまだ増やさない。納品済みステータスに変更されたタイミングで増やす）
+				// ShopStock sStock = shopStockRepository.findByShopIdAndGoodsIdAndDeleteFlag(shop, goods, 0);
+				// if (sStock == null)
+				// 	throw new Exception("店舗在庫データが未登録です。");
+				// sStock.setShopStockQuantity(sStock.getShopStockQuantity() + amount);
+				// shopStockRepository.save(sStock);
 
 			} catch (Exception e) {
 				// エラー内容に行番号を付与して上位(Controller)へ投げる
