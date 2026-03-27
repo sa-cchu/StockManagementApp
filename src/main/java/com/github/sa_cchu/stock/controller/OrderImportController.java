@@ -1,9 +1,16 @@
 package com.github.sa_cchu.stock.controller;
 
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +30,40 @@ import lombok.RequiredArgsConstructor;
 public class OrderImportController {
 
 	private final OrderImportService orderImportService;
+	
+	/**
+     * 一括発注用エクセルテンプレートのダウンロード
+     */
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> downloadExcel(@AuthenticationPrincipal User user) {
+        try {
+            // 1. ログインユーザーの店舗情報を取得
+            Shop loginShop = user.getShop();
+            if (loginShop == null) {
+                return ResponseEntity.badRequest().build();
+            }
 
+            // 2. サービスを呼び出してエクセル（バイト配列）を生成
+            byte[] excelContent = orderImportService.generateOrderExcel(loginShop);
+
+            // 3. ファイル名の設定（日本語が含まれる場合のエンコード処理）
+            String fileName = URLEncoder.encode("一括発注シート.xlsx", StandardCharsets.UTF_8).replace("+", "%20");
+
+            // 4. HTTPレスポンスとして返却
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + fileName)
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .contentLength(excelContent.length)
+                    .body(excelContent);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 実務ではログ出力後、エラー画面へ遷移させるか500エラーを返します
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    
 	@PostMapping("/import")
 	public String importExcel(
 	        @RequestParam("file") MultipartFile file, 
@@ -52,10 +92,10 @@ public class OrderImportController {
 			// 成功メッセージ
 			redirectAttributes.addFlashAttribute("successMsg", "一括発注インポートが正常に完了しました。");
 
+			// Controller
 		} catch (Exception e) {
-			// 4. サービスから飛んできた Exception (行番号入り) をキャッチして画面に表示
-			// 全ロールバックされているので、DBは安全です
-			redirectAttributes.addFlashAttribute("errorMsg", "インポートに失敗しました。全処理を中断しました。理由: " + e.getMessage());
+		    // 改行タグ入りのエラーリストを渡す
+		    redirectAttributes.addFlashAttribute("errorMsg", "インポートを中断しました。以下のエラーを修正してください。<br>" + e.getMessage());
 		}
 
 		return "redirect:/shop-order/goods-list"; // 完了後のリダイレクト先
