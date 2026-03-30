@@ -66,7 +66,8 @@ public class ShopStaffController {
 	@PostMapping("/save")
 	public String save(@Validated @ModelAttribute("userForm") UserFormDTO userForm, BindingResult result,
 			@AuthenticationPrincipal User operator, Model model) {
-
+		
+		
 // 1. 【重要】名前の重複チェック（DB照合）
 // userNameに形式エラーがない場合のみ、DBに問い合わせる
 		if (!result.hasFieldErrors("userName")) {
@@ -80,7 +81,9 @@ public class ShopStaffController {
 			// プルダウン（所属先リスト）が消えるのを防ぐため再セット
 			model.addAttribute("belongingList", userDetailsService.getBelongingList(operator));
 			model.addAttribute("baseUrl", "/shop-staff");
-
+			// 権限IDと権限名を再セット
+			userForm.setAuthorityId(operator.getAuthority().getAuthorityId());
+	        userForm.setAuthorityName(operator.getAuthority().getAuthorityName());
 			// 入力された値（userForm）を保持したままフォーム画面に戻る
 			return "myTeam-form";
 		}

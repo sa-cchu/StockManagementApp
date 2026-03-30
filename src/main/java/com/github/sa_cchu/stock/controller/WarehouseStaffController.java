@@ -80,7 +80,9 @@ public class WarehouseStaffController {
 			// プルダウン（所属先リスト）が消えるのを防ぐため再セット
 			model.addAttribute("belongingList", userDetailsService.getBelongingList(operator));
 			model.addAttribute("baseUrl", "/warehouse-staff");
-
+			// 権限IDと権限名を再セット
+			userForm.setAuthorityId(operator.getAuthority().getAuthorityId());
+	        userForm.setAuthorityName(operator.getAuthority().getAuthorityName());
 			// 入力された値（userForm）を保持したままフォーム画面に戻る
 			return "myTeam-form";
 		}
