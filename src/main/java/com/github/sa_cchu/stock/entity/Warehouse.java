@@ -21,11 +21,11 @@ public class Warehouse {
 	@Column(name = "warehouse_id")
 	private Integer warehouseId;
 
-	@NotBlank
+	@NotBlank(message = "倉庫名は必須です。必ず入力してください。")
 	@Column(name = "warehouse_name", nullable = false, length = 255)
 	private String warehouseName;
 
-	@NotBlank
+	@NotBlank(message = "倉庫住所は必須です。必ず入力してください。")
 	@Column(name = "warehouse_address", nullable = false, length = 255)
 	private String warehouseAddress;
 
