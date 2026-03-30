@@ -34,6 +34,7 @@ public class Goods {
     private Category category;
 
     @Column(name = "delete_flag", nullable = false)
+    @Builder.Default // @Builder用に初期値を適用させる設定追加
     private Integer deleteFlag = 0;
 
     // getter / setter
