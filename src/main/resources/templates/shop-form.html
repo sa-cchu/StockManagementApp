@@ -2,38 +2,41 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="layout :: layout">
 
-	<div th:fragment="content">
+    <div th:fragment="content">
 
-		<h1 th:text="${shop.shopId == null} ? '新規店舗追加' : '店舗編集'"></h1>
+        <h1 th:text="${shop.shopId == null} ? '新規店舗追加' : '店舗編集'"></h1>
 
-		<div th:if="${errorMessage}" class="text-danger">
-			<span th:text="${errorMessage}"></span>
-		</div>
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
 
-		<form th:action="${shop.shopId == null}
-            ? @{/shop/add}
-            : @{/shop/update}" th:object="${shop}" method="post">
+        <form th:action="${shop.shopId == null} ? @{/shop/add} : @{/shop/update}" 
+              th:object="${shop}" method="post">
 
-			<input type="hidden" th:if="${shop.shopId != null}" th:field="*{shopId}" />
+            <input type="hidden" th:if="${shop.shopId != null}" th:field="*{shopId}" />
 
-			<div class="mb-3">
-				<label class="form-label">店舗名</label>
-				<input type="text" th:field="*{shopName}" class="form-control">
-			</div>
+            <div class="mb-3">
+                <label class="form-label">店舗名</label>
+                <input type="text" th:field="*{shopName}" 
+                       class="form-control" 
+                       th:classappend="${#fields.hasErrors('shopName')} ? 'is-invalid'">
+                <div th:if="${#fields.hasErrors('shopName')}" th:errors="*{shopName}" class="invalid-feedback"></div>
+            </div>
 
-			<div class="mb-3">
-				<label class="form-label">店舗住所</label>
-				<input type="text" th:field="*{shopAddress}" class="form-control">
-			</div>
-			<div class="ms-3">
-				<button type="submit" class="btn btn-primary" th:text="${shop.shopId == null} ? '追加' : '編集'">
-				</button>
+            <div class="mb-3">
+                <label class="form-label">店舗住所</label>
+                <input type="text" th:field="*{shopAddress}" 
+                       class="form-control" 
+                       th:classappend="${#fields.hasErrors('shopAddress')} ? 'is-invalid'">
+                <div th:if="${#fields.hasErrors('shopAddress')}" th:errors="*{shopAddress}" class="invalid-feedback"></div>
+            </div>
 
-				<a th:href="@{/shop}" class="btn btn-secondary">一覧に戻る</a>
-			</div>
-		</form>
+            <div class="ms-3">
+                <button type="submit" class="btn btn-primary" th:text="${shop.shopId == null} ? '追加' : '編集'"></button>
+                <a th:href="@{/shop}" class="btn btn-secondary">一覧に戻る</a>
+            </div>
+        </form>
 
-	</div>
+    </div>
 </div>
-
 </html>

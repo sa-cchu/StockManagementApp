@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 
 import com.github.sa_cchu.stock.entity.Warehouse;
 import com.github.sa_cchu.stock.service.WarehouseService;
@@ -37,7 +39,10 @@ public class WarehouseController {
 	
 	//新規追加
 	@PostMapping("/add")
-	public String add(@ModelAttribute Warehouse warehouse,Model model) {
+	public String add(@Validated @ModelAttribute Warehouse warehouse, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			return "warehouse-form";
+		}
 		//フォームで入力された値をエンティティ入れてメソッドに渡す　//HTMLに渡すための箱
 		try {		
 			warehouseService.addWarehouse(warehouse);
@@ -59,7 +64,10 @@ public class WarehouseController {
 
 		// 更新
 		@PostMapping("/update")
-		public String update(@ModelAttribute Warehouse warehouse, Model model) {
+		public String update(@Validated @ModelAttribute Warehouse warehouse, BindingResult result, Model model) {
+			if (result.hasErrors()) {
+				return "warehouse-form";
+			}
 			try {
 				warehouseService.updateWarehouse(warehouse);
 				return "redirect:/warehouse";

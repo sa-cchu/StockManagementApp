@@ -20,6 +20,13 @@ public interface GoodsRepository extends JpaRepository<Goods, Integer> {
 
 	Optional<Goods> findByGoodsNameAndDeleteFlag(String goodsName, int i);
 	
-	
+	/**
+	 * 新商品を追加する際に入力した商品名が存在するかどうかをチェックする。
+	 * また、判定時に論理削除されていないもので判定する。
+	 * @param goodsName 商品名
+	 * @param deleteFlag 削除フラグ
+	 * @return 判定結果（true/false）
+	 */
+    boolean existsByGoodsNameAndDeleteFlag(String goodsName, Integer deleteFlag);
 	
 }

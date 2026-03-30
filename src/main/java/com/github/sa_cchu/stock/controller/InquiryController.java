@@ -87,10 +87,6 @@ public class InquiryController {
 	@GetMapping("/create")
 	public String viewInquiryCreate(@ModelAttribute InquiryForm inquiryForm,
 			@AuthenticationPrincipal User user, Model model) {
-		// ログインユーザーが管理者かを判定し、管理者の場合は一覧にリダイレクトさせる。
-		if (isAdmin(user)) {
-			return "redirect:/inquiry/list";
-		}
 		// 入力フォームの選択肢情報を取得する。
 		setCommonModel(model, user);
 		return "/inquiry/create";

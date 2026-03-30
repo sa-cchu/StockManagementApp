@@ -116,7 +116,7 @@ public class ShopOrderService {
             }
 
             WarehouseStock latestStock = warehouseStockRepository
-                    .findByWarehouseIdAndGoodsIdAndDeleteFlag(targetWarehouse, goods, 0);
+                    .findForUpdate(targetWarehouse, goods, 0);
             if (latestStock == null || latestStock.getWarehouseStockQuantity() < row.getOrderQuantity()) {
                 throw new Exception("問題が発生したため、発注処理が完了できませんでした。");
             }
@@ -170,7 +170,7 @@ public class ShopOrderService {
     // ステータス更新（「納品済み」にして店舗在庫を増やす）
     @Transactional
     public void updateOrderStatusToDelivered(Integer orderId, Shop shop) throws Exception {
-        Orders order = ordersRepository.findById(orderId).orElse(null);
+        Orders order = ordersRepository.findByIdForUpdate(orderId).orElse(null);
 
         if (order == null) {
             throw new Exception("発注データが見つかりません。");
@@ -188,8 +188,8 @@ public class ShopOrderService {
         order.setUpdateDate(LocalDateTime.now());
         ordersRepository.save(order);
 
-        // ここで店舗在庫を増やす
-        ShopStock shopStock = shopStockRepository.findByShopIdAndGoodsIdAndDeleteFlag(shop, order.getGoods(), 0);
+        // ここで店舗在庫を増やす (悲観的ロック付き)
+        ShopStock shopStock = shopStockRepository.findForUpdate(shop, order.getGoods(), 0);
         if(shopStock == null) throw new Exception("店舗在庫データが見つかりません。");
         shopStock.setShopStockQuantity(shopStock.getShopStockQuantity() + order.getOrderAmount());
         shopStockRepository.save(shopStock);

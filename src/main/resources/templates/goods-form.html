@@ -3,32 +3,40 @@
 
 <div th:fragment="content">
 
-	<h1 th:text="${goods.goodsId == null} ? '新規商品追加' : '商品編集'"></h1>
+	<h1 th:text="*{goodsId == null} ? '新規商品追加' : '商品編集'"></h1>
 
 	<div th:if="${errorMessage}" class="alert alert-danger">
 		<span th:text="${errorMessage}"></span>
 	</div>
 
-	<form th:action="@{/goods/save}" th:object="${goods}" method="post">
+	<form th:action="@{/goods/save}" th:object="${goodsFormDto}" method="post">
+		<!-- 入力項目に不備がある場合に全体のエラーメッセージを表示 -->
+		<div th:if="${#fields.hasAnyErrors()}" class="errorMessage alert alert-danger mb-3">
+			入力内容に誤りがあります。
+		</div>
 
 		<input type="hidden" th:if="*{goodsId != null}" th:field="*{goodsId}" />
 
 		<div class="mb-3">
 			<label for="goodsName" class="form-label">商品名 <span style="color:red">*</span></label>
-			<input type="text" id="goodsName" th:field="*{goodsName}" class="form-control" required maxlength="255">
+			<input type="text" id="goodsName" th:field="*{goodsName}" class="form-control" maxlength="255">
+			<!-- 入力・選択不備時にエラーメッセージを出力 -->
+			<div class="text-danger d-block small" th:errors="*{goodsName}"></div>
 		</div>
 
 		<div class="mb-3">
 			<label for="category" class="form-label">カテゴリー <span style="color:red">*</span></label>
-			<select id="category" th:field="*{category.categoryId}" class="form-select">
+			<select id="category" th:field="*{categoryId}" class="form-select">
 				<option value="">-- カテゴリーを選択してください --</option>
 				<option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}">
 				</option>
 			</select>
+			<!-- 入力・選択不備時にエラーメッセージを出力 -->
+			<div class="text-danger d-block small" th:errors="*{categoryId}"></div>
 		</div>
 
 		<div class="mt-4">
-			<button type="submit" class="btn btn-primary" th:text="${goods.goodsId == null} ? '追加' : '保存'"></button>
+			<button type="submit" class="btn btn-primary" th:text="*{goodsId == null} ? '追加' : '保存'"></button>
 			<a th:href="@{/goods}" class="btn btn-secondary">一覧に戻る</a>
 		</div>
 

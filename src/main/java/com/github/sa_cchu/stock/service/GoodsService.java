@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.github.sa_cchu.stock.dto.GoodsFormDto;
 import com.github.sa_cchu.stock.entity.Category;
 import com.github.sa_cchu.stock.entity.Goods;
 import com.github.sa_cchu.stock.entity.Shop;
@@ -70,7 +71,23 @@ public class GoodsService {
 	 * 商品を新規登録し、同時に全店舗・全倉庫の在庫レコードを初期化します
 	 */
 	@Transactional // これが超重要！一連の処理をひとまとめにします
-	public void saveGoods(Goods goods) {
+	public void saveGoods(GoodsFormDto goodsFormDto) {
+		// 商品名の重複確認を行う（deleteFlagが0、かつ入力された商品名と一致するレコードの有無）
+		if (goodsRepository.existsByGoodsNameAndDeleteFlag(goodsFormDto.getGoodsName(), 0)) {
+			// 同じ商品名が存在する場合、メッセージ付きで例外として投げる。
+			throw new RuntimeException("商品名「" + goodsFormDto.getGoodsName() + "」は既に登録されています。他の商品を登録してください");
+		}
+		// カテゴリーIDを使って、DBから本物のCategoryエンティティを取得する
+	    Category category = categoryRepository.findById(goodsFormDto.getCategoryId())
+	    	// カテゴリーテーブルに指定のカテゴリーがない場合は例外を投げる（コントローラーで）
+	        .orElseThrow(() -> new RuntimeException("指定されたカテゴリ(ID:" + goodsFormDto.getCategoryId() + ")が見つかりません"));
+		
+	    // DTOから保存のために情報をエンティティに入れ替える。
+		Goods goods = Goods.builder()
+			    .goodsName(goodsFormDto.getGoodsName())
+			    .category(category)
+			    .build();
+		
 		// 1. まずは商品を保存
 		Goods savedGoods = goodsRepository.save(goods);
 

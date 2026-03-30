@@ -31,6 +31,8 @@ public class SecurityConfig {
 						.requestMatchers("/shop-staff/**", "/shop-stock/**", "/linked-warehouses/**", "/shop-order/**", "/order/**").hasRole("SHOP")
 						// WAREHOUSE権限のみアクセス可能なURL
 						.requestMatchers("/warehouse-staff/**", "/warehouse-stock/**", "/warehouse-order/**").hasRole("WAREHOUSE")
+						// SHOP または WAREHOUSE 権限があればアクセス可能なURL
+						.requestMatchers("/inquiry/create/**").hasAnyRole("SHOP", "WAREHOUSE")
 						// 今後、どの権限でもアクセスできるがログインは必要な問い合わせなどはanyRequestで拾うか、.hasAnyRoleで複数割り当て可能
 
 						// それ以外のすべてのリクエストは、ログイン済みユーザーのみ許可します

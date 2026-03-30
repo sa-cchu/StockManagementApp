@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
+
 
 import com.github.sa_cchu.stock.entity.Category;
 import com.github.sa_cchu.stock.entity.Goods;
@@ -29,6 +32,10 @@ public interface WarehouseStockRepository extends JpaRepository<WarehouseStock, 
 
 	@EntityGraph(attributePaths = {"goodsId", "warehouseId"})
 	WarehouseStock findByWarehouseIdAndGoodsIdAndDeleteFlag(Warehouse warehouse, Goods goods, Integer deleteFlag);
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("SELECT ws FROM WarehouseStock ws WHERE ws.warehouseId = :warehouse AND ws.goodsId = :goods AND ws.deleteFlag = :deleteFlag")
+	WarehouseStock findForUpdate(@Param("warehouse") Warehouse warehouse, @Param("goods") Goods goods, @Param("deleteFlag") Integer deleteFlag);
 
 	// カテゴリー別取得
 	@EntityGraph(attributePaths = {"goodsId", "warehouseId", "goodsId.category"})

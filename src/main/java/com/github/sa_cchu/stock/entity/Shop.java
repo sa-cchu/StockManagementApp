@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "shop", uniqueConstraints = {
@@ -17,10 +19,14 @@ public class Shop {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "shop_id")
 	private Integer shopId;
-
+	
+	@Size(max = 255, message = "店舗名は255文字以内で入力してください")
+	@NotBlank(message = "店舗名を入力してください")
 	@Column(name = "shop_name", nullable = false, length = 255)
 	private String shopName;
-
+	
+	@NotBlank(message = "住所を入力してください")
+	@Size(max = 255, message = "住所は255文字以内で入力してください")
 	@Column(name = "shop_address", nullable = false, length = 255)
 	private String shopAddress;
 
