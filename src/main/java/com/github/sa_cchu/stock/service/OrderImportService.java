@@ -99,8 +99,8 @@ public class OrderImportService {
 					throw new Exception("倉庫「" + warehouse.getWarehouseName() + "」とは連携していません。");
 				}
 
-				// 4. 倉庫在庫チェック
-				WarehouseStock wStock = warehouseStockRepository.findByWarehouseIdAndGoodsIdAndDeleteFlag(warehouse,
+				// 4. 倉庫在庫チェック（悲観的ロック取得）
+				WarehouseStock wStock = warehouseStockRepository.findForUpdate(warehouse,
 						goods, 0);
 				if (wStock == null || wStock.getWarehouseStockQuantity() < amount) {
 					throw new Exception("倉庫に十分な在庫がありません。");
