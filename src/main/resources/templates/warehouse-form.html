@@ -24,7 +24,7 @@
 		<div class="mb-3">
 			<label for="warehouseName" class="form-label">倉庫名 <span style="color:red">*</span></label>
 			<input type="text" id="warehouseName" th:field="*{warehouseName}" class="form-control" 
-				maxlength="255" required>
+				maxlength="255">
 			<div class="text-danger" th:if="${#fields.hasErrors('warehouseName')}" th:errors="*{warehouseName}"></div>
 		</div>
 
@@ -32,7 +32,7 @@
 		<div class="mb-3">
 			<label for="warehouseAddress" class="form-label">倉庫住所 <span style="color:red">*</span></label>
 			<input type="text" id="warehouseAddress" th:field="*{warehouseAddress}" class="form-control"
-				maxlength="255" required>
+				maxlength="255">
 			<div class="text-danger" th:if="${#fields.hasErrors('warehouseAddress')}" th:errors="*{warehouseAddress}"></div>
 		</div>
 
