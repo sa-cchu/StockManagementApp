@@ -2,6 +2,7 @@ package com.github.sa_cchu.stock.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,9 +12,15 @@ import org.springframework.data.repository.query.Param;
 import com.github.sa_cchu.stock.entity.Orders;
 import com.github.sa_cchu.stock.entity.Shop;
 import com.github.sa_cchu.stock.entity.Warehouse;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 
 public interface OrdersRepository extends JpaRepository<Orders, Integer> {
     
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT o FROM Orders o WHERE o.orderId = :orderId")
+    Optional<Orders> findByIdForUpdate(@Param("orderId") Integer orderId);
+
     // 店舗ごとの発注一覧（動的絞り込み）
     @EntityGraph(attributePaths = {"goods", "warehouse"})
     @Query("SELECT o FROM Orders o " +

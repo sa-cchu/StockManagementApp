@@ -110,8 +110,8 @@ public class OrderImportService {
 	                throw new Exception("数量「" + dto.getAmount() + "」は半角数字で入力してください。");
 	            }
 
-	            // 5. 倉庫在庫チェック
-	            WarehouseStock wStock = warehouseStockRepository.findByWarehouseIdAndGoodsIdAndDeleteFlag(warehouse, goods, 0);
+	            // 5. 倉庫在庫チェック（悲観的ロック取得）
+	            WarehouseStock wStock = warehouseStockRepository.findForUpdate(warehouse, goods, 0);
 	            int currentStock = (wStock == null) ? 0 : wStock.getWarehouseStockQuantity();
 	            
 	            if (currentStock < amount) {
