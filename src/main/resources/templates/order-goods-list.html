@@ -14,10 +14,14 @@
 
 	<div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show" role="alert">
 		<i class="bi bi-exclamation-triangle-fill me-2"></i>
-		<span th:text="${errorMsg}"></span>
+		<span th:utext="${errorMsg}"></span>
 		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 	</div>
-
+	<div class="mb-3 text-end">
+	    <a th:href="@{/order/download}" class="btn btn-outline-success">
+	        <i class="bi bi-file-earmark-excel"></i> 発注用エクセルをダウンロード
+	    </a>
+	</div>
 	<div class="card mb-4 border-primary shadow-sm">
 		<div class="card-header bg-primary text-white py-2">
 			<h6 class="mb-0"><i class="bi bi-file-earmark-excel me-1"></i> Excelから一括発注</h6>

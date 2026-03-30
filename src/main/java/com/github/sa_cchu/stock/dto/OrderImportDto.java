@@ -14,5 +14,6 @@ public class OrderImportDto {
     private String goodsName;
     private String warehouseName;
     private String amount;
-
+    private String sheetName;
+    private int excelRowNum;
 }
